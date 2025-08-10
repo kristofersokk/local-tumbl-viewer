@@ -9,9 +9,6 @@ import {
 	useState,
 } from 'react';
 
-const collapsedMaxHeightRem = 24;
-const nonCollapsibleHeightRem = 32;
-
 interface BlogTextCollapsibleProps {
 	children: (
 		ref: RefObject<HTMLElement | null>,
@@ -25,6 +22,9 @@ const BlogTextCollapsible = ({ children }: BlogTextCollapsibleProps) => {
 	const [isNonCollapsible, setIsNonCollapsible] = useState(false);
 	const { scrollHeight } = useElementSize(contentRef);
 	const remToPixels = useRemToPixels();
+
+	const collapsedMaxHeightRem = 24 * (remToPixels / 16);
+	const nonCollapsibleHeightRem = 24 * (remToPixels / 16);
 
 	const collapse = () => {
 		setCollapsed(true);
@@ -76,21 +76,27 @@ const BlogTextCollapsible = ({ children }: BlogTextCollapsibleProps) => {
 			expand();
 			setIsNonCollapsible(true);
 		}
-	}, [scrollHeight, collapsed, remToPixels, expand]);
+	}, [scrollHeight, collapsed, remToPixels, expand, nonCollapsibleHeightRem]);
 
 	return (
 		<div className="relative overflow-y-hidden">
 			{children(contentRef, 'transition-[max-height] duration-500')}
 			{collapsed && (
-				<div className="absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t from-black to-transparent p-2">
-					<button className="cursor-pointer" onClick={expand}>
+				<div className="from-blog-collapse-color absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t p-2">
+					<button
+						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 drop-shadow-[0_2px_4px_rgba(0,0,9px,0)] transition-shadow hover:drop-shadow-gray-600"
+						onClick={expand}
+					>
 						Show More
 					</button>
 				</div>
 			)}
 			{!collapsed && !isNonCollapsible && (
-				<div className="flex justify-around p-2">
-					<button className="cursor-pointer" onClick={collapse}>
+				<div className="flex justify-around">
+					<button
+						className="cursor-pointer rounded-xl p-2 transition-colors hover:bg-gray-700"
+						onClick={collapse}
+					>
 						Show Less
 					</button>
 				</div>

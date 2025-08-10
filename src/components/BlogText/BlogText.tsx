@@ -11,7 +11,7 @@ interface BlogTextProps {
 const BlogText = ({ text }: BlogTextProps) => {
 	return (
 		<div
-			className="z-blog w-[30rem] max-w-full rounded-md bg-gray-900"
+			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
 			key={text.id}
 		>
 			<div className="m-2 mt-3 flex justify-end gap-2">
@@ -19,7 +19,6 @@ const BlogText = ({ text }: BlogTextProps) => {
 			</div>
 			<div
 				className={classNames([
-					'my-2',
 					'[&_img]:my-4',
 					'[&_p]:mx-4 [&_p]:my-2',
 					'[&_h1]:mx-4 [&_h1]:my-2',
