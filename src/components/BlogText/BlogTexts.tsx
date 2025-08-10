@@ -3,6 +3,8 @@ import { Blog, BlogText as BlogTextType } from 'Types/blog';
 import { Masonry } from 'masonic';
 import { useMemo, useState } from 'react';
 import BlogText from './BlogText';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
@@ -14,6 +16,8 @@ interface BlogTextsProps {
 
 const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 	const remInPixels = useRemToPixels();
+
+	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
 
 	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
 
@@ -89,12 +93,33 @@ const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 					</div>
 					<a
 						href={`https://${blog.Name}.tumblr.com`}
+						target="_blank"
 						className="text-sm text-gray-400 transition-colors hover:text-white"
 					>
 						Visit Blog
 					</a>
 				</div>
-				<div>
+				<div className="flex items-center gap-4">
+					<div className="flex items-center gap-2">
+						<span className="text-sm text-gray-400">Column width:</span>
+						<div className="w-40">
+							<Slider
+								step={1}
+								min={10}
+								max={60}
+								defaultValue={24}
+								value={columnWidthRem}
+								onChange={value => setColumnWidthRem(value as number)}
+								classNames={{
+									track: '!bg-gray-700',
+									rail: '!bg-gray-800',
+									handle:
+										'!bg-white !border !border-gray-300 [&.rc-slider-handle-dragging]:!shadow-[0_0_3px_4px] [&.rc-slider-handle-dragging]:shadow-gray-400',
+								}}
+							/>
+						</div>
+						<span className="text-sm text-gray-400">{columnWidthRem}rem</span>
+					</div>
 					{!!tagsForFilter.length && (
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-gray-400">Filtering by: </span>
@@ -124,11 +149,16 @@ const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 					key={JSON.stringify(filter)}
 					items={sortedTexts}
 					render={({ data: text }) => (
-						<BlogText key={text.id} text={text} addTagFilter={addTagFilter} />
+						<BlogText
+							key={text.id}
+							text={text}
+							addTagFilter={addTagFilter}
+							columnWidthRem={columnWidthRem}
+						/>
 					)}
 					columnGutter={1 * remInPixels}
 					rowGutter={1 * remInPixels}
-					columnWidth={24 * remInPixels}
+					columnWidth={columnWidthRem * remInPixels}
 					itemHeightEstimate={29 * remInPixels}
 					itemKey={text => text.id || text.url}
 					scrollFps={12}

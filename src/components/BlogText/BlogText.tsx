@@ -15,9 +15,10 @@ const removeTime = (date: string) => {
 interface BlogTextProps {
 	text: BlogTextType;
 	addTagFilter: (tag: string) => void;
+	columnWidthRem: number;
 }
 
-const BlogText = ({ text, addTagFilter }: BlogTextProps) => {
+const BlogText = ({ text, addTagFilter, columnWidthRem }: BlogTextProps) => {
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
@@ -42,7 +43,7 @@ const BlogText = ({ text, addTagFilter }: BlogTextProps) => {
 					'[&_*]:first:mt-0 [&_*]:last:mb-0',
 				])}
 			>
-				<BlogTextCollapsible>
+				<BlogTextCollapsible columnWidthRem={columnWidthRem}>
 					{(ref, className) =>
 						text.format === 'html' ? (
 							<UnsafeContent

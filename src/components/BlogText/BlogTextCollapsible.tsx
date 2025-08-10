@@ -14,17 +14,21 @@ interface BlogTextCollapsibleProps {
 		ref: RefObject<HTMLElement | null>,
 		className?: string
 	) => ReactNode | ReactNode[];
+	columnWidthRem: number;
 }
 
-const BlogTextCollapsible = ({ children }: BlogTextCollapsibleProps) => {
+const BlogTextCollapsible = ({
+	children,
+	columnWidthRem,
+}: BlogTextCollapsibleProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const [collapsed, setCollapsed] = useState(true);
 	const [isNonCollapsible, setIsNonCollapsible] = useState(false);
 	const { scrollHeight } = useElementSize(contentRef);
 	const remToPixels = useRemToPixels();
 
-	const collapsedMaxHeightRem = 24 * (remToPixels / 16);
-	const nonCollapsibleHeightRem = 24 * (remToPixels / 16);
+	const collapsedMaxHeightRem = columnWidthRem * (remToPixels / 16);
+	const nonCollapsibleHeightRem = columnWidthRem * (remToPixels / 16);
 
 	const collapse = () => {
 		setCollapsed(true);
@@ -52,7 +56,7 @@ const BlogTextCollapsible = ({ children }: BlogTextCollapsibleProps) => {
 				})
 			);
 		}
-	}, [scrollHeight]);
+	}, [collapsedMaxHeightRem, scrollHeight]);
 
 	useEffect(() => {
 		const contentEl = contentRef.current;
@@ -84,7 +88,7 @@ const BlogTextCollapsible = ({ children }: BlogTextCollapsibleProps) => {
 			{collapsed && (
 				<div className="from-blog-collapse-color absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t p-2">
 					<button
-						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 drop-shadow-[0_2px_4px_rgba(0,0,9px,0)] transition-shadow hover:drop-shadow-gray-600"
+						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 drop-shadow-[0_2px_4px_9px_rgba(0,0,0,0)] transition-shadow hover:drop-shadow-gray-600"
 						onClick={expand}
 					>
 						Show More
