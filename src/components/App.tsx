@@ -6,6 +6,7 @@ import { Blog, BlogText } from 'Types/blog';
 import { getBlogFolderName } from 'Utils/blogUtils';
 import BlogSelector from './BlogSelector';
 import BlogTexts from './BlogText/BlogTexts';
+import Center from './Center';
 import TitleScreen from './TitleScreen';
 
 const App = () => {
@@ -99,7 +100,11 @@ const App = () => {
 		});
 
 	if (!initialized) {
-		return <TitleScreen />;
+		return (
+			<Center>
+				<TitleScreen />
+			</Center>
+		);
 	}
 
 	const isLoading =
@@ -109,15 +114,27 @@ const App = () => {
 		isLoadingChosenBlogTexts;
 
 	if (isLoading) {
-		return <p>Loading...</p>;
+		return (
+			<Center>
+				<p>Loading...</p>
+			</Center>
+		);
 	}
 
 	if (!blogs?.length) {
-		return <p>No blogs found in the index folder.</p>;
+		return (
+			<Center>
+				<p>No blogs found in the index folder.</p>
+			</Center>
+		);
 	}
 
 	if (!chosenBlogName) {
-		return <BlogSelector blogs={blogs} setChosenBlogName={setChosenBlogName} />;
+		return (
+			<Center>
+				<BlogSelector blogs={blogs} setChosenBlogName={setChosenBlogName} />
+			</Center>
+		);
 	}
 
 	if (!chosenBlog) {
@@ -125,7 +142,11 @@ const App = () => {
 	}
 
 	if (!chosenBlogFolderName) {
-		return <p>Blog doesn't have a folder for files, try another</p>;
+		return (
+			<Center>
+				<p>Blog doesn't have a folder for files, try another</p>
+			</Center>
+		);
 	}
 
 	if (!chosenBlogFolder || !chosenBlogFiles) {
@@ -133,11 +154,19 @@ const App = () => {
 	}
 
 	if (!chosenBlogTextsFile) {
-		return <p>Blog doesn't have a texts.txt file, try another</p>;
+		return (
+			<Center>
+				<p>Blog doesn't have a texts.txt file, try another</p>
+			</Center>
+		);
 	}
 
 	if (!chosenBlogTexts?.length) {
-		return <p>Cannot find blog texts, try another</p>;
+		return (
+			<Center>
+				<p>Cannot find blog texts, try another</p>
+			</Center>
+		);
 	}
 
 	return <BlogTexts blog={chosenBlog} texts={chosenBlogTexts} />;

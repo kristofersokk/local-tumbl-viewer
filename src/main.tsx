@@ -10,9 +10,7 @@ createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<Initializer>
-				<div className="flex min-h-full items-center justify-center [&>*]:min-h-full">
-					<App />
-				</div>
+				<App />
 			</Initializer>
 		</QueryClientProvider>
 	</StrictMode>

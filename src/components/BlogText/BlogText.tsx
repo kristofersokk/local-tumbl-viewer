@@ -4,18 +4,30 @@ import { BlogText as BlogTextType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogTextCollapsible from './BlogTextCollapsible';
 
+const removeTime = (date: string) => {
+	const firstSpace = date.indexOf(' ');
+	const lastSpace = date.lastIndexOf(' ');
+	return firstSpace !== -1 && lastSpace !== -1
+		? date.slice(firstSpace + 1, lastSpace)
+		: date;
+};
+
 interface BlogTextProps {
 	text: BlogTextType;
+	addTagFilter: (tag: string) => void;
 }
 
-const BlogText = ({ text }: BlogTextProps) => {
+const BlogText = ({ text, addTagFilter }: BlogTextProps) => {
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
 			key={text.id}
 		>
-			<div className="m-2 mt-3 flex justify-end gap-2">
-				<span className="text-sm">{text.date}</span>
+			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
+				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
+					{text['regular-title'] || text.slug}
+				</span>
+				<span className="text-sm">{removeTime(text.date)}</span>
 			</div>
 			<div
 				className={classNames([
@@ -27,6 +39,7 @@ const BlogText = ({ text }: BlogTextProps) => {
 					'[&_h4]:mx-4 [&_h4]:my-2',
 					'[&_h5]:mx-4 [&_h5]:my-2',
 					'[&_h6]:mx-4 [&_h6]:my-2',
+					'[&_*]:first:mt-0 [&_*]:last:mb-0',
 				])}
 			>
 				<BlogTextCollapsible>
@@ -48,7 +61,20 @@ const BlogText = ({ text }: BlogTextProps) => {
 					}
 				</BlogTextCollapsible>
 			</div>
-			<div className="mx-4 my-2 flex">WIP</div>
+			{!!text.tags?.length && (
+				<div className="mx-2 mt-2 flex flex-wrap gap-2">
+					{text.tags.map(tag => (
+						<span
+							key={tag}
+							className="cursor-pointer rounded-full bg-gray-800 px-2 py-1 text-sm"
+							onClick={() => addTagFilter(tag)}
+						>
+							#{tag}
+						</span>
+					))}
+				</div>
+			)}
+			<div className="mx-4 my-2 flex"></div>
 		</div>
 	);
 };
