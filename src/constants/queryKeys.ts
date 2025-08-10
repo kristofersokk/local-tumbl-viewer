@@ -1,0 +1,6 @@
+export const QUERY_KEYS = {
+	ROOT_FOLDERS: 'ROOT_FOLDERS',
+	BLOGS: 'BLOGS',
+	BLOG_FILES: 'BLOG_FILES',
+	BLOG_TEXTS: 'BLOG_TEXTS',
+} as const;

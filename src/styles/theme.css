@@ -1,0 +1,9 @@
+@theme {
+	--font-Inter: 'Inter', sans-serif;
+
+	--color-text: #cccccc;
+	--color-background: black;
+
+	--z-index-blog: 40;
+	--z-index-sticky: 50;
+}

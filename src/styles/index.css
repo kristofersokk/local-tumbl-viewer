@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+@layer theme, base, components, utilities;
+@import './theme.css' layer(theme);
+
+@layer base {
+	* {
+		@apply text-text box-border font-Inter;
+	}
+}
