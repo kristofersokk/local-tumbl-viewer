@@ -1,20 +1,20 @@
 import useRemToPixels from 'Hooks/useRemToPixels';
-import { Blog, BlogText as BlogTextType } from 'Types/blog';
+import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
 import { Masonry } from 'masonic';
-import { useMemo, useState } from 'react';
-import BlogText from './BlogText';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { useMemo, useState } from 'react';
+import BlogPost from './BlogPost';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
 
-interface BlogTextsProps {
-	blog: Blog;
-	texts: BlogTextType[];
+interface BlogProps {
+	blog: BlogType;
+	texts: BlogPostType[];
 }
 
-const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
+const Blog = ({ blog, texts }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
@@ -55,7 +55,7 @@ const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 		useState<SortingDirection>('desc');
 
 	const sortedTexts = useMemo(() => {
-		const getKey = (text: BlogTextType) => {
+		const getKey = (text: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
 					return text['unix-timestamp'];
@@ -149,7 +149,7 @@ const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 					key={JSON.stringify(filter)}
 					items={sortedTexts}
 					render={({ data: text }) => (
-						<BlogText
+						<BlogPost
 							key={text.id}
 							text={text}
 							addTagFilter={addTagFilter}
@@ -168,4 +168,4 @@ const BlogTexts = ({ blog, texts }: BlogTextsProps) => {
 	);
 };
 
-export default BlogTexts;
+export default Blog;

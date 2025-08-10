@@ -48,7 +48,7 @@ export interface Blog {
 	DuplicateAudios: number;
 	DuplicatePhotos: number;
 	DuplicateVideos: number;
-	FileDownloadLocation: string;
+	FileDownloadLocation: string | undefined;
 	FilenameTemplate: string;
 	ForceRescan: boolean;
 	ForceSize: boolean;
@@ -92,11 +92,11 @@ export interface Blog {
 	ZipCrawlerData: boolean;
 }
 
-export interface BlogText {
+export interface BlogPost {
 	date: string; // "Thu, 30 Jan 2025 11:07:36"
 	'date-gmt': string; // "2025-01-30 16:07:36 GMT"
 	'downloaded-media-files': string[]; // ["39d13eca6f8dfb01247c08be45ae4bcd8b04468c.jpg"]
-	format: string; // "html"
+	format?: string; // "html"
 	id: string; // "774114646189867009"
 	'reblog-key': string; // "G9pbwBu5"
 	'regular-body': string; // pure HTML

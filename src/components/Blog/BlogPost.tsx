@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { RefObject } from 'react';
-import { BlogText as BlogTextType } from 'Types/blog';
+import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
-import BlogTextCollapsible from './BlogTextCollapsible';
+import BlogPostCollapsible from './BlogPostCollapsible';
 
 const removeTime = (date: string) => {
 	const firstSpace = date.indexOf(' ');
@@ -12,13 +12,13 @@ const removeTime = (date: string) => {
 		: date;
 };
 
-interface BlogTextProps {
-	text: BlogTextType;
+interface BlogPostProps {
+	text: BlogPostType;
 	addTagFilter: (tag: string) => void;
 	columnWidthRem: number;
 }
 
-const BlogText = ({ text, addTagFilter, columnWidthRem }: BlogTextProps) => {
+const BlogPost = ({ text, addTagFilter, columnWidthRem }: BlogPostProps) => {
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
@@ -43,24 +43,15 @@ const BlogText = ({ text, addTagFilter, columnWidthRem }: BlogTextProps) => {
 					'[&_*]:first:mt-0 [&_*]:last:mb-0',
 				])}
 			>
-				<BlogTextCollapsible columnWidthRem={columnWidthRem}>
-					{(ref, className) =>
-						text.format === 'html' ? (
-							<UnsafeContent
-								Ref={ref}
-								className={className}
-								content={text['regular-body']}
-							/>
-						) : (
-							<p
-								ref={ref as RefObject<HTMLParagraphElement | null>}
-								className={className}
-							>
-								Error: unknown format
-							</p>
-						)
-					}
-				</BlogTextCollapsible>
+				<BlogPostCollapsible columnWidthRem={columnWidthRem}>
+					{(ref, className) => (
+						<UnsafeContent
+							Ref={ref}
+							className={className}
+							content={text['regular-body']}
+						/>
+					)}
+				</BlogPostCollapsible>
 			</div>
 			{!!text.tags?.length && (
 				<div className="mx-2 mt-2 flex flex-wrap gap-2">
@@ -80,4 +71,4 @@ const BlogText = ({ text, addTagFilter, columnWidthRem }: BlogTextProps) => {
 	);
 };
 
-export default BlogText;
+export default BlogPost;

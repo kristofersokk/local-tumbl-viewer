@@ -9,7 +9,7 @@ import {
 	useState,
 } from 'react';
 
-interface BlogTextCollapsibleProps {
+interface BlogPostCollapsibleProps {
 	children: (
 		ref: RefObject<HTMLElement | null>,
 		className?: string
@@ -17,10 +17,10 @@ interface BlogTextCollapsibleProps {
 	columnWidthRem: number;
 }
 
-const BlogTextCollapsible = ({
+const BlogPostCollapsible = ({
 	children,
 	columnWidthRem,
-}: BlogTextCollapsibleProps) => {
+}: BlogPostCollapsibleProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const [collapsed, setCollapsed] = useState(true);
 	const [isNonCollapsible, setIsNonCollapsible] = useState(false);
@@ -109,4 +109,4 @@ const BlogTextCollapsible = ({
 	);
 };
 
-export default BlogTextCollapsible;
+export default BlogPostCollapsible;

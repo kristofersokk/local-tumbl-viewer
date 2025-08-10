@@ -2,10 +2,10 @@ import { skipToken, useQuery } from '@tanstack/react-query';
 import InitializationContext from 'Contexts/InitializationContext';
 import { useContext, useEffect, useState } from 'react';
 import { QUERY_KEYS } from 'src/constants/queryKeys';
-import { Blog, BlogText } from 'Types/blog';
+import { BlogPost, Blog as BlogType } from 'Types/blog';
 import { getBlogFolderName } from 'Utils/blogUtils';
+import Blog from './Blog/Blog';
 import BlogSelector from './BlogSelector';
-import BlogTexts from './BlogText/BlogTexts';
 import Center from './Center';
 import TitleScreen from './TitleScreen';
 
@@ -45,7 +45,7 @@ const App = () => {
 								file
 									.getFile()
 									.then(file => file.text())
-									.then(text => JSON.parse(text) as Blog)
+									.then(text => JSON.parse(text) as BlogType)
 							)
 						);
 						return acquiredBlogs;
@@ -83,19 +83,19 @@ const App = () => {
 				: skipToken,
 		});
 
-	const chosenBlogTextsFile = chosenBlogFiles?.find(
+	const chosenBlogPostsFile = chosenBlogFiles?.find(
 		file => file.name === 'texts.txt'
 	);
 
-	const { data: chosenBlogTexts, isLoading: isLoadingChosenBlogTexts } =
+	const { data: chosenBlogPosts, isLoading: isLoadingChosenBlogPosts } =
 		useQuery({
-			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogTextsFile],
-			queryFn: chosenBlogTextsFile
+			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogPostsFile],
+			queryFn: chosenBlogPostsFile
 				? async () =>
-						chosenBlogTextsFile
+						chosenBlogPostsFile
 							.getFile()
 							.then(file => file.text())
-							.then(text => JSON.parse(text) as BlogText[])
+							.then(text => JSON.parse(text) as BlogPost[])
 				: skipToken,
 		});
 
@@ -111,7 +111,7 @@ const App = () => {
 		isLoadingRootFolders ||
 		isLoadingBlogs ||
 		isLoadingChosenBlogFiles ||
-		isLoadingChosenBlogTexts;
+		isLoadingChosenBlogPosts;
 
 	if (isLoading) {
 		return (
@@ -153,7 +153,7 @@ const App = () => {
 		return null;
 	}
 
-	if (!chosenBlogTextsFile) {
+	if (!chosenBlogPostsFile) {
 		return (
 			<Center>
 				<p>Blog doesn't have a texts.txt file, try another</p>
@@ -161,7 +161,7 @@ const App = () => {
 		);
 	}
 
-	if (!chosenBlogTexts?.length) {
+	if (!chosenBlogPosts?.length) {
 		return (
 			<Center>
 				<p>Cannot find blog texts, try another</p>
@@ -169,7 +169,7 @@ const App = () => {
 		);
 	}
 
-	return <BlogTexts blog={chosenBlog} texts={chosenBlogTexts} />;
+	return <Blog blog={chosenBlog} texts={chosenBlogPosts} />;
 };
 
 export default App;
