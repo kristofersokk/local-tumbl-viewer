@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { createElement, JSX, RefObject } from 'react';
 
 type Props<E extends keyof JSX.IntrinsicElements = 'div'> = {
@@ -18,7 +19,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	return createElement(tagContainer.tag, {
 		ref: Ref,
 		...rest,
-		dangerouslySetInnerHTML: { __html: content },
+		dangerouslySetInnerHTML: { __html: DOMPurify.sanitize(content) },
 	});
 };
 

@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
