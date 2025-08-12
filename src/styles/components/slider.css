@@ -1,0 +1,23 @@
+.SliderRoot {
+	@apply relative flex h-3 w-48 touch-none items-center select-none;
+}
+
+.SliderTrack {
+	@apply relative h-3 flex-grow-1 rounded-full bg-gray-800;
+}
+
+.SliderRange {
+	@apply absolute h-full rounded-[9999px] bg-gray-700;
+}
+
+.SliderThumb {
+	@apply block h-5 w-5 rounded-[10px] bg-text;
+}
+
+.SliderThumb:hover {
+	@apply shadow-[0_0_3px_4px] shadow-gray-600;
+}
+
+.SliderThumb:focus {
+	@apply shadow-[0_0_3px_4px] shadow-gray-500 outline-none;
+}

@@ -1,14 +1,11 @@
 import HomeLogo from 'Assets/icons/home.svg?react';
+import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
 import { Masonry } from 'masonic';
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
-import { useMemo, useState } from 'react';
+import { Slider } from 'radix-ui';
+import { useMemo } from 'react';
 import BlogPost from './BlogPost';
-
-const sortingFields = ['createdBy'];
-const sortingDirections = ['asc', 'desc'];
 
 interface BlogProps {
 	blog: BlogType;
@@ -19,26 +16,16 @@ interface BlogProps {
 const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
-	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
-
-	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
-
-	const filter = useMemo(
-		() => ({
-			tagsForFilter,
-		}),
-		[tagsForFilter]
-	);
-
-	const addTagFilter = (tag: string) => {
-		if (!tagsForFilter.includes(tag)) {
-			setTagsForFilter(prev => [...prev, tag]);
-		}
-	};
-
-	const removeTagFilter = (tag: string) => {
-		setTagsForFilter(prev => prev.filter(t => t !== tag));
-	};
+	const {
+		params: { columnWidthRem, filter, sortingField, sortingDirection },
+		setters: {
+			setColumnWidthRem,
+			addTagFilter,
+			removeTagFilter,
+			setSortingField,
+			setSortingDirection,
+		},
+	} = useBlogViewSettings();
 
 	const filteredTexts = useMemo(() => {
 		return texts.filter(text =>
@@ -48,13 +35,6 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 				: true
 		);
 	}, [texts, filter]);
-
-	type SortingField = (typeof sortingFields)[number];
-	type SortingDirection = (typeof sortingDirections)[number];
-
-	const [sortingField, setSortingField] = useState<SortingField>('createdBy');
-	const [sortingDirection, setSortingDirection] =
-		useState<SortingDirection>('desc');
 
 	const sortedTexts = useMemo(() => {
 		const getKey = (text: BlogPostType) => {
@@ -113,29 +93,26 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 				</div>
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-2">
-						<span className="text-sm text-gray-400">Column width:</span>
-						<div className="w-40">
-							<Slider
-								step={1}
-								min={10}
-								max={60}
-								defaultValue={24}
-								value={columnWidthRem}
-								onChange={value => setColumnWidthRem(value as number)}
-								classNames={{
-									track: '!bg-gray-700',
-									rail: '!bg-gray-800',
-									handle:
-										'!bg-white !border !border-gray-300 [&.rc-slider-handle-dragging]:!shadow-[0_0_3px_4px] [&.rc-slider-handle-dragging]:shadow-gray-400',
-								}}
-							/>
-						</div>
-						<span className="text-sm text-gray-400">{columnWidthRem}rem</span>
+						<span className="text-sm">Column width:</span>
+						<Slider.Root
+							className="SliderRoot"
+							min={10}
+							max={60}
+							step={1}
+							value={[columnWidthRem]}
+							onValueChange={value => setColumnWidthRem(value[0])}
+						>
+							<Slider.Track className="SliderTrack">
+								<Slider.Range className="SliderRange" />
+							</Slider.Track>
+							<Slider.Thumb className="SliderThumb" />
+						</Slider.Root>
+						<span className="text-sm">{columnWidthRem}rem</span>
 					</div>
-					{!!tagsForFilter.length && (
+					{!!filter.tagsForFilter.length && (
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-gray-400">Filtering by: </span>
-							{tagsForFilter.map(tag => (
+							{filter.tagsForFilter.map(tag => (
 								<span
 									key={tag}
 									className="flex items-center gap-0.5 rounded-full bg-gray-800 px-2 py-1"
@@ -171,7 +148,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 					columnGutter={1 * remInPixels}
 					rowGutter={1 * remInPixels}
 					columnWidth={columnWidthRem * remInPixels}
-					itemHeightEstimate={29 * remInPixels}
+					itemHeightEstimate={(columnWidthRem + 5) * remInPixels}
 					itemKey={text => text.id || text.url}
 					scrollFps={12}
 				/>
