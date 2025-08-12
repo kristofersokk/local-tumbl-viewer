@@ -2,10 +2,10 @@ import { Blog } from 'Types/blog';
 
 interface BlogSelectorProps {
 	blogs: Blog[];
-	setChosenBlogName: (name: string) => void;
+	selectBlog: (name: string) => void;
 }
 
-const BlogSelector = ({ blogs, setChosenBlogName }: BlogSelectorProps) => {
+const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	return (
 		<div className="flex flex-col items-start gap-4 p-2">
 			<p>Select a blog:</p>
@@ -13,7 +13,7 @@ const BlogSelector = ({ blogs, setChosenBlogName }: BlogSelectorProps) => {
 				{blogs.map(blog => (
 					<div
 						className="flex cursor-pointer items-center gap-4 rounded-md px-2 py-1.5 transition-colors hover:bg-gray-900"
-						onClick={() => setChosenBlogName(blog.Name)}
+						onClick={() => selectBlog(blog.Name)}
 						key={blog.Name}
 					>
 						<img

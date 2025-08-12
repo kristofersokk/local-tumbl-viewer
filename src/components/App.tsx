@@ -12,8 +12,8 @@ import TitleScreen from './TitleScreen';
 const App = () => {
 	const { rootDirHandle, initialized } = useContext(InitializationContext);
 
-	const { data: folders, isLoading: isLoadingRootFolders } = useQuery({
-		queryKey: [QUERY_KEYS.ROOT_FOLDERS, rootDirHandle],
+	const { data: folders, isFetching: isFetchingRootFolders } = useQuery({
+		queryKey: [QUERY_KEYS.ROOT_FOLDERS, rootDirHandle?.name],
 		queryFn: rootDirHandle
 			? async () =>
 					Array.fromAsync(rootDirHandle.values()).then(handles =>
@@ -27,8 +27,8 @@ const App = () => {
 
 	const indexFolder = folders?.find(folder => folder.name === 'Index');
 
-	const { data: blogs, isLoading: isLoadingBlogs } = useQuery({
-		queryKey: [QUERY_KEYS.BLOGS, indexFolder],
+	const { data: blogs, isFetching: isFetchingBlogs } = useQuery({
+		queryKey: [QUERY_KEYS.BLOGS, indexFolder?.name],
 		queryFn: indexFolder
 			? async () =>
 					Array.fromAsync(
@@ -67,9 +67,9 @@ const App = () => {
 		folder => folder.name === chosenBlogFolderName
 	);
 
-	const { data: chosenBlogFiles, isLoading: isLoadingChosenBlogFiles } =
+	const { data: chosenBlogFiles, isFetching: isFetchingChosenBlogFiles } =
 		useQuery({
-			queryKey: [QUERY_KEYS.BLOG_FILES, chosenBlogFolder],
+			queryKey: [QUERY_KEYS.BLOG_FILES, chosenBlogFolder?.name],
 			queryFn: chosenBlogFolder
 				? async () =>
 						Array.fromAsync(
@@ -87,9 +87,9 @@ const App = () => {
 		file => file.name === 'texts.txt'
 	);
 
-	const { data: chosenBlogPosts, isLoading: isLoadingChosenBlogPosts } =
+	const { data: chosenBlogPosts, isFetching: isFetchingChosenBlogPosts } =
 		useQuery({
-			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogPostsFile],
+			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogPostsFile?.name],
 			queryFn: chosenBlogPostsFile
 				? async () =>
 						chosenBlogPostsFile
@@ -99,6 +99,14 @@ const App = () => {
 				: skipToken,
 		});
 
+	const goToBlogSelection = () => {
+		setChosenBlogName(undefined);
+	};
+
+	const selectBlog = (blogName: string) => {
+		setChosenBlogName(blogName);
+	};
+
 	if (!initialized) {
 		return (
 			<Center>
@@ -107,13 +115,13 @@ const App = () => {
 		);
 	}
 
-	const isLoading =
-		isLoadingRootFolders ||
-		isLoadingBlogs ||
-		isLoadingChosenBlogFiles ||
-		isLoadingChosenBlogPosts;
+	const isFetching =
+		isFetchingRootFolders ||
+		isFetchingBlogs ||
+		isFetchingChosenBlogFiles ||
+		isFetchingChosenBlogPosts;
 
-	if (isLoading) {
+	if (isFetching) {
 		return (
 			<Center>
 				<p>Loading...</p>
@@ -132,7 +140,7 @@ const App = () => {
 	if (!chosenBlogName) {
 		return (
 			<Center>
-				<BlogSelector blogs={blogs} setChosenBlogName={setChosenBlogName} />
+				<BlogSelector blogs={blogs} selectBlog={selectBlog} />
 			</Center>
 		);
 	}
@@ -169,7 +177,13 @@ const App = () => {
 		);
 	}
 
-	return <Blog blog={chosenBlog} texts={chosenBlogPosts} />;
+	return (
+		<Blog
+			blog={chosenBlog}
+			texts={chosenBlogPosts}
+			goToBlogSelection={goToBlogSelection}
+		/>
+	);
 };
 
 export default App;

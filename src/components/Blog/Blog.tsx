@@ -1,3 +1,4 @@
+import HomeLogo from 'Assets/icons/home.svg?react';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
 import { Masonry } from 'masonic';
@@ -12,9 +13,10 @@ const sortingDirections = ['asc', 'desc'];
 interface BlogProps {
 	blog: BlogType;
 	texts: BlogPostType[];
+	goToBlogSelection: () => void;
 }
 
-const Blog = ({ blog, texts }: BlogProps) => {
+const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
@@ -77,11 +79,21 @@ const Blog = ({ blog, texts }: BlogProps) => {
 		});
 	}, [filteredTexts, sortingField, sortingDirection]);
 
+	const goHome = () => {
+		goToBlogSelection();
+	};
+
 	return (
 		<div className="min-h-full w-full">
 			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-6">
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-4">
+						<button
+							className="cursor-pointer drop-shadow-[0_0_3px_4px] drop-shadow-gray-400 transition-shadow hover:drop-shadow-gray-600"
+							onClick={() => goHome()}
+						>
+							<HomeLogo />
+						</button>
 						<img
 							src="https://assets.tumblr.com/images/default_avatar/sphere_closed_64.png"
 							className="h-11 w-11 rounded"
@@ -146,7 +158,7 @@ const Blog = ({ blog, texts }: BlogProps) => {
 			</div>
 			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
 				<Masonry
-					key={JSON.stringify(filter)}
+					key={blog.Name + JSON.stringify(filter)}
 					items={sortedTexts}
 					render={({ data: text }) => (
 						<BlogPost
