@@ -19,6 +19,7 @@
         "@tanstack/react-query-devtools": "^5.84.2",
         "classnames": "^2.5.1",
         "dompurify": "^3.2.6",
+        "jsonrepair": "^3.13.0",
         "masonic": "^4.1.0",
         "radix-ui": "^1.4.2",
         "react": "^19.1.1",

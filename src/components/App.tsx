@@ -1,5 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import InitializationContext from 'Contexts/InitializationContext';
+import { jsonrepair } from 'jsonrepair';
 import { useContext, useEffect, useState } from 'react';
 import { QUERY_KEYS } from 'src/constants/queryKeys';
 import { BlogPost, Blog as BlogType } from 'Types/blog';
@@ -83,19 +84,26 @@ const App = () => {
 				: skipToken,
 		});
 
-	const chosenBlogPostsFile = chosenBlogFiles?.find(
+	const chosenBlogTextsFile = chosenBlogFiles?.find(
 		file => file.name === 'texts.txt'
 	);
 
 	const { data: chosenBlogPosts, isFetching: isFetchingChosenBlogPosts } =
 		useQuery({
-			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogPostsFile?.name],
-			queryFn: chosenBlogPostsFile
-				? async () =>
-						chosenBlogPostsFile
-							.getFile()
-							.then(file => file.text())
-							.then(text => JSON.parse(text) as BlogPost[])
+			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogTextsFile?.name],
+			queryFn: chosenBlogTextsFile
+				? async () => {
+						const [textsFileText] = await Promise.all([
+							chosenBlogTextsFile
+								.getFile()
+								.then(file => file.text())
+								.then(text => jsonrepair(text))
+								.then(text => JSON.parse(text) as BlogPost[])
+								.catch(() => undefined),
+						]);
+
+						return textsFileText;
+					}
 				: skipToken,
 		});
 
@@ -161,7 +169,7 @@ const App = () => {
 		return null;
 	}
 
-	if (!chosenBlogPostsFile) {
+	if (!chosenBlogTextsFile) {
 		return (
 			<Center>
 				<p>Blog doesn't have a texts.txt file, try another</p>

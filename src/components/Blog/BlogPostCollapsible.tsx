@@ -14,12 +14,12 @@ interface BlogPostCollapsibleProps {
 		ref: RefObject<HTMLElement | null>,
 		className?: string
 	) => ReactNode | ReactNode[];
-	columnWidthRem: number;
+	collapsedHeightRem: number;
 }
 
 const BlogPostCollapsible = ({
 	children,
-	columnWidthRem,
+	collapsedHeightRem,
 }: BlogPostCollapsibleProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const [collapsed, setCollapsed] = useState(true);
@@ -27,8 +27,8 @@ const BlogPostCollapsible = ({
 	const { scrollHeight } = useElementSize(contentRef);
 	const remToPixels = useRemToPixels();
 
-	const collapsedMaxHeightRem = columnWidthRem * (remToPixels / 16);
-	const nonCollapsibleHeightRem = columnWidthRem * (remToPixels / 16);
+	const collapsedMaxHeightRem = collapsedHeightRem * (remToPixels / 16);
+	const nonCollapsibleHeightRem = collapsedHeightRem * (remToPixels / 16);
 
 	const collapse = () => {
 		setCollapsed(true);
@@ -88,10 +88,10 @@ const BlogPostCollapsible = ({
 			{collapsed && (
 				<div className="from-blog-collapse-color absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t p-2">
 					<button
-						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 drop-shadow-[0_2px_4px_9px_rgba(0,0,0,0)] transition-shadow hover:drop-shadow-gray-600"
+						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 transition-shadow hover:shadow-[0_0_4px_3px] hover:shadow-gray-500/75"
 						onClick={expand}
 					>
-						Show More
+						Expand
 					</button>
 				</div>
 			)}
@@ -101,7 +101,7 @@ const BlogPostCollapsible = ({
 						className="cursor-pointer rounded-xl p-2 transition-colors hover:bg-gray-700"
 						onClick={collapse}
 					>
-						Show Less
+						Collapse
 					</button>
 				</div>
 			)}

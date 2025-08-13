@@ -1,29 +1,27 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
 
+export type BlogViewSettings = ReturnType<typeof useBlogViewSettings>;
+export type BlogParams = BlogViewSettings['params'];
+export type BlogSorting = BlogViewSettings['sorting'];
+export type BlogFiltering = BlogViewSettings['filter'];
+
 const useBlogViewSettings = () => {
+	const [collapsedHeightRem, setCollapsedHeightRem] = useState<number>(24);
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
+	const [showDate, setShowDate] = useState<boolean>(true);
 
 	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
 
-	const filter = useMemo(
-		() => ({
-			tagsForFilter,
-		}),
-		[tagsForFilter]
-	);
+	const addTagFilter = useCallback((tag: string) => {
+		setTagsForFilter(prev => (prev.includes(tag) ? [...prev] : [...prev, tag]));
+	}, []);
 
-	const addTagFilter = (tag: string) => {
-		if (!tagsForFilter.includes(tag)) {
-			setTagsForFilter(prev => [...prev, tag]);
-		}
-	};
-
-	const removeTagFilter = (tag: string) => {
+	const removeTagFilter = useCallback((tag: string) => {
 		setTagsForFilter(prev => prev.filter(t => t !== tag));
-	};
+	}, []);
 
 	type SortingField = (typeof sortingFields)[number];
 	type SortingDirection = (typeof sortingDirections)[number];
@@ -33,20 +31,26 @@ const useBlogViewSettings = () => {
 		useState<SortingDirection>('desc');
 
 	return {
-		sortingFields,
-		sortingDirections,
-		params: {
-			columnWidthRem,
-			filter,
+		sorting: {
 			sortingField,
 			sortingDirection,
-		},
-		setters: {
-			setColumnWidthRem,
 			setSortingField,
 			setSortingDirection,
+			sortingFields,
+			sortingDirections,
+		},
+		filter: {
+			tagsForFilter,
 			addTagFilter,
 			removeTagFilter,
+		},
+		params: {
+			collapsedHeightRem,
+			columnWidthRem,
+			setCollapsedHeightRem,
+			setColumnWidthRem,
+			showDate,
+			setShowDate,
 		},
 	};
 };

@@ -1,11 +1,13 @@
 import HomeLogo from 'Assets/icons/home.svg?react';
+
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
 import { Masonry } from 'masonic';
-import { Slider } from 'radix-ui';
 import { useMemo } from 'react';
+import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
+import BlogSettings from './BlogSettings';
 
 interface BlogProps {
 	blog: BlogType;
@@ -17,24 +19,22 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
 	const {
-		params: { columnWidthRem, filter, sortingField, sortingDirection },
-		setters: {
-			setColumnWidthRem,
-			addTagFilter,
-			removeTagFilter,
-			setSortingField,
-			setSortingDirection,
-		},
+		sorting: { sortingField, sortingDirection },
+		filter,
+		params,
 	} = useBlogViewSettings();
+
+	const { tagsForFilter, addTagFilter } = filter;
+	const { collapsedHeightRem, columnWidthRem } = params;
 
 	const filteredTexts = useMemo(() => {
 		return texts.filter(text =>
-			filter.tagsForFilter.length
+			tagsForFilter.length
 				? !!text.tags.length &&
-					filter.tagsForFilter.every(tag => text.tags.includes(tag))
+					tagsForFilter.every(tag => text.tags.includes(tag))
 				: true
 		);
-	}, [texts, filter]);
+	}, [texts, tagsForFilter]);
 
 	const sortedTexts = useMemo(() => {
 		const getKey = (text: BlogPostType) => {
@@ -69,7 +69,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-4">
 						<button
-							className="cursor-pointer drop-shadow-[0_0_3px_4px] drop-shadow-gray-400 transition-shadow hover:drop-shadow-gray-600"
+							className="fill-text cursor-pointer rounded-full p-2 transition-colors hover:bg-gray-700"
 							onClick={() => goHome()}
 						>
 							<HomeLogo />
@@ -86,51 +86,14 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 					<a
 						href={`https://${blog.Name}.tumblr.com`}
 						target="_blank"
-						className="text-sm text-gray-400 transition-colors hover:text-white"
+						className="text-sm text-gray-400 transition-colors hover:text-gray-300"
 					>
 						Visit Blog
 					</a>
 				</div>
-				<div className="flex items-center gap-4">
-					<div className="flex items-center gap-2">
-						<span className="text-sm">Column width:</span>
-						<Slider.Root
-							className="SliderRoot"
-							min={10}
-							max={60}
-							step={1}
-							value={[columnWidthRem]}
-							onValueChange={value => setColumnWidthRem(value[0])}
-						>
-							<Slider.Track className="SliderTrack">
-								<Slider.Range className="SliderRange" />
-							</Slider.Track>
-							<Slider.Thumb className="SliderThumb" />
-						</Slider.Root>
-						<span className="text-sm">{columnWidthRem}rem</span>
-					</div>
-					{!!filter.tagsForFilter.length && (
-						<div className="flex items-center gap-2">
-							<span className="text-sm text-gray-400">Filtering by: </span>
-							{filter.tagsForFilter.map(tag => (
-								<span
-									key={tag}
-									className="flex items-center gap-0.5 rounded-full bg-gray-800 px-2 py-1"
-								>
-									<p className="text-sm">#{tag}</p>
-									{
-										<button
-											// On hover, change background drop-shadow instead of text color
-											className="h-4 w-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors hover:bg-gray-700"
-											onClick={() => removeTagFilter(tag)}
-										>
-											x
-										</button>
-									}
-								</span>
-							))}
-						</div>
-					)}
+				<div className="flex items-center gap-2">
+					<BlogFiltering filter={filter} />
+					<BlogSettings params={params} />
 				</div>
 			</div>
 			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
@@ -142,13 +105,13 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 							key={text.id}
 							text={text}
 							addTagFilter={addTagFilter}
-							columnWidthRem={columnWidthRem}
+							params={params}
 						/>
 					)}
 					columnGutter={1 * remInPixels}
 					rowGutter={1 * remInPixels}
 					columnWidth={columnWidthRem * remInPixels}
-					itemHeightEstimate={(columnWidthRem + 5) * remInPixels}
+					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
 					itemKey={text => text.id || text.url}
 					scrollFps={12}
 				/>

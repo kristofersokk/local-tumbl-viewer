@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { BlogParams } from 'Hooks/useBlogViewSettings';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
@@ -14,10 +15,12 @@ const removeTime = (date: string) => {
 interface BlogPostProps {
 	text: BlogPostType;
 	addTagFilter: (tag: string) => void;
-	columnWidthRem: number;
+	params: BlogParams;
 }
 
-const BlogPost = ({ text, addTagFilter, columnWidthRem }: BlogPostProps) => {
+const BlogPost = ({ text, addTagFilter, params }: BlogPostProps) => {
+	const { collapsedHeightRem, showDate } = params;
+
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
@@ -27,7 +30,9 @@ const BlogPost = ({ text, addTagFilter, columnWidthRem }: BlogPostProps) => {
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
 					{text['regular-title'] || text.slug}
 				</span>
-				<span className="text-sm">{removeTime(text.date)}</span>
+				<span className="text-sm">
+					{showDate ? removeTime(text.date) : null}
+				</span>
 			</div>
 			<div
 				className={classNames([
@@ -42,7 +47,7 @@ const BlogPost = ({ text, addTagFilter, columnWidthRem }: BlogPostProps) => {
 					'[&_*]:first:mt-0 [&_*]:last:mb-0',
 				])}
 			>
-				<BlogPostCollapsible columnWidthRem={columnWidthRem}>
+				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
 					{(ref, className) => (
 						<UnsafeContent
 							Ref={ref}

@@ -1,0 +1,7 @@
+.SwitchRoot {
+	@apply data-[state=checked]:bg-text relative h-6 w-11 rounded-full bg-black transition-colors;
+}
+
+.SwitchThumb {
+	@apply bg-text block h-[20px] w-[20px] translate-x-0.5 rounded-full transition-transform will-change-transform data-[state=checked]:translate-x-[22px] data-[state=checked]:bg-black;
+}

@@ -1,10 +1,13 @@
 @theme {
 	--font-Inter: 'Inter', sans-serif;
 
-	--color-text: #ccc;
+	--color-text: #bbb;
 	--color-background: black;
 	--color-blog-collapse-color: black;
+	--color-popover-background: #222;
+	--color-counter: #a11;
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
+	--z-index-popover: 60;
 }
