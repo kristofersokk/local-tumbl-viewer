@@ -40,7 +40,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 		const getKey = (text: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
-					return text['unix-timestamp'];
+					return text['unix-timestamp'] || text['date-gmt'] || 0;
 				default:
 					return 0;
 			}
@@ -112,7 +112,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 					rowGutter={1 * remInPixels}
 					columnWidth={columnWidthRem * remInPixels}
 					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
-					itemKey={text => text.id || text.url}
+					itemKey={text => text.id || text.url || ''}
 					scrollFps={12}
 				/>
 			</div>

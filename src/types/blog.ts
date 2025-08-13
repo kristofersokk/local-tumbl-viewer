@@ -92,19 +92,42 @@ export interface Blog {
 	ZipCrawlerData: boolean;
 }
 
-export interface BlogPost {
-	date: string; // "Thu, 30 Jan 2025 11:07:36"
-	'date-gmt': string; // "2025-01-30 16:07:36 GMT"
-	'downloaded-media-files': string[]; // ["39d13eca6f8dfb01247c08be45ae4bcd8b04468c.jpg"]
-	format?: string; // "html"
-	id: string; // "774114646189867009"
-	'reblog-key': string; // "G9pbwBu5"
-	'regular-body': string; // pure HTML
-	'regular-title': string; // ""
-	slug: string; // "joel-had-always-felt-like-a-shadow-in-the-world"
+// TODO: add other types of posts, eg image posts, answers, conversations
+export type BlogPost = BlogText;
+
+// Merged from examples of private blog, likes, and public blog
+export interface BlogText {
+	// Required fields common to all types
+	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
+	id: string; // "7741146463634667009"
+	'reblog-key': string; // "H34s8Fsad"
 	tags: string[]; // []
-	type: string; // "regular"
-	'unix-timestamp': number; // 1738253256
-	url: string; // "https://gay-transformation.tumblr.com/post/774114646189867009"
-	'url-with-slug': string;
+	type: 'regular' | 'text'; // String literal types
+
+	// Optional fields that may not be present in all types
+	format?: string; // "html" - not present in Likes
+	'date-gmt'?: string; // "2025-01-30 16:07:36 GMT"
+	'downloaded-media-files'?: string[]; // ["6fa382268369aa0231e2ea24.jpg"]
+	downloaded_media_files?: string[]; // Private blog uses underscore format
+	'regular-body'?: string; // Normal blog and Likes
+	body?: string; // Private blog uses "body" instead of "regular-body"
+	'regular-title'?: string; // ""
+	slug?: string; // "something-happening"
+	'unix-timestamp'?: number; // 1738253256
+	timestamp?: number; // Private blog uses "timestamp"
+	url?: string; // "https://example-blog.tumblr.com/post/7741146463634667009"
+	'url-with-slug'?: string; // Full URL with slug
+
+	// Private blog specific fields
+	post_html?: string;
+	post_url?: string;
+	posted_on_tooltip?: string;
+	reblogged_from_name?: string;
+	reblogged_from_title?: string;
+	reblogged_from_url?: string;
+	reblogged_root_name?: string;
+	reblogged_root_title?: string;
+	reblogged_root_url?: string;
+	summary?: string;
+	title?: string;
 }

@@ -6,6 +6,11 @@ import BlogPostCollapsible from './BlogPostCollapsible';
 
 const removeTime = (date: string) => {
 	const firstSpace = date.indexOf(' ');
+
+	if (date.endsWith(' GMT')) {
+		return date.slice(0, firstSpace);
+	}
+
 	const lastSpace = date.lastIndexOf(' ');
 	return firstSpace !== -1 && lastSpace !== -1
 		? date.slice(firstSpace + 1, lastSpace)
@@ -28,7 +33,7 @@ const BlogPost = ({ text, addTagFilter, params }: BlogPostProps) => {
 		>
 			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
-					{text['regular-title'] || text.slug}
+					{text['regular-title'] || text.title || text.slug}
 				</span>
 				<span className="text-sm">
 					{showDate ? removeTime(text.date) : null}
@@ -52,7 +57,7 @@ const BlogPost = ({ text, addTagFilter, params }: BlogPostProps) => {
 						<UnsafeContent
 							Ref={ref}
 							className={className}
-							content={text['regular-body']}
+							content={text['regular-body'] || text.body || ''}
 						/>
 					)}
 				</BlogPostCollapsible>
