@@ -87,33 +87,68 @@ const App = () => {
 	const chosenBlogTextsFile = chosenBlogFiles?.find(
 		file => file.name === 'texts.txt'
 	);
+	const chosenBlogImagesFile = chosenBlogFiles?.find(
+		file => file.name === 'images.txt'
+	);
+	const chosenBlogVideosFile = chosenBlogFiles?.find(
+		file => file.name === 'videos.txt'
+	);
+	const chosenBlogConversationsFile = chosenBlogFiles?.find(
+		file => file.name === 'conversations.txt'
+	);
+	const chosenBlogAnswersFile = chosenBlogFiles?.find(
+		file => file.name === 'answers.txt'
+	);
 
 	const { data: chosenBlogPosts, isFetching: isFetchingChosenBlogPosts } =
 		useQuery({
-			queryKey: [QUERY_KEYS.BLOG_TEXTS, chosenBlogTextsFile?.name],
-			queryFn: chosenBlogTextsFile
+			queryKey: [QUERY_KEYS.BLOG_POSTS, chosenBlogFolder?.name],
+			queryFn: chosenBlogFiles
 				? async () => {
-						const [textsFileText] = await Promise.all([
-							chosenBlogTextsFile
-								.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.catch(() => undefined),
-						]);
+						const [texts, images, videos, conversations, answers] =
+							await Promise.all([
+								chosenBlogTextsFile
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.catch(() => console.log('Error parsing texts.txt')),
+								chosenBlogImagesFile
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.catch(() => console.log('Error parsing images.txt')),
+								chosenBlogVideosFile
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.catch(() => console.log('Error parsing videos.txt')),
+								chosenBlogConversationsFile
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.catch(() => console.log('Error parsing conversations.txt')),
+								chosenBlogAnswersFile
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.catch(() => console.log('Error parsing answers.txt')),
+							]);
 
-						return textsFileText;
+						return [
+							...(texts || []),
+							...(images || []),
+							...(videos || []),
+							...(conversations || []),
+							...(answers || []),
+						];
 					}
 				: skipToken,
 		});
-
-	const goToBlogSelection = () => {
-		setChosenBlogName(undefined);
-	};
-
-	const selectBlog = (blogName: string) => {
-		setChosenBlogName(blogName);
-	};
 
 	if (!initialized) {
 		return (
@@ -144,6 +179,10 @@ const App = () => {
 			</Center>
 		);
 	}
+
+	const selectBlog = (blogName: string) => {
+		setChosenBlogName(blogName);
+	};
 
 	if (!chosenBlogName) {
 		return (
@@ -180,15 +219,19 @@ const App = () => {
 	if (!chosenBlogPosts?.length) {
 		return (
 			<Center>
-				<p>Cannot find blog texts, try another</p>
+				<p>Cannot find blog posts, try another</p>
 			</Center>
 		);
 	}
 
+	const goToBlogSelection = () => {
+		setChosenBlogName(undefined);
+	};
+
 	return (
 		<Blog
 			blog={chosenBlog}
-			texts={chosenBlogPosts}
+			posts={chosenBlogPosts}
 			goToBlogSelection={goToBlogSelection}
 		/>
 	);

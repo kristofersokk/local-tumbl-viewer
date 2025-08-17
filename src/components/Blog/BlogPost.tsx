@@ -18,25 +18,25 @@ const removeTime = (date: string) => {
 };
 
 interface BlogPostProps {
-	text: BlogPostType;
+	post: BlogPostType;
 	addTagFilter: (tag: string) => void;
 	params: BlogParams;
 }
 
-const BlogPost = ({ text, addTagFilter, params }: BlogPostProps) => {
+const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 	const { collapsedHeightRem, showDate } = params;
 
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
-			key={text.id}
+			key={post.id}
 		>
 			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
-					{text['regular-title'] || text.title || text.slug}
+					{post['regular-title'] || post.title || post.slug}
 				</span>
 				<span className="text-sm">
-					{showDate ? removeTime(text.date) : null}
+					{showDate ? removeTime(post.date) : null}
 				</span>
 			</div>
 			<div
@@ -57,14 +57,16 @@ const BlogPost = ({ text, addTagFilter, params }: BlogPostProps) => {
 						<UnsafeContent
 							Ref={ref}
 							className={className}
-							content={text['regular-body'] || text.body || ''}
+							content={
+								post['regular-body'] || post.body || post.post_html || ''
+							}
 						/>
 					)}
 				</BlogPostCollapsible>
 			</div>
-			{!!text.tags?.length && (
+			{!!post.tags?.length && (
 				<div className="mx-2 mt-2 flex flex-wrap gap-2">
-					{text.tags.map(tag => (
+					{post.tags.map(tag => (
 						<span
 							key={tag}
 							className="cursor-pointer rounded-full bg-gray-800 px-2 py-1 text-sm"

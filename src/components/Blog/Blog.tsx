@@ -11,11 +11,11 @@ import BlogSettings from './BlogSettings';
 
 interface BlogProps {
 	blog: BlogType;
-	texts: BlogPostType[];
+	posts: BlogPostType[];
 	goToBlogSelection: () => void;
 }
 
-const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
+const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
 	const {
@@ -27,25 +27,25 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 	const { tagsForFilter, addTagFilter } = filter;
 	const { collapsedHeightRem, columnWidthRem } = params;
 
-	const filteredTexts = useMemo(() => {
-		return texts.filter(text =>
+	const filteredPosts = useMemo(() => {
+		return posts.filter(post =>
 			tagsForFilter.length
-				? !!text.tags.length &&
-					tagsForFilter.every(tag => text.tags.includes(tag))
+				? !!post.tags.length &&
+					tagsForFilter.every(tag => post.tags.includes(tag))
 				: true
 		);
-	}, [texts, tagsForFilter]);
+	}, [posts, tagsForFilter]);
 
-	const sortedTexts = useMemo(() => {
-		const getKey = (text: BlogPostType) => {
+	const sortedPosts = useMemo(() => {
+		const getKey = (post: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
-					return text['unix-timestamp'] || text['date-gmt'] || 0;
+					return post['unix-timestamp'] || post['date-gmt'] || 0;
 				default:
 					return 0;
 			}
 		};
-		return filteredTexts.toSorted((a, b) => {
+		return filteredPosts.toSorted((a, b) => {
 			const aValue = getKey(a);
 			const bValue = getKey(b);
 
@@ -57,7 +57,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 			}
 			return 0;
 		});
-	}, [filteredTexts, sortingField, sortingDirection]);
+	}, [filteredPosts, sortingField, sortingDirection]);
 
 	const goHome = () => {
 		goToBlogSelection();
@@ -99,11 +99,11 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
 				<Masonry
 					key={blog.Name + JSON.stringify(filter)}
-					items={sortedTexts}
-					render={({ data: text }) => (
+					items={sortedPosts}
+					render={({ data: post }) => (
 						<BlogPost
-							key={text.id}
-							text={text}
+							key={post.id}
+							post={post}
 							addTagFilter={addTagFilter}
 							params={params}
 						/>
@@ -112,7 +112,7 @@ const Blog = ({ blog, texts, goToBlogSelection }: BlogProps) => {
 					rowGutter={1 * remInPixels}
 					columnWidth={columnWidthRem * remInPixels}
 					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
-					itemKey={text => text.id || text.url || ''}
+					itemKey={post => post.id || post.url || ''}
 					scrollFps={12}
 				/>
 			</div>

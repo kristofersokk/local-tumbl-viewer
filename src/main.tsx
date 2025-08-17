@@ -5,7 +5,13 @@ import Initializer from 'Components/Initializer';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			refetchOnWindowFocus: false,
+		},
+	},
+});
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>

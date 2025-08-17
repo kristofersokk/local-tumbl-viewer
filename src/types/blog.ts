@@ -92,21 +92,15 @@ export interface Blog {
 	ZipCrawlerData: boolean;
 }
 
-// TODO: add other types of posts, eg image posts, answers, conversations
-export type BlogPost = BlogText;
-
 // Merged from examples of private blog, likes, and public blog
-export interface BlogText {
-	// Required fields common to all types
-	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
+export interface BlogPost {
+	type: 'regular' | 'text' | 'photo' | 'video' | 'conversation' | 'answer';
 	id: string; // "7741146463634667009"
+	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
+	'date-gmt'?: string; // "2025-01-30 16:07:36 GMT"
 	'reblog-key': string; // "H34s8Fsad"
 	tags: string[]; // []
-	type: 'regular' | 'text'; // String literal types
-
-	// Optional fields that may not be present in all types
 	format?: string; // "html" - not present in Likes
-	'date-gmt'?: string; // "2025-01-30 16:07:36 GMT"
 	'downloaded-media-files'?: string[]; // ["6fa382268369aa0231e2ea24.jpg"]
 	downloaded_media_files?: string[]; // Private blog uses underscore format
 	'regular-body'?: string; // Normal blog and Likes
@@ -117,8 +111,6 @@ export interface BlogText {
 	timestamp?: number; // Private blog uses "timestamp"
 	url?: string; // "https://example-blog.tumblr.com/post/7741146463634667009"
 	'url-with-slug'?: string; // Full URL with slug
-
-	// Private blog specific fields
 	post_html?: string;
 	post_url?: string;
 	posted_on_tooltip?: string;
@@ -130,4 +122,50 @@ export interface BlogText {
 	reblogged_root_url?: string;
 	summary?: string;
 	title?: string;
+
+	// type photo
+	'photo-caption'?: string;
+	caption?: string;
+	photos?: {
+		caption: string;
+		height: number;
+		width: number;
+		offset: string; // o1, o2, o3, ...
+		// photo-url-75
+		// photo-url-100
+		// photo-url-250
+		// photo-url-400
+		// photo-url-500
+		// photo-url-1280
+	}[];
+	// photo-url-75
+	// photo-url-100
+	// photo-url-250
+	// photo-url-400
+	// photo-url-500
+	// photo-url-1280
+	photoset_layout?: string; // 11, 1111, 222
+	photoset_photos?: {
+		height: number;
+		width: number;
+		high_res: string;
+		low_res: string;
+	}[];
+
+	// type video
+	video_type?: string; // "tumblr"
+	video_url?: string;
+
+	// type conversation
+	conversation_title?: string;
+	conversation_text?: string;
+	conversation?: {
+		label: string;
+		name: string;
+		phrase: string;
+	}[];
+
+	// type answer
+	question?: string;
+	answer?: string;
 }
