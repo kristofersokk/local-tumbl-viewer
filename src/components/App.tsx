@@ -1,8 +1,9 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
+import ArrowLeft from 'Assets/icons/arrow-left.svg?react';
 import InitializationContext from 'Contexts/InitializationContext';
 import { jsonrepair } from 'jsonrepair';
 import { useContext, useEffect, useState } from 'react';
-import { QUERY_KEYS } from 'src/constants/queryKeys';
+import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogPost, Blog as BlogType } from 'Types/blog';
 import { getBlogFolderName } from 'Utils/blogUtils';
 import Blog from './Blog/Blog';
@@ -196,10 +197,25 @@ const App = () => {
 		return null;
 	}
 
+	const goToBlogSelection = () => {
+		setChosenBlogName(undefined);
+	};
+
+	const returnToBlogSelectionButton = (
+		<button
+			className="fill-text flex cursor-pointer gap-2 rounded-xl bg-gray-800 p-2 transition-colors hover:bg-gray-700"
+			onClick={goToBlogSelection}
+		>
+			<ArrowLeft />
+			<p>Back to Blog Selection</p>
+		</button>
+	);
+
 	if (!chosenBlogFolderName) {
 		return (
-			<Center>
+			<Center className="flex-col gap-6">
 				<p>Blog doesn't have a folder for files, try another</p>
+				{returnToBlogSelectionButton}
 			</Center>
 		);
 	}
@@ -210,23 +226,21 @@ const App = () => {
 
 	if (!chosenBlogTextsFile) {
 		return (
-			<Center>
+			<Center className="flex-col gap-6">
 				<p>Blog doesn't have a texts.txt file, try another</p>
+				{returnToBlogSelectionButton}
 			</Center>
 		);
 	}
 
 	if (!chosenBlogPosts?.length) {
 		return (
-			<Center>
+			<Center className="flex-col gap-6">
 				<p>Cannot find blog posts, try another</p>
+				{returnToBlogSelectionButton}
 			</Center>
 		);
 	}
-
-	const goToBlogSelection = () => {
-		setChosenBlogName(undefined);
-	};
 
 	return (
 		<Blog

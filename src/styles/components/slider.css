@@ -1,5 +1,5 @@
 .SliderRoot {
-	@apply relative flex h-3 w-48 touch-none items-center select-none;
+	@apply relative flex h-3 w-48 cursor-pointer touch-none items-center select-none;
 }
 
 .SliderTrack {
@@ -11,7 +11,7 @@
 }
 
 .SliderThumb {
-	@apply block h-5 w-5 rounded-[10px] bg-text;
+	@apply bg-text block h-5 w-5 rounded-[10px];
 }
 
 .SliderThumb:hover {

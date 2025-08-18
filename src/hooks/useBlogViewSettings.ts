@@ -12,6 +12,7 @@ const useBlogViewSettings = () => {
 	const [collapsedHeightRem, setCollapsedHeightRem] = useState<number>(24);
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
 	const [showDate, setShowDate] = useState<boolean>(true);
+	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
 
 	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
 
@@ -51,6 +52,8 @@ const useBlogViewSettings = () => {
 			setColumnWidthRem,
 			showDate,
 			setShowDate,
+			showPostUrl,
+			setShowPostUrl,
 		},
 	};
 };

@@ -1,5 +1,5 @@
 .SwitchRoot {
-	@apply data-[state=checked]:bg-text relative h-6 w-11 rounded-full bg-black transition-colors;
+	@apply data-[state=checked]:bg-text relative h-6 w-11 cursor-pointer rounded-full bg-black transition-colors;
 }
 
 .SwitchThumb {

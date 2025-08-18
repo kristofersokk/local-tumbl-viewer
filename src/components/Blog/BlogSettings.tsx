@@ -14,6 +14,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setCollapsedHeightRem,
 		showDate,
 		setShowDate,
+		showPostUrl,
+		setShowPostUrl,
 	} = params;
 
 	return (
@@ -67,6 +69,16 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 								className="SwitchRoot"
 								checked={showDate}
 								onCheckedChange={setShowDate}
+							>
+								<Switch.Thumb className="SwitchThumb" />
+							</Switch.Root>
+						</div>
+						<span className="text-sm">Show post URL:</span>
+						<div className="flex items-center gap-2">
+							<Switch.Root
+								className="SwitchRoot"
+								checked={showPostUrl}
+								onCheckedChange={setShowPostUrl}
 							>
 								<Switch.Thumb className="SwitchThumb" />
 							</Switch.Root>

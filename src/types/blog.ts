@@ -96,8 +96,12 @@ export interface Blog {
 export interface BlogPost {
 	type: 'regular' | 'text' | 'photo' | 'video' | 'conversation' | 'answer';
 	id: string; // "7741146463634667009"
+
 	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
 	'date-gmt'?: string; // "2025-01-30 16:07:36 GMT"
+	timestamp?: number; // Private blog uses "timestamp"
+	'unix-timestamp'?: number; // 1738253256
+
 	'reblog-key': string; // "H34s8Fsad"
 	tags: string[]; // []
 	format?: string; // "html" - not present in Likes
@@ -107,19 +111,23 @@ export interface BlogPost {
 	body?: string; // Private blog uses "body" instead of "regular-body"
 	'regular-title'?: string; // ""
 	slug?: string; // "something-happening"
-	'unix-timestamp'?: number; // 1738253256
-	timestamp?: number; // Private blog uses "timestamp"
 	url?: string; // "https://example-blog.tumblr.com/post/7741146463634667009"
 	'url-with-slug'?: string; // Full URL with slug
 	post_html?: string;
 	post_url?: string;
 	posted_on_tooltip?: string;
 	reblogged_from_name?: string;
+	'reblogged-from-name'?: string;
 	reblogged_from_title?: string;
+	'reblogged-from-title'?: string;
 	reblogged_from_url?: string;
+	'reblogged-from-url'?: string;
 	reblogged_root_name?: string;
+	'reblogged-root-name'?: string;
 	reblogged_root_title?: string;
+	'reblogged-root-title'?: string;
 	reblogged_root_url?: string;
+	'reblogged-root-url'?: string;
 	summary?: string;
 	title?: string;
 

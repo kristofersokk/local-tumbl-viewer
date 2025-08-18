@@ -2,10 +2,12 @@
 	--font-Inter: 'Inter', sans-serif;
 
 	--color-text: #bbb;
+	--color-text-highlight: #ddd;
 	--color-background: black;
 	--color-blog-collapse-color: black;
 	--color-popover-background: #222;
 	--color-counter: #a11;
+	--color-blog-post-summary: #888;
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
