@@ -90,7 +90,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 						</div>
 					</div>
 					<a
-						href={`https://${blog.Name}.tumblr.com`}
+						href={`https://tumblr.com/${blog.Name}`}
 						target="_blank"
 						className="text-sm text-gray-400 transition-colors [&:hover]:text-gray-300"
 					>
