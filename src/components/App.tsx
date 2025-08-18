@@ -234,7 +234,12 @@ const App = () => {
 	}
 
 	if (!chosenBlogFolder || !chosenBlogFiles) {
-		return null;
+		return (
+			<Center className="flex-col gap-6">
+				<p>Blog doesn't have a folder for files, try another</p>
+				{returnToBlogSelectionButton}
+			</Center>
+		);
 	}
 
 	if (!chosenBlogTextsFile) {

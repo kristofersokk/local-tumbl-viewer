@@ -2,13 +2,14 @@ import HomeLogo from 'Assets/icons/home.svg?react';
 
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
+import useWindowSize from 'Hooks/useWindowSize';
 import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
 import { Masonry } from 'masonic';
 import { useMemo } from 'react';
 import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
-import useWindowSize from 'Hooks/useWindowSize';
+import PlatformLogo from './PlatformLogo';
 
 interface BlogProps {
 	blog: BlogType;
@@ -80,10 +81,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 						>
 							<HomeLogo />
 						</button>
-						<img
-							src="https://assets.tumblr.com/images/default_avatar/sphere_closed_64.png"
-							className="h-11 w-11 rounded"
-						/>
+						<PlatformLogo platform={blog.platform} />
 						<div className="flex flex-col items-start justify-between text-sm">
 							<p className="text-white">{blog.Name}</p>
 							<p>{blog.Title}</p>

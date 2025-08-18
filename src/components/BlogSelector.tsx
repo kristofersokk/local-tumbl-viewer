@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { Blog } from 'Types/blog';
+import PlatformLogo from './Blog/PlatformLogo';
 
 interface BlogSelectorProps {
 	blogs: Blog[];
@@ -9,7 +10,7 @@ interface BlogSelectorProps {
 const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	return (
 		<div className="flex flex-col items-start gap-4 p-2">
-			<p>Select a blog:</p>
+			<p>Select a blog</p>
 			<div className="flex flex-col gap-0.5">
 				{blogs.map(blog => {
 					const isSupported = blog.platform === 'tumblr';
@@ -25,10 +26,7 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 							onClick={isSupported ? () => selectBlog(blog.Name) : undefined}
 							key={blog.Name}
 						>
-							<img
-								src="https://assets.tumblr.com/images/default_avatar/sphere_closed_64.png"
-								className="h-11 w-11 rounded"
-							/>
+							<PlatformLogo platform={blog.platform} />
 							<div className="flex flex-col items-start justify-between text-sm">
 								<p className="text-white">{blog.Name}</p>
 								<p>{blog.Title}</p>
