@@ -13,7 +13,6 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	content,
 	...rest
 }: Props<E>) => {
-	console.log('UnsafeContent', content, tag, Ref, rest);
 	const tagContainer = {
 		tag: tag || ('div' as E),
 	};
