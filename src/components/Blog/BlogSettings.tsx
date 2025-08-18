@@ -16,6 +16,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setShowDate,
 		showPostUrl,
 		setShowPostUrl,
+		showRebloggedInfo,
+		setShowRebloggedInfo,
 	} = params;
 
 	return (
@@ -79,6 +81,16 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 								className="SwitchRoot"
 								checked={showPostUrl}
 								onCheckedChange={setShowPostUrl}
+							>
+								<Switch.Thumb className="SwitchThumb" />
+							</Switch.Root>
+						</div>
+						<span className="text-sm">Show reblogged info:</span>
+						<div className="flex items-center gap-2">
+							<Switch.Root
+								className="SwitchRoot"
+								checked={showRebloggedInfo}
+								onCheckedChange={setShowRebloggedInfo}
 							>
 								<Switch.Thumb className="SwitchThumb" />
 							</Switch.Root>

@@ -1,12 +1,12 @@
 import Link from 'Assets/icons/link.svg?react';
 import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
+import useRemToPixels from 'Hooks/useRemToPixels';
+import useWindowSize from 'Hooks/useWindowSize';
 import { RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
-import useWindowSize from 'Hooks/useWindowSize';
-import useRemToPixels from 'Hooks/useRemToPixels';
 
 interface BlogPostProps {
 	post: BlogPostType;
@@ -15,7 +15,8 @@ interface BlogPostProps {
 }
 
 const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
-	const { collapsedHeightPercent, showDate, showPostUrl } = params;
+	const { collapsedHeightPercent, showDate, showPostUrl, showRebloggedInfo } =
+		params;
 
 	const remInPixels = useRemToPixels();
 	const { height: viewportHeightInPixels } = useWindowSize();
@@ -35,14 +36,13 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 	} = post.calculated ?? {};
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
-	const showReblogged = true;
 
 	return (
 		<div
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
 			key={post.id}
 		>
-			{showReblogged && rebloggedRoot && (
+			{showRebloggedInfo && rebloggedRoot && (
 				<div className="flex flex-col gap-2 px-4 py-3">
 					<span>Reblogged from: {rebloggedRoot}</span>
 					{showOriginalPoster && <span>Original poster: {rebloggedFrom}</span>}
