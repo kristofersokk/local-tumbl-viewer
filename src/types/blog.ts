@@ -2,7 +2,7 @@ export interface Blog {
 	Answers: number;
 	AudioMetas: number;
 	Audios: number;
-	BlogType: number;
+	BlogType: BlogType;
 	CatBoxType: number;
 	CheckDirectoryForFiles: boolean;
 	ChildId: string;
@@ -63,7 +63,7 @@ export interface Blog {
 	Notes: null | string;
 	NumberOfLinks: number;
 	Online: boolean;
-	OriginalBlogType: number;
+	OriginalBlogType: BlogType;
 	PageSize: number;
 	Password: null | string;
 	PhotoMetas: number;
@@ -90,7 +90,33 @@ export interface Blog {
 	Videos: number;
 	WebmshareType: number;
 	ZipCrawlerData: boolean;
+
+	// extra added properties
+	platform: Platform;
 }
+
+export const blogTypes = {
+	0: 'tumblr',
+	1: 'tmblrpriv',
+	2: 'instagram',
+	3: 'twitter',
+	4: 'tlb',
+	5: 'tumblrsearch',
+	6: 'tumblrtagsearch',
+	7: 'newtumbl',
+	8: 'bluesky',
+	9: 'all',
+};
+
+export type BlogType = keyof typeof blogTypes;
+
+export type Platform =
+	| 'tumblr'
+	| 'instagram'
+	| 'twitter'
+	| 'newtumbl'
+	| 'bluesky'
+	| 'unknown';
 
 // Merged from examples of private blog, likes, and public blog
 export interface BlogPost {

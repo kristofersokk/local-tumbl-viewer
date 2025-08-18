@@ -1,5 +1,5 @@
 import RootDirContext from 'Contexts/InitializationContext';
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
 
 interface InitializerProps {
@@ -10,13 +10,17 @@ const Initializer = ({ children }: InitializerProps) => {
 	const [rootDirHandle, setRootDirHandle] =
 		useState<FileSystemDirectoryHandle>();
 
-	const initializeRootDirHandle = useCallback(() => {
-		getPermittedRootDirectoryHandle().then(dirHandle => {
+	const initializeRootDirHandle = useCallback((allowPrompt?: boolean) => {
+		getPermittedRootDirectoryHandle(allowPrompt).then(dirHandle => {
 			if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
 				setRootDirHandle(dirHandle);
 			}
 		});
 	}, []);
+
+	useEffect(() => {
+		initializeRootDirHandle();
+	}, [initializeRootDirHandle]);
 
 	const initialized = !!rootDirHandle;
 

@@ -18,7 +18,7 @@ const BlogFiltering = ({
 	return (
 		<Popover.Root>
 			<Popover.Trigger asChild>
-				<button className="fill-text relative cursor-pointer rounded-full p-2 transition-colors hover:bg-gray-700">
+				<button className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700">
 					<FilterLogo />
 					<Counter count={filterCount || undefined} />
 				</button>
@@ -40,7 +40,7 @@ const BlogFiltering = ({
 											{
 												<button
 													// On hover, change background drop-shadow instead of text color
-													className="h-4 w-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors hover:bg-gray-700"
+													className="h-4 w-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
 													onClick={() => removeTagFilter(tag)}
 												>
 													x

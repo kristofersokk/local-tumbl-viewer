@@ -88,7 +88,7 @@ const BlogPostCollapsible = ({
 			{collapsed && (
 				<div className="from-blog-collapse-color absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t p-2">
 					<button
-						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 transition-shadow hover:shadow-[0_0_4px_3px] hover:shadow-gray-500/75"
+						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 transition-shadow [&:hover]:shadow-[0_0_4px_3px] [&:hover]:shadow-gray-500/75"
 						onClick={expand}
 					>
 						Expand
@@ -98,7 +98,7 @@ const BlogPostCollapsible = ({
 			{!collapsed && !isNonCollapsible && (
 				<div className="flex justify-around">
 					<button
-						className="cursor-pointer rounded-xl p-2 transition-colors hover:bg-gray-700"
+						className="cursor-pointer rounded-xl p-2 transition-colors [&:hover]:bg-gray-700"
 						onClick={collapse}
 					>
 						Collapse

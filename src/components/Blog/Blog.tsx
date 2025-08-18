@@ -40,6 +40,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 		const getKey = (post: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
+					// FIXME: improve a lot
 					return post['unix-timestamp'] || post['date-gmt'] || 0;
 				default:
 					return 0;
@@ -69,7 +70,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-4">
 						<button
-							className="fill-text cursor-pointer rounded-full p-2 transition-colors hover:bg-gray-700"
+							className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700"
 							onClick={() => goHome()}
 						>
 							<HomeLogo />
@@ -86,7 +87,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 					<a
 						href={`https://${blog.Name}.tumblr.com`}
 						target="_blank"
-						className="text-sm text-gray-400 transition-colors hover:text-gray-300"
+						className="text-sm text-gray-400 transition-colors [&:hover]:text-gray-300"
 					>
 						Visit Blog
 					</a>

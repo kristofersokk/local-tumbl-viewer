@@ -5,7 +5,7 @@ import { jsonrepair } from 'jsonrepair';
 import { useContext, useEffect, useState } from 'react';
 import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogPost, Blog as BlogType } from 'Types/blog';
-import { getBlogFolderName } from 'Utils/blogUtils';
+import { getBlogFolderName, getPlatformFromBlogType } from 'Utils/blogUtils';
 import Blog from './Blog/Blog';
 import BlogSelector from './BlogSelector';
 import Center from './Center';
@@ -42,14 +42,21 @@ const App = () => {
 									handle.kind === 'file'
 							)
 							.filter(file => !file.name.includes('_files'));
-						const acquiredBlogs = await Promise.all(
-							files.map(file =>
-								file
-									.getFile()
-									.then(file => file.text())
-									.then(text => JSON.parse(text) as BlogType)
+						const acquiredBlogs = (
+							await Promise.all(
+								files.map(file =>
+									file
+										.getFile()
+										.then(file => file.text())
+										.then(text => {
+											const obj = JSON.parse(text) as BlogType;
+											const platform = getPlatformFromBlogType(obj.BlogType);
+											return { ...obj, platform } satisfies BlogType;
+										})
+										.catch(() => undefined)
+								)
 							)
-						);
+						).filter(blog => blog !== undefined);
 						return acquiredBlogs;
 					})
 			: skipToken,
@@ -203,7 +210,7 @@ const App = () => {
 
 	const returnToBlogSelectionButton = (
 		<button
-			className="fill-text flex cursor-pointer gap-2 rounded-xl bg-gray-800 p-2 transition-colors hover:bg-gray-700"
+			className="fill-text flex cursor-pointer gap-2 rounded-xl bg-gray-800 p-2 transition-colors [&:hover]:bg-gray-700"
 			onClick={goToBlogSelection}
 		>
 			<ArrowLeft />

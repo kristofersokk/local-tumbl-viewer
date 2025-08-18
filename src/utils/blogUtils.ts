@@ -1,4 +1,4 @@
-import { Blog } from 'Types/blog';
+import { Blog, BlogType, Platform } from 'Types/blog';
 
 export function getBlogFolderName(blog: Blog | undefined) {
 	if (!blog) return undefined;
@@ -37,3 +37,19 @@ export const transformPostUrl = (url: string | undefined) => {
 	}
 	return url;
 };
+
+export const getPlatformFromBlogType = (blogType: BlogType): Platform =>
+	(
+		[
+			'tumblr',
+			'tumblr',
+			'instagram',
+			'twitter',
+			'tumblr',
+			'tumblr',
+			'tumblr',
+			'newtumbl',
+			'bluesky',
+			'unknown',
+		] as Platform[]
+	)[blogType] || 'unknown';

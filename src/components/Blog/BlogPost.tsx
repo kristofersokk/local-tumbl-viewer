@@ -78,6 +78,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'[&_.photoset\\_row]:!h-auto',
 					'[&_.tmblr-full_img]:!w-full',
 					'[&_.image]:!w-full',
+					'[&_figure_img]:!w-full',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
 					'[&_img]:my-4 [&_img]:!h-auto',
 					'[&_p]:mx-4 [&_p]:my-2',

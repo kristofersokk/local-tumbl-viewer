@@ -3,7 +3,7 @@ import { OBJECT_STORES, retrieveValue, storeValue } from './indexedDbUtils';
 
 const ROOT_FOLDER_KEY = 'rootFolder';
 
-export async function getPermittedRootDirectoryHandle() {
+export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
 	const dirHandle = await getRootDirectoryHandle();
 	if (!dirHandle) {
 		console.error('No root directory handle found');
@@ -19,7 +19,7 @@ export async function getPermittedRootDirectoryHandle() {
 	if (permission === 'granted') {
 		return dirHandle;
 	}
-	if (permission === 'prompt') {
+	if (allowPrompt && permission === 'prompt') {
 		return promptForRootDirectoryHandle();
 	}
 
