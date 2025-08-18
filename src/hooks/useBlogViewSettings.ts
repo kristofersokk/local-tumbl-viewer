@@ -9,8 +9,9 @@ export type BlogSorting = BlogViewSettings['sorting'];
 export type BlogFiltering = BlogViewSettings['filter'];
 
 const useBlogViewSettings = () => {
-	const [collapsedHeightRem, setCollapsedHeightRem] = useState<number>(24);
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
+	const [collapsedHeightPercent, setCollapsedHeightPercent] =
+		useState<number>(50);
 	const [showDate, setShowDate] = useState<boolean>(true);
 	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
 
@@ -46,10 +47,10 @@ const useBlogViewSettings = () => {
 			removeTagFilter,
 		},
 		params: {
-			collapsedHeightRem,
 			columnWidthRem,
-			setCollapsedHeightRem,
 			setColumnWidthRem,
+			collapsedHeightPercent,
+			setCollapsedHeightPercent,
 			showDate,
 			setShowDate,
 			showPostUrl,

@@ -5,6 +5,8 @@ import { RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
+import useWindowSize from 'Hooks/useWindowSize';
+import useRemToPixels from 'Hooks/useRemToPixels';
 
 interface BlogPostProps {
 	post: BlogPostType;
@@ -13,7 +15,14 @@ interface BlogPostProps {
 }
 
 const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
-	const { collapsedHeightRem, showDate, showPostUrl } = params;
+	const { collapsedHeightPercent, showDate, showPostUrl } = params;
+
+	const remInPixels = useRemToPixels();
+	const { height: viewportHeightInPixels } = useWindowSize();
+
+	const collapsedHeightRem = Math.floor(
+		((collapsedHeightPercent / 100) * viewportHeightInPixels) / remInPixels
+	);
 
 	const {
 		createdAt,

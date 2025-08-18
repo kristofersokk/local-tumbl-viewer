@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
+import useWindowSize from 'Hooks/useWindowSize';
 
 interface BlogProps {
 	blog: BlogType;
@@ -23,9 +24,14 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 		filter,
 		params,
 	} = useBlogViewSettings();
+	const { height: viewportHeightInPixels } = useWindowSize();
 
 	const { tagsForFilter, addTagFilter } = filter;
-	const { collapsedHeightRem, columnWidthRem } = params;
+	const { collapsedHeightPercent, columnWidthRem } = params;
+
+	const collapsedHeightRem = Math.floor(
+		((collapsedHeightPercent / 100) * viewportHeightInPixels) / remInPixels
+	);
 
 	const filteredPosts = useMemo(() => {
 		return posts.filter(post =>

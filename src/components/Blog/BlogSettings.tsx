@@ -10,8 +10,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 	const {
 		columnWidthRem,
 		setColumnWidthRem,
-		collapsedHeightRem,
-		setCollapsedHeightRem,
+		collapsedHeightPercent,
+		setCollapsedHeightPercent,
 		showDate,
 		setShowDate,
 		showPostUrl,
@@ -50,18 +50,18 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 						<div className="flex items-center gap-2">
 							<Slider.Root
 								className="SliderRoot"
-								min={10}
-								max={60}
+								min={5}
+								max={200}
 								step={1}
-								value={[collapsedHeightRem]}
-								onValueChange={value => setCollapsedHeightRem(value[0])}
+								value={[collapsedHeightPercent]}
+								onValueChange={value => setCollapsedHeightPercent(value[0])}
 							>
 								<Slider.Track className="SliderTrack">
 									<Slider.Range className="SliderRange" />
 								</Slider.Track>
 								<Slider.Thumb className="SliderThumb" />
 							</Slider.Root>
-							<span className="text-sm">{collapsedHeightRem}rem</span>
+							<span className="text-sm">{collapsedHeightPercent}%</span>
 						</div>
 						<span className="text-sm">Show date:</span>
 						<div className="flex items-center gap-2">
