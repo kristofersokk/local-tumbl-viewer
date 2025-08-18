@@ -96,7 +96,7 @@ const BlogPostCollapsible = ({
 				</div>
 			)}
 			{!collapsed && !isNonCollapsible && (
-				<div className="flex justify-around">
+				<div className="mt-2 flex justify-around">
 					<button
 						className="cursor-pointer rounded-xl p-2 transition-colors [&:hover]:bg-gray-700"
 						onClick={collapse}
