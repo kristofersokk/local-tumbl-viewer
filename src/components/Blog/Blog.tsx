@@ -40,8 +40,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 		const getKey = (post: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
-					// FIXME: improve a lot
-					return post['unix-timestamp'] || post['date-gmt'] || 0;
+					return post.calculated!.createdAt || 0;
 				default:
 					return 0;
 			}
@@ -93,7 +92,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 					</a>
 				</div>
 				<div className="flex items-center gap-2">
-					<BlogFiltering filter={filter} />
+					<BlogFiltering posts={sortedPosts} filter={filter} />
 					<BlogSettings params={params} />
 				</div>
 			</div>
@@ -115,6 +114,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
 					itemKey={post => post.id || post.url || ''}
 					scrollFps={12}
+					overscanBy={5}
 				/>
 			</div>
 		</div>

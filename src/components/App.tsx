@@ -1,11 +1,15 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import ArrowLeft from 'Assets/icons/arrow-left.svg?react';
+import { QUERY_KEYS } from 'Constants/queryKeys';
 import InitializationContext from 'Contexts/InitializationContext';
 import { jsonrepair } from 'jsonrepair';
 import { useContext, useEffect, useState } from 'react';
-import { QUERY_KEYS } from 'Constants/queryKeys';
-import { BlogPost, Blog as BlogType } from 'Types/blog';
-import { getBlogFolderName, getPlatformFromBlogType } from 'Utils/blogUtils';
+import { BlogPost, Blog as _Blog } from 'Types/blog';
+import {
+	getBlogFolderName,
+	processBlog,
+	processBlogPost,
+} from 'Utils/blogUtils';
 import Blog from './Blog/Blog';
 import BlogSelector from './BlogSelector';
 import Center from './Center';
@@ -48,11 +52,8 @@ const App = () => {
 									file
 										.getFile()
 										.then(file => file.text())
-										.then(text => {
-											const obj = JSON.parse(text) as BlogType;
-											const platform = getPlatformFromBlogType(obj.BlogType);
-											return { ...obj, platform } satisfies BlogType;
-										})
+										.then(text => JSON.parse(text) as _Blog)
+										.then(processBlog)
 										.catch(() => undefined)
 								)
 							)
@@ -120,30 +121,35 @@ const App = () => {
 									.then(file => file.text())
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.log('Error parsing texts.txt')),
 								chosenBlogImagesFile
 									?.getFile()
 									.then(file => file.text())
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.log('Error parsing images.txt')),
 								chosenBlogVideosFile
 									?.getFile()
 									.then(file => file.text())
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.log('Error parsing videos.txt')),
 								chosenBlogConversationsFile
 									?.getFile()
 									.then(file => file.text())
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.log('Error parsing conversations.txt')),
 								chosenBlogAnswersFile
 									?.getFile()
 									.then(file => file.text())
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.log('Error parsing answers.txt')),
 							]);
 

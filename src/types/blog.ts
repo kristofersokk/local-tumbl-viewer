@@ -128,7 +128,7 @@ export interface BlogPost {
 	timestamp?: number; // Private blog uses "timestamp"
 	'unix-timestamp'?: number; // 1738253256
 
-	'reblog-key': string; // "H34s8Fsad"
+	'reblog-key': string; // "H34s8Fads"
 	tags: string[]; // []
 	format?: string; // "html" - not present in Likes
 	'downloaded-media-files'?: string[]; // ["6fa382268369aa0231e2ea24.jpg"]
@@ -202,4 +202,15 @@ export interface BlogPost {
 	// type answer
 	question?: string;
 	answer?: string;
+
+	// calculated fields
+	calculated?: {
+		createdAt?: Date;
+		postTitle?: string;
+		postUrl?: string;
+		postBody?: string;
+		postSummary?: string;
+		rebloggedFrom?: string;
+		rebloggedRoot?: string;
+	};
 }

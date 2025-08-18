@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import { RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
-import { removeTime, transformPostUrl } from 'Utils/blogUtils';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
 
@@ -16,25 +15,17 @@ interface BlogPostProps {
 const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 	const { collapsedHeightRem, showDate, showPostUrl } = params;
 
-	const postTitle = post['regular-title'] || post.title;
-	const postUrl = transformPostUrl(
-		post.url || post['url-with-slug'] || post.post_url
-	);
-	const postBody =
-		post['regular-body'] ||
-		post.body ||
-		post.post_html ||
-		post['photo-caption'] ||
-		post.caption ||
-		'';
-	const postSummary = post.summary;
+	const {
+		createdAt,
+		postTitle,
+		postUrl,
+		postBody,
+		postSummary,
+		rebloggedFrom,
+		rebloggedRoot,
+	} = post.calculated ?? {};
 
-	const rebloggedFromName =
-		post['reblogged-from-name'] || post.reblogged_from_name;
-	const rebloggedRootName =
-		post['reblogged-root-name'] || post.reblogged_root_name;
-	const showOriginalPoster =
-		rebloggedRootName && rebloggedRootName !== rebloggedFromName;
+	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 	const showReblogged = true;
 
 	return (
@@ -42,19 +33,17 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
 			key={post.id}
 		>
-			{showReblogged && rebloggedRootName && (
+			{showReblogged && rebloggedRoot && (
 				<div className="flex flex-col gap-2 px-4 py-3">
-					<span>Reblogged from: {rebloggedRootName}</span>
-					{showOriginalPoster && (
-						<span>Original poster: {rebloggedFromName}</span>
-					)}
+					<span>Reblogged from: {rebloggedRoot}</span>
+					{showOriginalPoster && <span>Original poster: {rebloggedFrom}</span>}
 				</div>
 			)}
 			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
 					{postTitle}
 				</span>
-				<div className="flex gap-2">
+				<div className="flex items-center gap-2">
 					{showPostUrl && postUrl && (
 						<a
 							href={postUrl}
@@ -65,17 +54,18 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							<Link />
 						</a>
 					)}
-					{showDate && <span className="text-sm">{removeTime(post.date)}</span>}
+					{showDate && (
+						<span className="text-sm">
+							{createdAt ? createdAt.toISOString().substring(0, 10) : null}
+						</span>
+					)}
 				</div>
 			</div>
 			<div
 				className={classNames([
 					// eslint-disable-next-line no-useless-escape
-					'[&_.photoset\_row]:!w-full',
-					'[&_.photoset\\_row]:!w-full',
-					// eslint-disable-next-line no-useless-escape
-					'[&_.photoset\_row]:!h-auto',
-					'[&_.photoset\\_row]:!h-auto',
+					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full',
+					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full',
 					'[&_.tmblr-full_img]:!w-full',
 					'[&_.image]:!w-full',
 					'[&_figure_img]:!w-full',
@@ -95,7 +85,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
 					{(ref, className) => (
 						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
-							<UnsafeContent content={postBody} />
+							<UnsafeContent content={postBody || ''} />
 							{postSummary && (
 								<div className="text-blog-post-summary mt-2 p-2">
 									{postSummary}
