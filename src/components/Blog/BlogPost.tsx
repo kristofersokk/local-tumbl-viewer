@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
+import { Tooltip } from 'radix-ui';
 import { RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
@@ -63,10 +64,22 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							<Link />
 						</a>
 					)}
-					{showDate && (
-						<span className="text-sm">
-							{createdAt ? createdAt.toISOString().substring(0, 10) : null}
-						</span>
+					{showDate && createdAt && (
+						<Tooltip.Provider>
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild>
+									<span className="text-sm">
+										{createdAt.toISOString().substring(0, 10)}
+									</span>
+								</Tooltip.Trigger>
+								<Tooltip.Portal>
+									<Tooltip.Content className="TooltipContent" sideOffset={5}>
+										{createdAt.toISOString()}
+										<Tooltip.Arrow className="TooltipArrow" />
+									</Tooltip.Content>
+								</Tooltip.Portal>
+							</Tooltip.Root>
+						</Tooltip.Provider>
 					)}
 				</div>
 			</div>
