@@ -91,8 +91,8 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 			<div
 				className={classNames([
 					// eslint-disable-next-line no-useless-escape
-					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full',
-					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full',
+					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
+					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
 					'[&_.tmblr-full_img]:!w-full',
 					'[&_.image]:!w-full',
 					'[&_figure_img]:!w-full',
