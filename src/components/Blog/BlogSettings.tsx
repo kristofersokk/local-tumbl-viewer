@@ -18,6 +18,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setShowPostUrl,
 		showRebloggedInfo,
 		setShowRebloggedInfo,
+		showTags,
+		setShowTags,
 	} = params;
 
 	return (
@@ -29,7 +31,7 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 			</Popover.Trigger>
 			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
 				<div className="bg-popover-background rounded-lg px-3 py-4">
-					<p className="mb-4">Settings</p>
+					<p className="mb-4 text-lg">Settings</p>
 					<div className="grid grid-cols-[auto_auto] gap-4">
 						<span className="text-sm">Column width:</span>
 						<div className="flex items-center gap-2">
@@ -91,6 +93,16 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 								className="SwitchRoot"
 								checked={showRebloggedInfo}
 								onCheckedChange={setShowRebloggedInfo}
+							>
+								<Switch.Thumb className="SwitchThumb" />
+							</Switch.Root>
+						</div>
+						<span className="text-sm">Show tags:</span>
+						<div className="flex items-center gap-2">
+							<Switch.Root
+								className="SwitchRoot"
+								checked={showTags}
+								onCheckedChange={setShowTags}
 							>
 								<Switch.Thumb className="SwitchThumb" />
 							</Switch.Root>

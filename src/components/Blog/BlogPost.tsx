@@ -16,8 +16,13 @@ interface BlogPostProps {
 }
 
 const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
-	const { collapsedHeightPercent, showDate, showPostUrl, showRebloggedInfo } =
-		params;
+	const {
+		collapsedHeightPercent,
+		showDate,
+		showPostUrl,
+		showRebloggedInfo,
+		showTags,
+	} = params;
 
 	const remInPixels = useRemToPixels();
 	const { height: viewportHeightInPixels } = useWindowSize();
@@ -117,7 +122,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					)}
 				</BlogPostCollapsible>
 			</div>
-			{!!post.tags?.length && (
+			{!!post.tags?.length && showTags && (
 				<div className="mx-2 mt-2 flex flex-wrap gap-2">
 					{post.tags.map(tag => (
 						<span

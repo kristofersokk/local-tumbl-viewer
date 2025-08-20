@@ -15,6 +15,7 @@ const useBlogViewSettings = () => {
 	const [showDate, setShowDate] = useState<boolean>(true);
 	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
 	const [showRebloggedInfo, setShowRebloggedInfo] = useState<boolean>(true);
+	const [showTags, setShowTags] = useState<boolean>(true);
 
 	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
 
@@ -58,6 +59,8 @@ const useBlogViewSettings = () => {
 			setShowPostUrl,
 			showRebloggedInfo,
 			setShowRebloggedInfo,
+			showTags,
+			setShowTags,
 		},
 	};
 };

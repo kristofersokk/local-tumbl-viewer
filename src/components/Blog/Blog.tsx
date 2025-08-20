@@ -43,7 +43,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 		);
 	}, [posts, tagsForFilter]);
 
-	const sortedPosts = useMemo(() => {
+	const sortedFilteredPosts = useMemo(() => {
 		const getKey = (post: BlogPostType) => {
 			switch (sortingField) {
 				case 'createdBy':
@@ -96,14 +96,18 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 					</a>
 				</div>
 				<div className="flex items-center gap-2">
-					<BlogFiltering posts={sortedPosts} filter={filter} />
+					<BlogFiltering
+						filteredPosts={sortedFilteredPosts}
+						allPostsCount={posts.length}
+						filter={filter}
+					/>
 					<BlogSettings params={params} />
 				</div>
 			</div>
 			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
 				<Masonry
 					key={blog.Name + JSON.stringify(filter)}
-					items={sortedPosts}
+					items={sortedFilteredPosts}
 					render={({ data: post }) => (
 						<BlogPost
 							key={post.id}

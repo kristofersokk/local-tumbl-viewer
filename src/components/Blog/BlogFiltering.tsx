@@ -9,19 +9,22 @@ import { countAllTags } from 'Utils/blogUtils';
 type Filter = BlogViewSettings['filter'];
 
 interface BlogFilteringProps {
-	posts: BlogPost[];
+	filteredPosts: BlogPost[];
+	allPostsCount: number;
 	filter: Filter;
 }
 
 const BlogFiltering = ({
-	posts,
+	filteredPosts,
+	allPostsCount,
 	filter: { tagsForFilter, removeTagFilter, addTagFilter },
 }: BlogFilteringProps) => {
 	const filterCount = tagsForFilter.length;
 
-	const countedTags = countAllTags(posts);
+	const countedRemainingTags = countAllTags(filteredPosts);
 	// sort descendingly by count, map to tags
-	const notUsedTags = countedTags
+	const notUsedTags = countedRemainingTags
+		.filter(({ tag }) => !tagsForFilter.includes(tag))
 		.toSorted((a, b) => b.count - a.count)
 		.map(tag => tag.tag);
 
@@ -35,9 +38,17 @@ const BlogFiltering = ({
 			</Popover.Trigger>
 			<Popover.Content align="end" sideOffset={5} className="w-80 max-w-[90vw]">
 				<div className="bg-popover-background rounded-lg px-3 py-4">
-					<p className="mb-4">Filtering</p>
-					<div className="mt-3 flex items-center gap-2">
-						{!!countedTags.length && (
+					<div className="flex justify-between">
+						<p className="mb-4 text-lg">Filtering</p>
+						<p className="text-sm">
+							{filteredPosts.length} / {allPostsCount}
+						</p>
+					</div>
+					<div className="flex items-center gap-2">
+						{!countedRemainingTags.length && (
+							<p className="text-sm text-gray-400">No tags</p>
+						)}
+						{!!countedRemainingTags.length && (
 							<div className="flex flex-col items-start gap-4">
 								<div className="flex items-start gap-2">
 									<span className="mt-1 text-sm text-gray-400">Tags: </span>
@@ -61,7 +72,7 @@ const BlogFiltering = ({
 										))}
 									</div>
 								</div>
-								<div className="flex flex-wrap gap-2">
+								<div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
 									{notUsedTags.map(tag => (
 										<button
 											key={tag}
