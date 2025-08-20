@@ -69,12 +69,12 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							<Tooltip.Root>
 								<Tooltip.Trigger asChild>
 									<span className="text-sm">
-										{createdAt.toISOString().substring(0, 10)}
+										{createdAt.toLocaleDateString()}
 									</span>
 								</Tooltip.Trigger>
 								<Tooltip.Portal>
 									<Tooltip.Content className="TooltipContent" sideOffset={5}>
-										{createdAt.toISOString()}
+										{createdAt.toLocaleString()}
 										<Tooltip.Arrow className="TooltipArrow" />
 									</Tooltip.Content>
 								</Tooltip.Portal>
