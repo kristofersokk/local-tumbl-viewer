@@ -1,7 +1,7 @@
 import InitializationContext from 'Contexts/InitializationContext';
 import { useContext } from 'react';
 
-const TitleScreen = () => {
+const RootDirSelector = () => {
 	const { initializeRootDirHandle } = useContext(InitializationContext);
 
 	const fileSystemAPIIsSupported = !!window.showDirectoryPicker;
@@ -29,4 +29,4 @@ const TitleScreen = () => {
 	);
 };
 
-export default TitleScreen;
+export default RootDirSelector;

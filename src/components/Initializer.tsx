@@ -2,7 +2,7 @@ import RootDirContext from 'Contexts/InitializationContext';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
 import Center from './Center';
-import TitleScreen from './TitleScreen';
+import RootDirSelector from './RootDirSelector';
 
 interface InitializerProps {
 	children: ReactNode | ReactNode[];
@@ -41,7 +41,7 @@ const Initializer = ({ children }: InitializerProps) => {
 			{initialized && children}
 			{!initialized && (
 				// TODO: use spinner
-				<Center>{inProgress ? <p>Loading...</p> : <TitleScreen />}</Center>
+				<Center>{inProgress ? <p>Loading...</p> : <RootDirSelector />}</Center>
 			)}
 		</RootDirContext.Provider>
 	);
