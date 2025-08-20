@@ -44,7 +44,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 	}, [posts, tagsForFilter]);
 
 	const sortedFilteredPosts = useMemo(() => {
-		const getKey = (post: BlogPostType) => {
+		const getKey = (post: BlogPostType): Date | number => {
 			switch (sortingField) {
 				case 'createdBy':
 					return post.calculated!.createdAt || 0;
@@ -72,7 +72,7 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 
 	return (
 		<div className="min-h-full w-full">
-			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-6">
+			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-2 sm:px-6">
 				<div className="flex items-center gap-4">
 					<div className="flex items-center gap-4">
 						<button
