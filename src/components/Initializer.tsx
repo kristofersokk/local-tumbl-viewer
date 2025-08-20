@@ -1,6 +1,8 @@
 import RootDirContext from 'Contexts/InitializationContext';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
+import Center from './Center';
+import TitleScreen from './TitleScreen';
 
 interface InitializerProps {
 	children: ReactNode | ReactNode[];
@@ -9,12 +11,15 @@ interface InitializerProps {
 const Initializer = ({ children }: InitializerProps) => {
 	const [rootDirHandle, setRootDirHandle] =
 		useState<FileSystemDirectoryHandle>();
+	const [inProgress, setInProgress] = useState(false);
 
 	const initializeRootDirHandle = useCallback((allowPrompt?: boolean) => {
+		setInProgress(true);
 		getPermittedRootDirectoryHandle(allowPrompt).then(dirHandle => {
 			if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
 				setRootDirHandle(dirHandle);
 			}
+			setInProgress(false);
 		});
 	}, []);
 
@@ -28,7 +33,11 @@ const Initializer = ({ children }: InitializerProps) => {
 		<RootDirContext.Provider
 			value={{ rootDirHandle, initializeRootDirHandle, initialized }}
 		>
-			{children}
+			{initialized && children}
+			{!initialized && (
+				// TODO: use spinner
+				<Center>{inProgress ? <p>Loading...</p> : <TitleScreen />}</Center>
+			)}
 		</RootDirContext.Provider>
 	);
 };
