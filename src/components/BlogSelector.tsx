@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { Blog } from 'Types/blog';
 import PlatformLogo from './Blog/PlatformLogo';
+import RootDirResetButton from './RootDirResetButton';
 
 interface BlogSelectorProps {
 	blogs: Blog[];
@@ -10,6 +11,7 @@ interface BlogSelectorProps {
 const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	return (
 		<div className="flex flex-col items-start gap-4 p-2">
+			<RootDirResetButton className="fixed top-4 right-4" />
 			<p>Select a blog</p>
 			<div className="flex flex-col gap-0.5">
 				{blogs.map(blog => {

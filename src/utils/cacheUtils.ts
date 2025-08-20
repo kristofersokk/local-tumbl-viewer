@@ -18,3 +18,7 @@ export const cacheValueAsync = async <T>(
 	cache[key] = newValue;
 	return newValue;
 };
+
+export const clearCacheValue = (key: CacheName & (string & {})) => {
+	delete cache[key];
+};

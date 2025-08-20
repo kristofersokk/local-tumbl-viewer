@@ -50,6 +50,25 @@ export async function retrieveValue(store: ObjectStoreName, key: string) {
 	});
 }
 
+export async function deleteValue(store: ObjectStoreName, key: string) {
+	await openDatabaseIfNotOpen();
+
+	const request = indexedDb!
+		.transaction(store, 'readwrite')
+		.objectStore(store)
+		.delete(key);
+
+	return new Promise<void>((resolve, reject) => {
+		request.onsuccess = () => {
+			console.log('File handle deleted from IndexedDB');
+			resolve();
+		};
+		request.onerror = () => {
+			reject(request.error);
+		};
+	});
+}
+
 export async function openDatabaseIfNotOpen() {
 	return new Promise<IDBDatabase>((resolve, reject) => {
 		if (!indexedDb) {

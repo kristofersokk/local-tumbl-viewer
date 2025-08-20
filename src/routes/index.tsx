@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import BlogSelector from 'Components/BlogSelector';
 import Center from 'Components/Center';
+import RootDirResetButton from 'Components/RootDirResetButton';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
 
@@ -25,10 +26,19 @@ function Index() {
 		);
 	}
 
-	if (!blogs?.length) {
+	const error = !folders?.length
+		? 'No subfolders found.'
+		: !indexFolder
+			? 'No "Index" folder found.'
+			: !blogs?.length
+				? 'No blogs found.'
+				: undefined;
+
+	if (error) {
 		return (
-			<Center>
-				<p>No blogs found in the index folder.</p>
+			<Center className="flex flex-col gap-3">
+				<p>{error}</p>
+				<RootDirResetButton />
 			</Center>
 		);
 	}
@@ -39,7 +49,7 @@ function Index() {
 
 	return (
 		<Center>
-			<BlogSelector blogs={blogs} selectBlog={selectBlog} />
+			<BlogSelector blogs={blogs!} selectBlog={selectBlog} />
 		</Center>
 	);
 }

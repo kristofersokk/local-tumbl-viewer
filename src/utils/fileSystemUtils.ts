@@ -1,12 +1,17 @@
-import { CACHES, cacheValueAsync } from './cacheUtils';
-import { OBJECT_STORES, retrieveValue, storeValue } from './indexedDbUtils';
+import { CACHES, cacheValueAsync, clearCacheValue } from './cacheUtils';
+import {
+	deleteValue,
+	OBJECT_STORES,
+	retrieveValue,
+	storeValue,
+} from './indexedDbUtils';
 
 const ROOT_FOLDER_KEY = 'rootFolder';
 
 export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
-	const dirHandle = await getRootDirectoryHandle();
+	const dirHandle = await getRootDirectoryHandle(allowPrompt);
 	if (!dirHandle) {
-		console.error('No root directory handle found');
+		console.info('No root directory handle found');
 		return undefined;
 	}
 
@@ -27,7 +32,7 @@ export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
 	return undefined;
 }
 
-async function getRootDirectoryHandle() {
+async function getRootDirectoryHandle(allowPrompt?: boolean) {
 	const dirHandle = await cacheValueAsync(CACHES.ROOT_FOLDER, () =>
 		retrieveValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY)
 	);
@@ -35,7 +40,10 @@ async function getRootDirectoryHandle() {
 		return dirHandle;
 	}
 
-	return promptForRootDirectoryHandle();
+	if (allowPrompt) {
+		return promptForRootDirectoryHandle();
+	}
+	return undefined;
 }
 
 async function promptForRootDirectoryHandle() {
@@ -47,4 +55,11 @@ async function promptForRootDirectoryHandle() {
 	await storeValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY, newDirHandle);
 
 	return newDirHandle;
+}
+
+export async function resetRootDirectoryHandle() {
+	clearCacheValue(CACHES.ROOT_FOLDER);
+	return deleteValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY)
+		.then(() => true)
+		.catch(() => false);
 }
