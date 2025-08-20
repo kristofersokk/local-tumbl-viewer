@@ -41,9 +41,7 @@ async function getRootDirectoryHandle() {
 async function promptForRootDirectoryHandle() {
 	console.log('Prompting for root directory handle');
 	const newDirHandle: FileSystemDirectoryHandle =
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-expect-error
-		await window.showDirectoryPicker({
+		await window.showDirectoryPicker!({
 			id: ROOT_FOLDER_KEY,
 		});
 	await storeValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY, newDirHandle);

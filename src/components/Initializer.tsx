@@ -15,16 +15,21 @@ const Initializer = ({ children }: InitializerProps) => {
 
 	const initializeRootDirHandle = useCallback((allowPrompt?: boolean) => {
 		setInProgress(true);
-		getPermittedRootDirectoryHandle(allowPrompt).then(dirHandle => {
-			if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
-				setRootDirHandle(dirHandle);
-			}
+		try {
+			getPermittedRootDirectoryHandle(allowPrompt).then(dirHandle => {
+				if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
+					setRootDirHandle(dirHandle);
+				}
+			});
+		} finally {
 			setInProgress(false);
-		});
+		}
 	}, []);
 
 	useEffect(() => {
-		initializeRootDirHandle();
+		if (window.showDirectoryPicker) {
+			initializeRootDirHandle();
+		}
 	}, [initializeRootDirHandle]);
 
 	const initialized = !!rootDirHandle;
