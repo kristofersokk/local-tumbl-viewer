@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import BlogSelector from 'Components/BlogSelector';
 import Center from 'Components/Center';
+import Loader from 'Components/Loader';
 import RootDirResetButton from 'Components/RootDirResetButton';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
@@ -21,7 +22,7 @@ function Index() {
 	if (isFetching) {
 		return (
 			<Center>
-				<p>Loading...</p>
+				<Loader />
 			</Center>
 		);
 	}

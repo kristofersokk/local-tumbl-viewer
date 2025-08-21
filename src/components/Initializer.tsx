@@ -1,9 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query';
 import RootDirContext from 'Contexts/InitializationContext';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
 import Center from './Center';
+import Loader from './Loader';
 import RootDirSelector from './RootDirSelector';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface InitializerProps {
 	children: ReactNode | ReactNode[];
@@ -56,7 +57,7 @@ const Initializer = ({ children }: InitializerProps) => {
 			{initialized && children}
 			{!initialized && (
 				// TODO: use spinner
-				<Center>{inProgress ? <p>Loading...</p> : <RootDirSelector />}</Center>
+				<Center>{inProgress ? <Loader /> : <RootDirSelector />}</Center>
 			)}
 		</RootDirContext.Provider>
 	);
