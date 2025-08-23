@@ -23,6 +23,7 @@ const useBlogPosts = (
 		blogVideosFile,
 		blogConversationsFile,
 		blogAnswersFile,
+		blogQuotesFile,
 	].filter(Boolean);
 
 	const query = useQuery({
