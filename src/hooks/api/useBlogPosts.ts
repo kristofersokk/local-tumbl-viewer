@@ -76,7 +76,7 @@ const useBlogPosts = (
 						]);
 
 					return [
-						// ...(texts || []),
+						...(texts || []),
 						...(images || []),
 						...(videos || []),
 						...(conversations || []),
