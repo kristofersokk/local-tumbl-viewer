@@ -4,7 +4,7 @@ import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
-import { RefObject } from 'react';
+import { memo, RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
@@ -140,4 +140,9 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 	);
 };
 
-export default BlogPost;
+export default memo(BlogPost, (prevProps, nextProps) => {
+	return (
+		prevProps.post.id === nextProps.post.id &&
+		prevProps.params === nextProps.params
+	);
+});
