@@ -115,7 +115,6 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'[&_figure_img]:!w-full',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
 					'[&_img]:my-4 [&_img]:!h-auto',
-					// '[&_.quote]:whitespace-pre-line',
 					'[&_.quote_h1]:font-Tinos',
 					'[&_.quote_p]:py-2',
 					{
