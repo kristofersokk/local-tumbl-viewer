@@ -227,6 +227,10 @@ export interface BlogPost {
 			quote: string;
 			source: string;
 		};
+		postAnswer?: {
+			question: string;
+			answer: string;
+		};
 		rebloggedFrom?: string;
 		rebloggedRoot?: string;
 	};

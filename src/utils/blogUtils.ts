@@ -92,6 +92,13 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 							source: post['quote-source'] || post.quote_source || '',
 						}
 					: undefined,
+			postAnswer:
+				post.type === 'answer'
+					? {
+							question: post.question || '',
+							answer: post.answer || '',
+						}
+					: undefined,
 			postSummary: post.summary,
 			rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
 			rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,

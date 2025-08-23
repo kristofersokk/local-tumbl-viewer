@@ -2,16 +2,18 @@
 	--font-Inter: 'Inter', sans-serif;
 	--font-Tinos: 'Tinos', Times, Times New Roman, serif;
 
+	--color-background: black;
 	--color-text: #bbb;
 	--color-text-highlight: #ddd;
 	--color-text-tag: #999;
-	--color-background: black;
 	--color-blog-collapse-color: black;
 	--color-popover-background: #222;
 	--color-counter: #a11;
-	--color-blog-post-summary: #888;
 	--color-tooltip-bg: #ddd;
 	--color-tooltip-text: #222;
+	--color-blog-post-card: theme(colors.gray.900);
+	--color-blog-post-question-bg: theme(colors.gray.800);
+	--color-blog-post-summary: #888;
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;

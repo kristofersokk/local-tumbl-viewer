@@ -4,7 +4,7 @@ import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
-import { memo, RefObject } from 'react';
+import { ComponentProps, memo, ReactNode, RefObject } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
 import UnsafeContent from '../UnsafeContent';
 import BlogPostCollapsible from './BlogPostCollapsible';
@@ -35,19 +35,55 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		createdAt,
 		postTitle,
 		postUrl,
-		postBody,
+		postBody: dynamicPostBody,
 		postSummary,
+		postQuote,
+		postAnswer,
 		rebloggedFrom,
 		rebloggedRoot,
-		postQuote,
 	} = post.calculated ?? {};
 
-	const postQuoteBody = postQuote
-		? `<div class="quote">
-									<h1>${postQuote.quote}</h1>
-									<p>${postQuote.source}</p>
-								</div>`
-		: undefined;
+	const renderDynamic = (
+		content: string | ReactNode | undefined,
+		{ className, ...rest }: ComponentProps<'div'> = {}
+	) => {
+		if (!content) return null;
+
+		return (
+			<div
+				className={classNames(
+					className,
+					// eslint-disable-next-line no-useless-escape
+					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
+					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
+					'[&_.tmblr-full_img]:!w-full',
+					'[&_.image]:!w-full',
+					'[&_figure_img]:!w-full',
+					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
+					'[&_img]:my-4 [&_img]:!h-auto',
+					'[&_p]:mx-4 [&_p]:my-2',
+					'[&_h1]:mx-4 [&_h1]:my-2',
+					'[&_h2]:mx-4 [&_h2]:my-2',
+					'[&_h3]:mx-4 [&_h3]:my-2',
+					'[&_h4]:mx-4 [&_h4]:my-2',
+					'[&_h5]:mx-4 [&_h5]:my-2',
+					'[&_h6]:mx-4 [&_h6]:my-2',
+					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
+					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
+					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',
+					'[&_*]:first:mt-0 [&_*]:last:mb-0'
+				)}
+				{...rest}
+			>
+				{typeof content === 'string' ? (
+					<UnsafeContent content={dynamicPostBody || ''} />
+				) : (
+					content
+				)}
+			</div>
+		);
+	};
+
 	const postQuoteFontSize = postQuote
 		? (() => {
 				const length = postQuote.quote.length;
@@ -57,12 +93,48 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				return 'text-4xl';
 			})()
 		: undefined;
+	const postQuoteBody = postQuote ? (
+		<div className="px-4">
+			<UnsafeContent
+				tag="h1"
+				content={postQuote.quote}
+				className={classNames('font-Tinos', {
+					'text-4xl': postQuoteFontSize === 'text-4xl',
+					'text-3xl': postQuoteFontSize === 'text-3xl',
+					'text-2xl': postQuoteFontSize === 'text-2xl',
+					'text-xl': postQuoteFontSize === 'text-xl',
+				})}
+			/>
+			<UnsafeContent tag="p" className="mt-2 py-2" content={postQuote.source} />
+		</div>
+	) : undefined;
+
+	const postAnswerBody = postAnswer ? (
+		<div>
+			<div className="bg-blog-post-question-bg mx-4 p-4">
+				<p className="text-text-tag font-light">
+					<strong className="text-text-tag">
+						{'<'}Unknown{'>'}
+					</strong>{' '}
+					asked:
+				</p>
+				<UnsafeContent
+					tag="p"
+					className="mt-4 [&_*:not(:first-child)]:mt-4"
+					content={postAnswer.question}
+				/>
+			</div>
+			{renderDynamic(<UnsafeContent tag="div" content={postAnswer.answer} />, {
+				className: 'pt-4',
+			})}
+		</div>
+	) : undefined;
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
 	return (
 		<div
-			className="z-blog flex w-full flex-col rounded-md bg-gray-900"
+			className="z-blog bg-blog-post-card flex w-full flex-col rounded-md"
 			key={post.id}
 		>
 			{showRebloggedInfo && rebloggedRoot && (
@@ -105,39 +177,13 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					)}
 				</div>
 			</div>
-			<div
-				className={classNames(
-					// eslint-disable-next-line no-useless-escape
-					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
-					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
-					'[&_.tmblr-full_img]:!w-full',
-					'[&_.image]:!w-full',
-					'[&_figure_img]:!w-full',
-					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
-					'[&_img]:my-4 [&_img]:!h-auto',
-					'[&_.quote_h1]:font-Tinos',
-					'[&_.quote_p]:py-2',
-					{
-						'[&_.quote_h1]:text-4xl': postQuoteFontSize === 'text-4xl',
-						'[&_.quote_h1]:text-3xl': postQuoteFontSize === 'text-3xl',
-						'[&_.quote_h1]:text-2xl': postQuoteFontSize === 'text-2xl',
-						'[&_.quote_h1]:text-xl': postQuoteFontSize === 'text-xl',
-					},
-					'[&_p]:mx-4 [&_p]:my-2',
-					'[&_h1]:mx-4 [&_h1]:my-2',
-					'[&_h2]:mx-4 [&_h2]:my-2',
-					'[&_h3]:mx-4 [&_h3]:my-2',
-					'[&_h4]:mx-4 [&_h4]:my-2',
-					'[&_h5]:mx-4 [&_h5]:my-2',
-					'[&_h6]:mx-4 [&_h6]:my-2',
-					'[&_a]:transition-colors [&_a:hover]:text-gray-200',
-					'[&_*]:first:mt-0 [&_*]:last:mb-0'
-				)}
-			>
+			<div>
 				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
 					{(ref, className) => (
 						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
-							{<UnsafeContent content={postBody || postQuoteBody || ''} />}
+							{renderDynamic(dynamicPostBody)}
+							{postQuoteBody ?? null}
+							{postAnswerBody ?? null}
 							{postSummary && (
 								<div className="text-blog-post-summary mt-2 p-2">
 									{postSummary}
@@ -152,7 +198,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					{post.tags.map(tag => (
 						<span
 							key={tag}
-							className="text-text-tag cursor-pointer px-2 py-1 text-sm [&:hover]:underline"
+							className="text-text-tag cursor-pointer px-2 py-0.5 text-sm [&:hover]:underline"
 							onClick={() => addTagFilter(tag)}
 						>
 							#{tag}
