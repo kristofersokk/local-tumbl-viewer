@@ -120,7 +120,14 @@ export type Platform =
 
 // Merged from examples of private blog, likes, and public blog
 export interface BlogPost {
-	type: 'regular' | 'text' | 'photo' | 'video' | 'conversation' | 'answer';
+	type:
+		| 'regular'
+		| 'text'
+		| 'photo'
+		| 'video'
+		| 'conversation'
+		| 'answer'
+		| 'quote';
 	id: string; // "7741146463634667009"
 
 	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
@@ -203,6 +210,12 @@ export interface BlogPost {
 	question?: string;
 	answer?: string;
 
+	// type quote
+	'quote-source'?: string;
+	quote_source?: string;
+	'quote-text'?: string;
+	quote_text?: string;
+
 	// calculated fields
 	calculated?: {
 		createdAt?: Date;
@@ -210,6 +223,10 @@ export interface BlogPost {
 		postUrl?: string;
 		postBody?: string;
 		postSummary?: string;
+		postQuote?: {
+			quote: string;
+			source: string;
+		};
 		rebloggedFrom?: string;
 		rebloggedRoot?: string;
 	};

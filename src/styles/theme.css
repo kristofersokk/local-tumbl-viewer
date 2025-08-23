@@ -1,8 +1,10 @@
 @theme {
 	--font-Inter: 'Inter', sans-serif;
+	--font-Tinos: 'Tinos', Times, Times New Roman, serif;
 
 	--color-text: #bbb;
 	--color-text-highlight: #ddd;
+	--color-text-tag: #999;
 	--color-background: black;
 	--color-blog-collapse-color: black;
 	--color-popover-background: #222;

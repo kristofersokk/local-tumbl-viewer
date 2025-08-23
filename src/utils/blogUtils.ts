@@ -85,6 +85,13 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 				post['photo-caption'] ||
 				post.caption ||
 				'',
+			postQuote:
+				post.type === 'quote'
+					? {
+							quote: post['quote-text'] || post.quote_text || '',
+							source: post['quote-source'] || post.quote_source || '',
+						}
+					: undefined,
 			postSummary: post.summary,
 			rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
 			rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,

@@ -39,7 +39,24 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		postSummary,
 		rebloggedFrom,
 		rebloggedRoot,
+		postQuote,
 	} = post.calculated ?? {};
+
+	const postQuoteBody = postQuote
+		? `<div class="quote">
+									<h1>${postQuote.quote}</h1>
+									<p>${postQuote.source}</p>
+								</div>`
+		: undefined;
+	const postQuoteFontSize = postQuote
+		? (() => {
+				const length = postQuote.quote.length;
+				if (length > 250) return 'text-xl';
+				if (length > 120) return 'text-2xl';
+				if (length > 70) return 'text-3xl';
+				return 'text-4xl';
+			})()
+		: undefined;
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
@@ -89,7 +106,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				</div>
 			</div>
 			<div
-				className={classNames([
+				className={classNames(
 					// eslint-disable-next-line no-useless-escape
 					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
 					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
@@ -98,6 +115,15 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'[&_figure_img]:!w-full',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
 					'[&_img]:my-4 [&_img]:!h-auto',
+					// '[&_.quote]:whitespace-pre-line',
+					'[&_.quote_h1]:font-Tinos',
+					'[&_.quote_p]:py-2',
+					{
+						'[&_.quote_h1]:text-4xl': postQuoteFontSize === 'text-4xl',
+						'[&_.quote_h1]:text-3xl': postQuoteFontSize === 'text-3xl',
+						'[&_.quote_h1]:text-2xl': postQuoteFontSize === 'text-2xl',
+						'[&_.quote_h1]:text-xl': postQuoteFontSize === 'text-xl',
+					},
 					'[&_p]:mx-4 [&_p]:my-2',
 					'[&_h1]:mx-4 [&_h1]:my-2',
 					'[&_h2]:mx-4 [&_h2]:my-2',
@@ -106,13 +132,13 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'[&_h5]:mx-4 [&_h5]:my-2',
 					'[&_h6]:mx-4 [&_h6]:my-2',
 					'[&_a]:transition-colors [&_a:hover]:text-gray-200',
-					'[&_*]:first:mt-0 [&_*]:last:mb-0',
-				])}
+					'[&_*]:first:mt-0 [&_*]:last:mb-0'
+				)}
 			>
 				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
 					{(ref, className) => (
 						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
-							<UnsafeContent content={postBody || ''} />
+							{<UnsafeContent content={postBody || postQuoteBody || ''} />}
 							{postSummary && (
 								<div className="text-blog-post-summary mt-2 p-2">
 									{postSummary}
@@ -123,11 +149,11 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				</BlogPostCollapsible>
 			</div>
 			{!!post.tags?.length && showTags && (
-				<div className="mx-2 mt-2 flex flex-wrap gap-2">
+				<div className="mx-2 mt-2 flex flex-wrap">
 					{post.tags.map(tag => (
 						<span
 							key={tag}
-							className="cursor-pointer rounded-full bg-gray-800 px-2 py-1 text-sm"
+							className="text-text-tag cursor-pointer px-2 py-1 text-sm [&:hover]:underline"
 							onClick={() => addTagFilter(tag)}
 						>
 							#{tag}
