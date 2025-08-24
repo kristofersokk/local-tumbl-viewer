@@ -16,6 +16,7 @@ const useBlogPosts = (
 	);
 	const blogAnswersFile = blogFiles?.find(file => file.name === 'answers.txt');
 	const blogQuotesFile = blogFiles?.find(file => file.name === 'quotes.txt');
+	const blogLinksFile = blogFiles?.find(file => file.name === 'links.txt');
 
 	const foundBlogPostsFiles = [
 		blogTextsFile,
@@ -24,57 +25,25 @@ const useBlogPosts = (
 		blogConversationsFile,
 		blogAnswersFile,
 		blogQuotesFile,
+		blogLinksFile,
 	].filter(Boolean);
 
 	const query = useQuery({
 		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolder?.name],
 		queryFn: blogFiles
 			? async () => {
-					const [texts, images, videos, conversations, answers, quotes] =
-						await Promise.all([
-							blogTextsFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing texts.txt')),
-							blogImagesFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing images.txt')),
-							blogVideosFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing videos.txt')),
-							blogConversationsFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing conversations.txt')),
-							blogAnswersFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing answers.txt')),
-							blogQuotesFile
-								?.getFile()
-								.then(file => file.text())
-								.then(text => jsonrepair(text))
-								.then(text => JSON.parse(text) as BlogPost[])
-								.then(blogs => blogs.map(processBlogPost))
-								.catch(() => console.log('Error parsing quotes.txt')),
-						]);
+					const [texts, images, videos, conversations, answers, quotes, links] =
+						await Promise.all(
+							foundBlogPostsFiles.map(file =>
+								file
+									?.getFile()
+									.then(file => file.text())
+									.then(text => jsonrepair(text))
+									.then(text => JSON.parse(text) as BlogPost[])
+									.then(blogs => blogs.map(processBlogPost))
+									.catch(() => console.log(`Error parsing ${file.name}`))
+							)
+						);
 
 					return [
 						...(texts || []),
@@ -83,6 +52,7 @@ const useBlogPosts = (
 						...(conversations || []),
 						...(answers || []),
 						...(quotes || []),
+						...(links || []),
 					];
 				}
 			: skipToken,

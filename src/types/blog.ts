@@ -127,7 +127,8 @@ export interface BlogPost {
 		| 'video'
 		| 'conversation'
 		| 'answer'
-		| 'quote';
+		| 'quote'
+		| 'link';
 	id: string; // "7741146463634667009"
 
 	date: string; // "Thu, 30 Jan 2025 11:07:36" or "2025-05-15 18:31:07 GMT"
@@ -223,6 +224,14 @@ export interface BlogPost {
 	'quote-text'?: string;
 	quote_text?: string;
 
+	// type link
+	link_url?: string;
+	'link-url'?: string;
+	link_text?: string;
+	'link-text'?: string;
+	link_description?: string;
+	'link-description'?: string;
+
 	// calculated fields
 	calculated?: {
 		createdAt?: Date;
@@ -245,6 +254,11 @@ export interface BlogPost {
 				name: string;
 				phrase: string;
 			}[];
+		};
+		link?: {
+			url: string;
+			text: string;
+			description: string;
 		};
 		rebloggedFrom?: string;
 		rebloggedRoot?: string;

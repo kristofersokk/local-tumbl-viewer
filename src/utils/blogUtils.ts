@@ -110,6 +110,15 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 							utterances: post.conversation || [],
 						}
 					: undefined,
+			link:
+				post.type === 'link'
+					? {
+							url: post.link_url || post['link-url'] || '',
+							text: post.link_text || post['link-text'] || '',
+							description:
+								post.link_description || post['link-description'] || '',
+						}
+					: undefined,
 			summary: post.summary,
 			rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
 			rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,

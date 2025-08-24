@@ -83,7 +83,7 @@ const BlogPostCollapsible = ({
 	}, [scrollHeight, collapsed, remToPixels, expand, nonCollapsibleHeightRem]);
 
 	return (
-		<div className="relative overflow-y-hidden">
+		<div className="relative overflow-hidden">
 			{children(contentRef, 'transition-[max-height] duration-500')}
 			{collapsed && (
 				<button

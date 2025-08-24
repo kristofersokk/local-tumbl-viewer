@@ -15,6 +15,7 @@
 	--color-blog-post-card: theme(colors.gray.900);
 	--color-blog-post-question-bg: theme(colors.gray.800);
 	--color-blog-post-summary: #888;
+	--color-blog-post-link-border: theme(colors.gray.500);
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;

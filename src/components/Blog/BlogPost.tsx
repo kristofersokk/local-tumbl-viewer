@@ -40,6 +40,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		quote,
 		answer,
 		conversation,
+		link,
 		rebloggedFrom,
 		rebloggedRoot,
 	} = post.calculated ?? {};
@@ -157,6 +158,22 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		</div>
 	) : undefined;
 
+	const linkBody = link ? (
+		<div className="mx-4">
+			<div className="border-blog-post-link-border rounded-lg border-1 transition-colors [&:hover]:bg-gray-700/50">
+				<a
+					className="cursor-pointer"
+					href={link.url}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<h2 className="px-2 py-3 text-2xl font-bold">{link.text}</h2>
+				</a>
+			</div>
+			<UnsafeContent className="mt-2 py-2" content={link.description} />
+		</div>
+	) : undefined;
+
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
 	return (
@@ -165,12 +182,12 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 			key={post.id}
 		>
 			{showRebloggedInfo && rebloggedRoot && (
-				<div className="flex flex-col gap-2 px-4 py-3">
+				<div className="flex flex-col gap-2 px-4 pt-3">
 					<span>Reblogged from: {rebloggedRoot}</span>
 					{showOriginalPoster && <span>Original poster: {rebloggedFrom}</span>}
 				</div>
 			)}
-			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
+			<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
 					{title}
 				</span>
@@ -212,6 +229,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							{quoteBody ?? null}
 							{answerBody ?? null}
 							{conversationBody ?? null}
+							{linkBody ?? null}
 							{summary && (
 								<div className="text-blog-post-summary mt-2 p-2">{summary}</div>
 							)}
