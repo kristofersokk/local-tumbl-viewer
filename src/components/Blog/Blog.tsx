@@ -4,6 +4,7 @@ import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
+import { deduplicateArray } from 'Utils/arrayUtils';
 import { Masonry } from 'masonic';
 import { useMemo } from 'react';
 import BlogFiltering from './BlogFiltering';
@@ -20,14 +21,19 @@ interface BlogProps {
 const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
+	const availablePostTypes = useMemo(
+		() => deduplicateArray(posts.map(post => post.type)),
+		[posts]
+	);
+
 	const {
 		sorting: { sortingField, sortingDirection },
 		filter,
 		params,
-	} = useBlogViewSettings();
+	} = useBlogViewSettings({ availablePostTypes });
 	const { height: viewportHeightInPixels } = useWindowSize();
 
-	const { tagsForFilter, addTagFilter } = filter;
+	const { tagsForFilter, addTagFilter, blogPostTypes } = filter;
 	const { collapsedHeightPercent, columnWidthRem } = params;
 
 	const collapsedHeightRem = Math.floor(
@@ -39,9 +45,9 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 			tagsForFilter.length
 				? !!post.tags.length &&
 					tagsForFilter.every(tag => post.tags.includes(tag))
-				: true
+				: blogPostTypes[post.type]
 		);
-	}, [posts, tagsForFilter]);
+	}, [posts, tagsForFilter, blogPostTypes]);
 
 	const sortedFilteredPosts = useMemo(() => {
 		const getKey = (post: BlogPostType): Date | number => {

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { BlogPost } from 'Types/blog';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
@@ -8,7 +9,11 @@ export type BlogParams = BlogViewSettings['params'];
 export type BlogSorting = BlogViewSettings['sorting'];
 export type BlogFiltering = BlogViewSettings['filter'];
 
-const useBlogViewSettings = () => {
+interface BlogViewSettingsProps {
+	availablePostTypes: BlogPost['type'][];
+}
+
+const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
 	const [collapsedHeightPercent, setCollapsedHeightPercent] =
 		useState<number>(50);
@@ -16,6 +21,15 @@ const useBlogViewSettings = () => {
 	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
 	const [showRebloggedInfo, setShowRebloggedInfo] = useState<boolean>(true);
 	const [showTags, setShowTags] = useState<boolean>(true);
+	const [blogPostTypes, setBlogPostTypes] = useState(
+		Object.fromEntries(
+			availablePostTypes.map(type => [type, true] as const)
+		) as Record<BlogPost['type'], boolean>
+	);
+
+	const setBlogPostType = (type: BlogPost['type'], value: boolean) => {
+		setBlogPostTypes(prev => ({ ...prev, [type]: value }));
+	};
 
 	const [tagsForFilter, setTagsForFilter] = useState<string[]>([]);
 
@@ -47,6 +61,8 @@ const useBlogViewSettings = () => {
 			tagsForFilter,
 			addTagFilter,
 			removeTagFilter,
+			blogPostTypes,
+			setBlogPostType,
 		},
 		params: {
 			columnWidthRem,

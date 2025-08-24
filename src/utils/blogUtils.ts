@@ -1,4 +1,5 @@
 import { Blog, BlogPost, BlogType, Platform } from 'Types/blog';
+import { deduplicateArray } from './arrayUtils';
 
 export function getBlogFolderName(blog: Blog | undefined) {
 	if (!blog) return undefined;
@@ -129,7 +130,7 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 export const countAllTags = (
 	posts: BlogPost[]
 ): { tag: string; count: number }[] => {
-	const allTags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
+	const allTags = deduplicateArray(posts.flatMap(post => post.tags || []));
 	return allTags.map(tag => {
 		const count = posts.filter(p => p.tags?.includes(tag)).length;
 		return {

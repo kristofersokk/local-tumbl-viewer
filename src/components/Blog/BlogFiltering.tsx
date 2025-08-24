@@ -1,4 +1,4 @@
-import { Popover } from 'radix-ui';
+import { Popover, Switch } from 'radix-ui';
 
 import FilterLogo from 'Assets/icons/filter.svg?react';
 import Counter from 'Components/utils/Counter';
@@ -17,7 +17,13 @@ interface BlogFilteringProps {
 const BlogFiltering = ({
 	filteredPosts,
 	allPostsCount,
-	filter: { tagsForFilter, removeTagFilter, addTagFilter },
+	filter: {
+		tagsForFilter,
+		removeTagFilter,
+		addTagFilter,
+		blogPostTypes,
+		setBlogPostType,
+	},
 }: BlogFilteringProps) => {
 	const filterCount = tagsForFilter.length;
 
@@ -85,6 +91,25 @@ const BlogFiltering = ({
 								</div>
 							</div>
 						)}
+					</div>
+					<p className="my-2">Filter by type:</p>
+					<div className="grid grid-cols-[auto_auto_auto_auto] gap-4">
+						{Object.entries(blogPostTypes).map(([type, isActive]) => (
+							<>
+								<span className="text-sm">{type}:</span>
+								<div className="flex items-center gap-2">
+									<Switch.Root
+										className="SwitchRoot"
+										checked={isActive}
+										onCheckedChange={value =>
+											setBlogPostType(type as BlogPost['type'], value)
+										}
+									>
+										<Switch.Thumb className="SwitchThumb" />
+									</Switch.Root>
+								</div>
+							</>
+						))}
 					</div>
 				</div>
 			</Popover.Content>
