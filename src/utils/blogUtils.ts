@@ -139,3 +139,20 @@ export const countAllTags = (
 		};
 	});
 };
+
+export const countCollapsedTags = (post: BlogPost, maxChars: number) => {
+	const tags = post.tags || [];
+	let currentChars = 0;
+	let count = 0;
+
+	for (const tag of tags) {
+		const tagChars = tag.length;
+		currentChars += tagChars + 2;
+		count++;
+		if (currentChars > maxChars) {
+			break;
+		}
+	}
+
+	return count;
+};

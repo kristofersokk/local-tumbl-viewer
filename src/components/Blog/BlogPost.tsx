@@ -4,10 +4,11 @@ import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
-import { ComponentProps, memo, ReactNode, RefObject } from 'react';
+import { ComponentProps, memo, ReactNode, RefObject, useState } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
+import { countCollapsedTags } from 'Utils/blogUtils';
 import UnsafeContent from '../UnsafeContent';
-import BlogPostCollapsible from './BlogPostCollapsible';
+import Collapsible from './Collapsible';
 
 interface BlogPostProps {
 	post: BlogPostType;
@@ -179,6 +180,14 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
+	const tagsCollapsedCount = countCollapsedTags(post, 100);
+	const tagsNeedCollapsing = post.tags.length > tagsCollapsedCount;
+	const [tagsCollapsed, setTagsCollapsed] = useState(true);
+	const tagsShown =
+		tagsNeedCollapsing && tagsCollapsed
+			? post.tags.slice(0, tagsCollapsedCount)
+			: post.tags;
+
 	return (
 		<div
 			className="z-blog bg-blog-post-card flex w-full flex-col rounded-md"
@@ -225,7 +234,25 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				</div>
 			</div>
 			<div>
-				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
+				<Collapsible
+					collapsedHeightRem={collapsedHeightRem}
+					expandButton={expand => (
+						<button
+							className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"
+							onClick={expand}
+						>
+							Expand
+						</button>
+					)}
+					collapseButton={collapse => (
+						<button
+							className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
+							onClick={collapse}
+						>
+							Collapse
+						</button>
+					)}
+				>
 					{(ref, className) => (
 						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
 							{renderDynamic(dynamicBody)}
@@ -238,11 +265,11 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							)}
 						</div>
 					)}
-				</BlogPostCollapsible>
+				</Collapsible>
 			</div>
 			{!!post.tags?.length && showTags && (
-				<div className="mx-2 mt-2 flex flex-wrap">
-					{post.tags.map(tag => (
+				<div className="flex flex-wrap overflow-hidden">
+					{tagsShown.map(tag => (
 						<span
 							key={tag}
 							className="text-text-tag cursor-pointer px-2 py-0.5 text-sm [&:hover]:underline"
@@ -251,6 +278,22 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 							#{tag}
 						</span>
 					))}
+					{tagsNeedCollapsing && tagsCollapsed && (
+						<button
+							className="cursor-pointer pl-2 text-sm text-nowrap [&:hover]:underline"
+							onClick={() => setTagsCollapsed(false)}
+						>
+							Show more
+						</button>
+					)}
+					{tagsNeedCollapsing && !tagsCollapsed && (
+						<button
+							className="cursor-pointer pl-2 text-sm text-nowrap [&:hover]:underline"
+							onClick={() => setTagsCollapsed(true)}
+						>
+							Show less
+						</button>
+					)}
 				</div>
 			)}
 			<div className="mx-4 my-2 flex"></div>

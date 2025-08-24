@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import useElementSize from 'Hooks/useElementSize';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import {
@@ -9,18 +10,25 @@ import {
 	useState,
 } from 'react';
 
-interface BlogPostCollapsibleProps {
+interface CollapsibleProps {
 	children: (
 		ref: RefObject<HTMLElement | null>,
-		className?: string
+		className?: string,
+		collapsed?: boolean
 	) => ReactNode | ReactNode[];
+	className?: string;
+	expandButton: (expand?: () => void) => ReactNode;
+	collapseButton: (collapse?: () => void) => ReactNode;
 	collapsedHeightRem: number;
 }
 
-const BlogPostCollapsible = ({
+const Collapsible = ({
 	children,
+	className,
+	expandButton,
+	collapseButton,
 	collapsedHeightRem,
-}: BlogPostCollapsibleProps) => {
+}: CollapsibleProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const [collapsed, setCollapsed] = useState(true);
 	const [isNonCollapsible, setIsNonCollapsible] = useState(false);
@@ -83,26 +91,12 @@ const BlogPostCollapsible = ({
 	}, [scrollHeight, collapsed, remToPixels, expand, nonCollapsibleHeightRem]);
 
 	return (
-		<div className="relative overflow-hidden">
-			{children(contentRef, 'transition-[max-height] duration-500')}
-			{collapsed && (
-				<button
-					className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"
-					onClick={expand}
-				>
-					Expand
-				</button>
-			)}
-			{!collapsed && !isNonCollapsible && (
-				<button
-					className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
-					onClick={collapse}
-				>
-					Collapse
-				</button>
-			)}
+		<div className={classNames('relative overflow-hidden', className)}>
+			{children(contentRef, 'transition-[max-height] duration-500', collapsed)}
+			{collapsed && expandButton(expand)}
+			{!collapsed && !isNonCollapsible && collapseButton(collapse)}
 		</div>
 	);
 };
 
-export default BlogPostCollapsible;
+export default Collapsible;
