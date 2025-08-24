@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import InitializationContext from 'Contexts/InitializationContext';
 import { useContext } from 'react';
@@ -8,11 +9,13 @@ interface RootDirResetButtonProps {
 }
 
 const RootDirResetButton = ({ className }: RootDirResetButtonProps) => {
+	const queryClient = useQueryClient();
 	const { clearRootDirectoryHandle } = useContext(InitializationContext);
 
 	const reset = async () => {
 		await resetRootDirectoryHandle();
 		clearRootDirectoryHandle?.();
+		queryClient.clear();
 	};
 
 	return (
