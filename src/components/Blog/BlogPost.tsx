@@ -67,11 +67,14 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					// eslint-disable-next-line no-useless-escape
 					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:!my-0 [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
 					'[&_.npf\\_chat]:font-Tinos [&_.npf\\_chat_*]:font-Tinos [&_.npf\\_chat]:!my-0 [&_.npf\\_chat]:text-lg [&_.npf\\_chat:has(br)]:h-3',
+					// eslint-disable-next-line no-useless-escape
+					'[&_.npf\_quote]:font-Tinos [&_.npf\_quote]:text-2xl',
+					'[&_.npf\\_quote]:font-Tinos [&_.npf\\_quote]:text-2xl',
 					'[&_p]:mx-4 [&_p]:my-2',
-					'[&_h1]:mx-4 [&_h1]:my-2',
-					'[&_h2]:mx-4 [&_h2]:my-2',
-					'[&_h3]:mx-4 [&_h3]:my-2',
-					'[&_h4]:mx-4 [&_h4]:my-2',
+					'[&_h1]:mx-4 [&_h1]:my-2 [&_h1]:text-3xl',
+					'[&_h2]:mx-4 [&_h2]:my-2 [&_h2]:text-2xl',
+					'[&_h3]:mx-4 [&_h3]:my-2 [&_h3]:text-xl',
+					'[&_h4]:mx-4 [&_h4]:my-2 [&_h4]:text-lg',
 					'[&_h5]:mx-4 [&_h5]:my-2',
 					'[&_h6]:mx-4 [&_h6]:my-2',
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
