@@ -140,14 +140,18 @@ export interface BlogPost {
 	format?: string; // "html" - not present in Likes
 	'downloaded-media-files'?: string[]; // ["6fa382268369aa0231e2ea24.jpg"]
 	downloaded_media_files?: string[]; // Private blog uses underscore format
+	regular_body?: string; // Normal blog and Likes
 	'regular-body'?: string; // Normal blog and Likes
 	body?: string; // Private blog uses "body" instead of "regular-body"
+	regular_title?: string; // ""
 	'regular-title'?: string; // ""
 	slug?: string; // "something-happening"
 	url?: string; // "https://example-blog.tumblr.com/post/7741146463634667009"
 	'url-with-slug'?: string; // Full URL with slug
 	post_html?: string;
+	'post-html'?: string;
 	post_url?: string;
+	'post-url'?: string;
 	posted_on_tooltip?: string;
 	reblogged_from_name?: string;
 	'reblogged-from-name'?: string;
@@ -165,6 +169,7 @@ export interface BlogPost {
 	title?: string;
 
 	// type photo
+	photo_caption?: string;
 	'photo-caption'?: string;
 	caption?: string;
 	photos?: {
@@ -199,7 +204,9 @@ export interface BlogPost {
 
 	// type conversation
 	conversation_title?: string;
+	'conversation-title'?: string;
 	conversation_text?: string;
+	'conversation-text'?: string;
 	conversation?: {
 		label: string;
 		name: string;
@@ -219,17 +226,25 @@ export interface BlogPost {
 	// calculated fields
 	calculated?: {
 		createdAt?: Date;
-		postTitle?: string;
-		postUrl?: string;
-		postBody?: string;
-		postSummary?: string;
-		postQuote?: {
+		title?: string;
+		url?: string;
+		body?: string;
+		summary?: string;
+		quote?: {
 			quote: string;
 			source: string;
 		};
-		postAnswer?: {
+		answer?: {
 			question: string;
 			answer: string;
+		};
+		conversation?: {
+			title: string | undefined;
+			utterances: {
+				label: string;
+				name: string;
+				phrase: string;
+			}[];
 		};
 		rebloggedFrom?: string;
 		rebloggedRoot?: string;

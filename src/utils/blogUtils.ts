@@ -74,32 +74,43 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 		...post,
 		calculated: {
 			createdAt: calculatedCreatedAt(post),
-			postTitle: post['regular-title'] || post.title,
-			postUrl: transformPostUrl(
-				post['url-with-slug'] || post.url || post.post_url
-			),
-			postBody:
+			title: post.regular_title || post['regular-title'] || post.title,
+			url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
+			body:
+				post.regular_body ||
 				post['regular-body'] ||
 				post.body ||
 				post.post_html ||
+				post['post-html'] ||
+				post.photo_caption ||
 				post['photo-caption'] ||
 				post.caption ||
 				'',
-			postQuote:
+			quote:
 				post.type === 'quote'
 					? {
 							quote: post['quote-text'] || post.quote_text || '',
 							source: post['quote-source'] || post.quote_source || '',
 						}
 					: undefined,
-			postAnswer:
+			answer:
 				post.type === 'answer'
 					? {
 							question: post.question || '',
 							answer: post.answer || '',
 						}
 					: undefined,
-			postSummary: post.summary,
+			conversation:
+				post.type === 'conversation'
+					? {
+							title:
+								post.conversation_title ||
+								post['conversation-title'] ||
+								undefined,
+							utterances: post.conversation || [],
+						}
+					: undefined,
+			summary: post.summary,
 			rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
 			rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,
 		},

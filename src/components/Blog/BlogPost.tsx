@@ -33,12 +33,13 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 
 	const {
 		createdAt,
-		postTitle,
-		postUrl,
-		postBody: dynamicPostBody,
-		postSummary,
-		postQuote,
-		postAnswer,
+		title,
+		url,
+		body: dynamicBody,
+		summary,
+		quote,
+		answer,
+		conversation,
 		rebloggedFrom,
 		rebloggedRoot,
 	} = post.calculated ?? {};
@@ -53,6 +54,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 			<div
 				className={classNames(
 					className,
+					'mb-2',
 					// eslint-disable-next-line no-useless-escape
 					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
 					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
@@ -61,6 +63,9 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'[&_figure_img]:!w-full',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
 					'[&_img]:my-4 [&_img]:!h-auto',
+					// eslint-disable-next-line no-useless-escape
+					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:!my-0 [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
+					'[&_.npf\\_chat]:font-Tinos [&_.npf\\_chat_*]:font-Tinos [&_.npf\\_chat]:!my-0 [&_.npf\\_chat]:text-lg [&_.npf\\_chat:has(br)]:h-3',
 					'[&_p]:mx-4 [&_p]:my-2',
 					'[&_h1]:mx-4 [&_h1]:my-2',
 					'[&_h2]:mx-4 [&_h2]:my-2',
@@ -76,7 +81,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				{...rest}
 			>
 				{typeof content === 'string' ? (
-					<UnsafeContent content={dynamicPostBody || ''} />
+					<UnsafeContent content={dynamicBody || ''} />
 				) : (
 					content
 				)}
@@ -84,32 +89,32 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		);
 	};
 
-	const postQuoteFontSize = postQuote
+	const quoteFontSize = quote
 		? (() => {
-				const length = postQuote.quote.length;
+				const length = quote.quote.length;
 				if (length > 250) return 'text-xl';
 				if (length > 120) return 'text-2xl';
 				if (length > 70) return 'text-3xl';
 				return 'text-4xl';
 			})()
 		: undefined;
-	const postQuoteBody = postQuote ? (
+	const quoteBody = quote ? (
 		<div className="px-4">
 			<UnsafeContent
 				tag="h1"
-				content={postQuote.quote}
+				content={quote.quote}
 				className={classNames('font-Tinos', {
-					'text-4xl': postQuoteFontSize === 'text-4xl',
-					'text-3xl': postQuoteFontSize === 'text-3xl',
-					'text-2xl': postQuoteFontSize === 'text-2xl',
-					'text-xl': postQuoteFontSize === 'text-xl',
+					'text-4xl': quoteFontSize === 'text-4xl',
+					'text-3xl': quoteFontSize === 'text-3xl',
+					'text-2xl': quoteFontSize === 'text-2xl',
+					'text-xl': quoteFontSize === 'text-xl',
 				})}
 			/>
-			<UnsafeContent tag="p" className="mt-2 py-2" content={postQuote.source} />
+			<UnsafeContent tag="p" className="mt-2 py-2" content={quote.source} />
 		</div>
 	) : undefined;
 
-	const postAnswerBody = postAnswer ? (
+	const answerBody = answer ? (
 		<div>
 			<div className="bg-blog-post-question-bg mx-4 p-4">
 				<p className="text-text-tag font-light">
@@ -121,12 +126,34 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				<UnsafeContent
 					tag="p"
 					className="mt-4 [&_*:not(:first-child)]:mt-4"
-					content={postAnswer.question}
+					content={answer.question}
 				/>
 			</div>
-			{renderDynamic(<UnsafeContent tag="div" content={postAnswer.answer} />, {
+			{renderDynamic(<UnsafeContent tag="div" content={answer.answer} />, {
 				className: 'pt-4',
 			})}
+		</div>
+	) : undefined;
+
+	const conversationBody = conversation ? (
+		<div className="[&_*]:font-Tinos mx-4">
+			{conversation.title && (
+				<h2 className="mb-4 text-2xl font-bold">{conversation.title}</h2>
+			)}
+			{conversation.utterances.map((utterance, index) => (
+				<div key={index} className="mb-4 text-lg">
+					{utterance.label && (
+						<span className="pr-2 font-bold">
+							<strong className="">{utterance.label}</strong>
+						</span>
+					)}
+					<UnsafeContent
+						tag="span"
+						className="mt-2 [&_*:not(:first-child)]:mt-2"
+						content={utterance.phrase}
+					/>
+				</div>
+			))}
 		</div>
 	) : undefined;
 
@@ -145,12 +172,12 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 			)}
 			<div className="m-3 grid grid-cols-[auto_max-content] gap-2">
 				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
-					{postTitle}
+					{title}
 				</span>
 				<div className="flex items-center gap-2">
-					{showPostUrl && postUrl && (
+					{showPostUrl && url && (
 						<a
-							href={postUrl}
+							href={url}
 							className="fill-text"
 							target="_blank"
 							rel="noopener noreferrer"
@@ -181,13 +208,12 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				<BlogPostCollapsible collapsedHeightRem={collapsedHeightRem}>
 					{(ref, className) => (
 						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
-							{renderDynamic(dynamicPostBody)}
-							{postQuoteBody ?? null}
-							{postAnswerBody ?? null}
-							{postSummary && (
-								<div className="text-blog-post-summary mt-2 p-2">
-									{postSummary}
-								</div>
+							{renderDynamic(dynamicBody)}
+							{quoteBody ?? null}
+							{answerBody ?? null}
+							{conversationBody ?? null}
+							{summary && (
+								<div className="text-blog-post-summary mt-2 p-2">{summary}</div>
 							)}
 						</div>
 					)}

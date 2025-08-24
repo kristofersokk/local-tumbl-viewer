@@ -86,24 +86,20 @@ const BlogPostCollapsible = ({
 		<div className="relative overflow-y-hidden">
 			{children(contentRef, 'transition-[max-height] duration-500')}
 			{collapsed && (
-				<div className="from-blog-collapse-color absolute right-0 bottom-0 left-0 flex justify-around bg-gradient-to-t p-2">
-					<button
-						className="cursor-pointer rounded-xl bg-gray-600/75 p-2 transition-shadow [&:hover]:shadow-[0_0_4px_3px] [&:hover]:shadow-gray-500/75"
-						onClick={expand}
-					>
-						Expand
-					</button>
-				</div>
+				<button
+					className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"
+					onClick={expand}
+				>
+					Expand
+				</button>
 			)}
 			{!collapsed && !isNonCollapsible && (
-				<div className="mt-2 flex justify-around">
-					<button
-						className="cursor-pointer rounded-xl p-2 transition-colors [&:hover]:bg-gray-700"
-						onClick={collapse}
-					>
-						Collapse
-					</button>
-				</div>
+				<button
+					className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
+					onClick={collapse}
+				>
+					Collapse
+				</button>
 			)}
 		</div>
 	);

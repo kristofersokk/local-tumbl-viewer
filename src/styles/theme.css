@@ -6,7 +6,8 @@
 	--color-text: #bbb;
 	--color-text-highlight: #ddd;
 	--color-text-tag: #999;
-	--color-blog-collapse-color: black;
+	--color-blog-collapse-color: theme(colors.gray.900);
+	--color-blog-collapse-color-hover: theme(colors.gray.800);
 	--color-popover-background: #222;
 	--color-counter: #a11;
 	--color-tooltip-bg: #ddd;
