@@ -23,6 +23,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	const bodyWithSanitizedContent = useMemo(() => {
 		const body = DOMPurify.sanitize(content, {
 			RETURN_DOM: true,
+			FORBID_TAGS: ['script'],
 		}) as HTMLBodyElement;
 
 		domProcessors?.forEach(processor => {
