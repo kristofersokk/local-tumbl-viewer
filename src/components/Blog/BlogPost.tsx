@@ -6,7 +6,7 @@ import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
 import { ComponentProps, memo, ReactNode, RefObject, useState } from 'react';
 import { BlogPost as BlogPostType } from 'Types/blog';
-import { countCollapsedTags } from 'Utils/blogUtils';
+import { blogPostProcessors, countCollapsedTags } from 'Utils/blogUtils';
 import UnsafeContent from '../UnsafeContent';
 import Collapsible from './Collapsible';
 
@@ -86,7 +86,10 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 				{...rest}
 			>
 				{typeof content === 'string' ? (
-					<UnsafeContent content={dynamicBody || ''} />
+					<UnsafeContent
+						content={dynamicBody || ''}
+						domProcessors={blogPostProcessors}
+					/>
 				) : (
 					content
 				)}
@@ -114,8 +117,14 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					'text-2xl': quoteFontSize === 'text-2xl',
 					'text-xl': quoteFontSize === 'text-xl',
 				})}
+				domProcessors={blogPostProcessors}
 			/>
-			<UnsafeContent tag="p" className="mt-2 py-2" content={quote.source} />
+			<UnsafeContent
+				tag="p"
+				className="mt-2 py-2"
+				content={quote.source}
+				domProcessors={blogPostProcessors}
+			/>
 		</div>
 	) : undefined;
 
@@ -132,11 +141,19 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					tag="p"
 					className="mt-4 [&_*:not(:first-child)]:mt-4"
 					content={answer.question}
+					domProcessors={blogPostProcessors}
 				/>
 			</div>
-			{renderDynamic(<UnsafeContent tag="div" content={answer.answer} />, {
-				className: 'pt-4',
-			})}
+			{renderDynamic(
+				<UnsafeContent
+					tag="div"
+					content={answer.answer}
+					domProcessors={blogPostProcessors}
+				/>,
+				{
+					className: 'pt-4',
+				}
+			)}
 		</div>
 	) : undefined;
 
@@ -156,6 +173,7 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 						tag="span"
 						className="mt-2 [&_*:not(:first-child)]:mt-2"
 						content={utterance.phrase}
+						domProcessors={blogPostProcessors}
 					/>
 				</div>
 			))}
@@ -174,7 +192,11 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 					<h2 className="px-2 py-3 text-2xl font-bold">{link.text}</h2>
 				</a>
 			</div>
-			<UnsafeContent className="mt-2 py-2" content={link.description} />
+			<UnsafeContent
+				className="mt-2 py-2"
+				content={link.description}
+				domProcessors={blogPostProcessors}
+			/>
 		</div>
 	) : undefined;
 

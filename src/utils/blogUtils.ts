@@ -156,3 +156,25 @@ export const countCollapsedTags = (post: BlogPost, maxChars: number) => {
 
 	return count;
 };
+
+export type DomProcessor = (el: HTMLElement) => void;
+
+export const iterateDomTree = (el: HTMLElement, processor: DomProcessor) => {
+	if (!el) return;
+
+	processor(el);
+
+	for (const child of el.children) {
+		iterateDomTree(child as HTMLElement, processor);
+	}
+};
+
+export const blogPostProcessors: DomProcessor[] = [
+	el => {
+		if (el.tagName.toLowerCase() === 'a') {
+			el.setAttribute('target', '_blank');
+			el.setAttribute('rel', 'noopener noreferrer');
+		}
+	},
+	// Add more processors as needed
+];
