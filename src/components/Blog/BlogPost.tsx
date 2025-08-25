@@ -6,17 +6,18 @@ import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
 import {
 	ComponentProps,
-	memo,
 	ReactNode,
 	RefObject,
 	useCallback,
-	useEffect,
 	useMemo,
-	useRef,
 	useState,
 } from 'react';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
-import { countCollapsedTags, getBlogPostProcessors } from 'Utils/blogUtils';
+import {
+	countCollapsedTags,
+	getAlternativeFileNames,
+	getBlogPostProcessors,
+} from 'Utils/blogUtils';
 import UnsafeContent from '../UnsafeContent';
 import Collapsible from './Collapsible';
 
@@ -26,6 +27,8 @@ interface BlogPostProps {
 	blogFiles: File[];
 	addTagFilter: (tag: string) => void;
 	params: BlogParams;
+	imageUrlsCache: Record<string, { online?: string; local?: string }>;
+	generatedObjectUrls: string[];
 }
 
 const BlogPost = ({
@@ -34,6 +37,8 @@ const BlogPost = ({
 	blogFiles,
 	addTagFilter,
 	params,
+	imageUrlsCache,
+	generatedObjectUrls,
 }: BlogPostProps) => {
 	const {
 		collapsedHeightPercent,
@@ -41,6 +46,7 @@ const BlogPost = ({
 		showPostUrl,
 		showRebloggedInfo,
 		showTags,
+		fallbackToOnlineMedia,
 	} = params;
 
 	const remInPixels = useRemToPixels();
@@ -76,47 +82,83 @@ const BlogPost = ({
 		fileEntries: { Entries: imgMappingEntries },
 	} = blog;
 
-	const { current: imageUrlsCache } = useRef<Record<string, string>>({});
-	const { current: generatedObjectUrls } = useRef<string[]>([]);
 	const transformMediaUrl = useCallback(
-		(url: string) => {
-			if (imageUrlsCache[url]) return imageUrlsCache[url];
-			let newUrl = url;
-			const lastSlashIndex = url.lastIndexOf('/');
-			const urlFileName = url.slice(lastSlashIndex + 1);
-			const differentResolutionEntry = imgMappingEntries?.find(
-				({ O: originalFileName }) => originalFileName === urlFileName
-			);
-			const originalResolutionEntry = imgMappingEntries?.find(
-				({ L: unChangedFileName }) => unChangedFileName === urlFileName
-			);
-			const newFileName =
-				differentResolutionEntry?.F ||
-				originalResolutionEntry?.F ||
-				originalResolutionEntry?.L;
-			const mediaFile = blogFiles.find(file => file.name === newFileName);
-			if (mediaFile) {
-				console.log(mediaFile.name);
-				newUrl = URL.createObjectURL(mediaFile);
-				generatedObjectUrls.push(newUrl);
+		(inputUrls: string | string[]) => {
+			const urls = Array.isArray(inputUrls)
+				? inputUrls.filter(Boolean)
+				: [inputUrls];
+			const firstUrl = urls[0];
+			if (!firstUrl) return { original: '', transformed: '' };
+
+			const cachedValue = imageUrlsCache[firstUrl];
+			if (cachedValue)
+				return {
+					original: cachedValue.online!,
+					transformed:
+						cachedValue.local ||
+						(fallbackToOnlineMedia
+							? cachedValue.online || 'unknown'
+							: 'unknown'),
+				};
+
+			function getMediaFile(url: string) {
+				const lastSlashIndex = url.lastIndexOf('/');
+				const urlFileName = url.slice(lastSlashIndex + 1);
+				const differentResolutionEntry = imgMappingEntries?.find(
+					({ O: originalFileName }) => originalFileName === urlFileName
+				);
+				const originalResolutionEntry = imgMappingEntries?.find(
+					({ L: unChangedFileName }) => unChangedFileName === urlFileName
+				);
+				const newFileNames = [
+					differentResolutionEntry?.F,
+					differentResolutionEntry?.L,
+					differentResolutionEntry?.O,
+					originalResolutionEntry?.F,
+					originalResolutionEntry?.L,
+					originalResolutionEntry?.O,
+				];
+				const possibleFileNames = newFileNames.flatMap(getAlternativeFileNames);
+				const mediaFile = blogFiles.find(file =>
+					possibleFileNames.includes(file.name)
+				);
+				return mediaFile;
 			}
-			imageUrlsCache[url] = newUrl;
-			return newUrl;
+
+			const { url: workingUrl, file: mediaFile } = urls
+				.map(url => ({
+					url,
+					file: getMediaFile(url),
+				}))
+				.find(file => !!file.file) ?? { url: undefined, file: undefined };
+			let localUrl: string | undefined = undefined;
+			if (mediaFile) {
+				localUrl = URL.createObjectURL(mediaFile);
+				generatedObjectUrls.push(localUrl);
+			}
+
+			imageUrlsCache[firstUrl] = {
+				online: workingUrl || firstUrl,
+				local: localUrl,
+			};
+			return {
+				original: workingUrl || firstUrl,
+				transformed: localUrl || (fallbackToOnlineMedia ? firstUrl : 'unknown'),
+			};
 		},
-		[blogFiles, generatedObjectUrls, imageUrlsCache, imgMappingEntries]
+		[
+			blogFiles,
+			fallbackToOnlineMedia,
+			generatedObjectUrls,
+			imageUrlsCache,
+			imgMappingEntries,
+		]
 	);
 
 	const blogPostProcessors = useMemo(
 		() => getBlogPostProcessors(transformMediaUrl),
 		[transformMediaUrl]
 	);
-
-	useEffect(() => {
-		return () => {
-			generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	const renderDynamic = (
 		content: string | ReactNode | undefined,
@@ -387,9 +429,4 @@ const BlogPost = ({
 	);
 };
 
-export default memo(BlogPost, (prevProps, nextProps) => {
-	return (
-		prevProps.post.id === nextProps.post.id &&
-		prevProps.params === nextProps.params
-	);
-});
+export default BlogPost;

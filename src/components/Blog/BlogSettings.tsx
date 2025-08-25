@@ -20,6 +20,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setShowRebloggedInfo,
 		showTags,
 		setShowTags,
+		fallbackToOnlineMedia,
+		setFallbackToOnlineMedia,
 	} = params;
 
 	return (
@@ -103,6 +105,16 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 								className="SwitchRoot"
 								checked={showTags}
 								onCheckedChange={setShowTags}
+							>
+								<Switch.Thumb className="SwitchThumb" />
+							</Switch.Root>
+						</div>
+						<span className="text-sm">Fallback to online media:</span>
+						<div className="flex items-center gap-2">
+							<Switch.Root
+								className="SwitchRoot"
+								checked={fallbackToOnlineMedia}
+								onCheckedChange={setFallbackToOnlineMedia}
 							>
 								<Switch.Thumb className="SwitchThumb" />
 							</Switch.Root>

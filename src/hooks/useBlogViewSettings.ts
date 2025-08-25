@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { BlogPost } from 'Types/blog';
+import { shouldSaveData } from 'Utils/networkUtils';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
@@ -14,6 +15,7 @@ interface BlogViewSettingsProps {
 }
 
 const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
+	// Params
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
 	const [collapsedHeightPercent, setCollapsedHeightPercent] =
 		useState<number>(50);
@@ -21,6 +23,10 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
 	const [showRebloggedInfo, setShowRebloggedInfo] = useState<boolean>(true);
 	const [showTags, setShowTags] = useState<boolean>(true);
+	const [fallbackToOnlineMedia, setFallbackToOnlineMedia] =
+		useState<boolean>(!shouldSaveData());
+
+	// Filter
 	const [blogPostTypes, setBlogPostTypes] = useState(
 		Object.fromEntries(
 			availablePostTypes.map(type => [type, true] as const)
@@ -41,6 +47,7 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 		setTagsForFilter(prev => prev.filter(t => t !== tag));
 	}, []);
 
+	// Sorting
 	type SortingField = (typeof sortingFields)[number];
 	type SortingDirection = (typeof sortingDirections)[number];
 
@@ -49,21 +56,6 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 		useState<SortingDirection>('desc');
 
 	return {
-		sorting: {
-			sortingField,
-			sortingDirection,
-			setSortingField,
-			setSortingDirection,
-			sortingFields,
-			sortingDirections,
-		},
-		filter: {
-			tagsForFilter,
-			addTagFilter,
-			removeTagFilter,
-			blogPostTypes,
-			setBlogPostType,
-		},
 		params: {
 			columnWidthRem,
 			setColumnWidthRem,
@@ -77,6 +69,23 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 			setShowRebloggedInfo,
 			showTags,
 			setShowTags,
+			fallbackToOnlineMedia,
+			setFallbackToOnlineMedia,
+		},
+		filter: {
+			tagsForFilter,
+			addTagFilter,
+			removeTagFilter,
+			blogPostTypes,
+			setBlogPostType,
+		},
+		sorting: {
+			sortingField,
+			sortingDirection,
+			setSortingField,
+			setSortingDirection,
+			sortingFields,
+			sortingDirections,
 		},
 	};
 };

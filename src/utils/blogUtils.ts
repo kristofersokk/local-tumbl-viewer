@@ -78,14 +78,14 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 			title: post.regular_title || post['regular-title'] || post.title,
 			url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
 			body:
-				post.regular_body ||
-				post['regular-body'] ||
-				post.body ||
 				post.post_html ||
 				post['post-html'] ||
 				post.photo_caption ||
 				post['photo-caption'] ||
 				post.caption ||
+				post.regular_body ||
+				post['regular-body'] ||
+				post.body ||
 				'',
 			quote:
 				post.type === 'quote'
@@ -169,8 +169,28 @@ export const iterateDomTree = (el: HTMLElement, processor: DomProcessor) => {
 	}
 };
 
+export function extractUrls(input: string): string[] {
+	const urlRegex = /https?:\/\/[^\s]+/g;
+	return input.match(urlRegex) || [];
+}
+
+export const modifyAttribute = (
+	el: HTMLElement,
+	attrName: string,
+	value: string | undefined
+) => {
+	if (value !== undefined) {
+		el.setAttribute(attrName, value);
+	} else {
+		el.removeAttribute(attrName);
+	}
+};
+
 export const getBlogPostProcessors = (
-	transformMediaUrl: (imageUrl: string) => string
+	transformMediaUrl: (imageUrl: string | string[]) => {
+		original: string;
+		transformed: string;
+	}
 ): DomProcessor[] => [
 	el => {
 		if (el.tagName.toLowerCase() === 'a') {
@@ -179,24 +199,61 @@ export const getBlogPostProcessors = (
 		}
 		if (el.tagName.toLowerCase() === 'img') {
 			const imageEl = el as HTMLImageElement;
-			if (imageEl.src) {
-				imageEl.src = transformMediaUrl(imageEl.src);
-			}
+			const parentEl = imageEl.parentElement;
+			const parentUrls = Array.from(parentEl?.attributes || [])
+				.filter(attr => ['data-big-photo'].includes(attr.name))
+				.filter(attr => attr.value.includes('https://'))
+				.map(attr => attr.value);
+			const srcsetUrls = extractUrls(imageEl.srcset).toReversed();
+			const urls = [
+				imageEl.getAttribute('data-src') || '',
+				...srcsetUrls,
+				imageEl.src,
+				...parentUrls,
+			].filter(url => !!url);
+
+			imageEl.srcset = '';
+			const { original, transformed } = transformMediaUrl(urls);
+			modifyAttribute(imageEl, 'data-src', original);
+			modifyAttribute(imageEl, 'src', transformed);
 		}
 		if (el.tagName.toLowerCase() === 'source') {
-			const imageEl = el as HTMLSourceElement;
-			if (imageEl.src) {
-				imageEl.src = transformMediaUrl(imageEl.src);
-			}
+			const sourceEl = el as HTMLSourceElement;
+			const { original, transformed } = transformMediaUrl([sourceEl.src]);
+			modifyAttribute(sourceEl, 'data-src', original);
+			modifyAttribute(sourceEl, 'src', transformed);
 		}
 		if (el.tagName.toLowerCase() === 'video') {
 			const videoEl = el as HTMLVideoElement;
-			if (videoEl.src) {
-				videoEl.src = transformMediaUrl(videoEl.src);
-			}
-			if (videoEl.poster) {
-				videoEl.poster = transformMediaUrl(videoEl.poster);
-			}
+			const { original: original1, transformed: transformed1 } =
+				transformMediaUrl(videoEl.src);
+			modifyAttribute(videoEl, 'data-src', original1);
+			modifyAttribute(videoEl, 'src', transformed1 || undefined);
+			const { original: original2, transformed: transformed2 } =
+				transformMediaUrl(videoEl.poster);
+			modifyAttribute(videoEl, 'data-poster', original2);
+			modifyAttribute(videoEl, 'poster', transformed2 || undefined);
+
+			videoEl.setAttribute('autoplay', 'true');
+			videoEl.setAttribute('muted', 'true');
+			videoEl.setAttribute('loop', 'true');
 		}
 	},
 ];
+
+const alternativeExtensions: string[][] = [['jpeg', 'jpg', 'png', 'webp']];
+
+export function getAlternativeFileNames(
+	fileName: string | undefined
+): string[] {
+	if (!fileName || !fileName.includes('.')) return [fileName || ''];
+
+	const lastIndexOfDot = fileName.lastIndexOf('.');
+	const fileNameWithoutExtension = fileName.slice(0, lastIndexOfDot);
+	const extension = fileName.slice(lastIndexOfDot + 1).toLowerCase();
+	const alternativeFileNames = (
+		alternativeExtensions.find(group => group.includes(extension)) || []
+	).map(ext => `${fileNameWithoutExtension}.${ext}`);
+
+	return [fileName, ...alternativeFileNames];
+}

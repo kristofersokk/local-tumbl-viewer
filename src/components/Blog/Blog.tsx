@@ -6,7 +6,7 @@ import useWindowSize from 'Hooks/useWindowSize';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { Masonry } from 'masonic';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
@@ -77,6 +77,22 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		goToBlogSelection();
 	};
 
+	const [imageUrlsCache, setImageUrlsCache] = useState<
+		Record<string, { online?: string; local?: string }>
+	>({});
+	const [generatedObjectUrls, setGeneratedObjectUrls] = useState<string[]>([]);
+
+	useEffect(() => {
+		return () => {
+			setImageUrlsCache({});
+			setGeneratedObjectUrls([]);
+			setTimeout(() => {
+				generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
+			}, 100);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return (
 		<div className="min-h-full w-full">
 			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-2 sm:px-6">
@@ -123,6 +139,8 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 							blogFiles={blogFiles}
 							addTagFilter={addTagFilter}
 							params={params}
+							imageUrlsCache={imageUrlsCache}
+							generatedObjectUrls={generatedObjectUrls}
 						/>
 					)}
 					columnGutter={1 * remInPixels}
