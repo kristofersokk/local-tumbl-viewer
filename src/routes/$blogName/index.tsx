@@ -21,15 +21,17 @@ function BlogRoute() {
 	const { data: folders, isFetching: isFetchingRootFolders } = useRootFolders();
 	const indexFolder = folders?.find(folder => folder.name === 'Index');
 	const { data: blogs, isFetching: isFetchingBlogs } = useBlogs(indexFolder);
-	const blog = blogs?.find(blog => blog.Name === blogName);
-	const blogFolderName = getBlogFolderName(blog);
-	const blogFolder = folders?.find(folder => folder.name === blogFolderName);
+	const blog = blogs?.find(blog => blog.metadata.Name === blogName);
+	const blogFolderName = getBlogFolderName(blog?.metadata);
+	const blogFolderHandle = folders?.find(
+		folder => folder.name === blogFolderName
+	);
 	const { data: blogFiles, isFetching: isFetchingBlogFiles } =
-		useBlogFiles(blogFolder);
+		useBlogFiles(blogFolderHandle);
 	const {
 		foundBlogPostsFiles,
 		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
-	} = useBlogPosts(blogFolder, blogFiles);
+	} = useBlogPosts(blogFolderHandle, blogFiles);
 
 	const goToBlogSelection = useCallback(() => {
 		navigate({ to: '..' });
@@ -70,7 +72,7 @@ function BlogRoute() {
 	);
 
 	const error =
-		!blogFolderName || !blogFolder || !blogFiles
+		!blogFolderName || !blogFolderHandle || !blogFiles
 			? "Blog doesn't have a folder for files, try another"
 			: !foundBlogPostsFiles.length
 				? "Blog doesn't have any post files, try another"
@@ -90,6 +92,7 @@ function BlogRoute() {
 	return (
 		<Blog
 			blog={blog}
+			blogFiles={blogFiles!}
 			posts={blogPosts!}
 			goToBlogSelection={goToBlogSelection}
 		/>

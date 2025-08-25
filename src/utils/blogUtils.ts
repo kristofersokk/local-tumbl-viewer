@@ -1,7 +1,7 @@
-import { Blog, BlogPost, BlogType, Platform } from 'Types/blog';
+import { BlogMetadata, BlogPost, BlogType, Platform } from 'Types/blog';
 import { deduplicateArray } from './arrayUtils';
 
-export function getBlogFolderName(blog: Blog | undefined) {
+export function getBlogFolderName(blog: BlogMetadata | undefined) {
 	if (!blog) return undefined;
 
 	const lastIndexOfBackSlash = blog?.FileDownloadLocation?.lastIndexOf('\\');
@@ -26,12 +26,12 @@ export const getPlatformFromBlogType = (blogType: BlogType): Platform =>
 			'newtumbl',
 			'bluesky',
 			'unknown',
-		] as Platform[]
+		] satisfies Platform[] as Platform[]
 	)[blogType] || 'unknown';
 
-export const processBlog = (blog: Blog): Blog => {
+export const processBlog = (blog: BlogMetadata): BlogMetadata => {
 	const platform = getPlatformFromBlogType(blog.BlogType);
-	return { ...blog, platform } satisfies Blog;
+	return { ...blog, platform } satisfies BlogMetadata;
 };
 
 const transformPostUrl = (url: string | undefined) => {
@@ -169,12 +169,34 @@ export const iterateDomTree = (el: HTMLElement, processor: DomProcessor) => {
 	}
 };
 
-export const blogPostProcessors: DomProcessor[] = [
+export const getBlogPostProcessors = (
+	transformMediaUrl: (imageUrl: string) => string
+): DomProcessor[] => [
 	el => {
 		if (el.tagName.toLowerCase() === 'a') {
 			el.setAttribute('target', '_blank');
 			el.setAttribute('rel', 'noopener noreferrer');
 		}
+		if (el.tagName.toLowerCase() === 'img') {
+			const imageEl = el as HTMLImageElement;
+			if (imageEl.src) {
+				imageEl.src = transformMediaUrl(imageEl.src);
+			}
+		}
+		if (el.tagName.toLowerCase() === 'source') {
+			const imageEl = el as HTMLSourceElement;
+			if (imageEl.src) {
+				imageEl.src = transformMediaUrl(imageEl.src);
+			}
+		}
+		if (el.tagName.toLowerCase() === 'video') {
+			const videoEl = el as HTMLVideoElement;
+			if (videoEl.src) {
+				videoEl.src = transformMediaUrl(videoEl.src);
+			}
+			if (videoEl.poster) {
+				videoEl.poster = transformMediaUrl(videoEl.poster);
+			}
+		}
 	},
-	// Add more processors as needed
 ];

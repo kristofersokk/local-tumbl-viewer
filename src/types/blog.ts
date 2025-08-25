@@ -1,4 +1,4 @@
-export interface Blog {
+export interface BlogMetadata {
 	Answers: number;
 	AudioMetas: number;
 	Audios: number;
@@ -93,6 +93,26 @@ export interface Blog {
 
 	// extra added properties
 	platform: Platform;
+}
+
+export interface BlogEntry {
+	metadata: BlogMetadata;
+	fileEntries: BlogFileEntries;
+}
+
+export interface BlogFileEntries {
+	BlogType: BlogType;
+	Location: string;
+	Name: string;
+	Updates: unknown | null;
+	Version: string; // number, eg "6"
+	Entries: BlogFileEntry[];
+}
+
+export interface BlogFileEntry {
+	F?: string;
+	L?: string;
+	O?: string;
 }
 
 export const blogTypes = {

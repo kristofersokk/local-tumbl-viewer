@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import { Blog } from 'Types/blog';
+import { BlogEntry } from 'Types/blog';
 import PlatformLogo from './Blog/PlatformLogo';
 import RootDirResetButton from './RootDirResetButton';
 
 interface BlogSelectorProps {
-	blogs: Blog[];
+	blogs: BlogEntry[];
 	selectBlog: (name: string) => void;
 }
 
@@ -15,7 +15,7 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 			<p>Select a blog</p>
 			<div className="flex flex-col gap-0.5">
 				{blogs.map(blog => {
-					const isSupported = blog.platform === 'tumblr';
+					const isSupported = blog.metadata.platform === 'tumblr';
 					return (
 						<div
 							className={classNames(
@@ -25,13 +25,15 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 									'cursor-not-allowed opacity-50': !isSupported,
 								}
 							)}
-							onClick={isSupported ? () => selectBlog(blog.Name) : undefined}
-							key={blog.Name}
+							onClick={
+								isSupported ? () => selectBlog(blog.metadata.Name) : undefined
+							}
+							key={blog.metadata.Name}
 						>
-							<PlatformLogo platform={blog.platform} />
+							<PlatformLogo platform={blog.metadata.platform} />
 							<div className="flex flex-col items-start justify-between text-sm">
-								<p className="text-white">{blog.Name}</p>
-								<p>{blog.Title}</p>
+								<p className="text-white">{blog.metadata.Name}</p>
+								<p>{blog.metadata.Title}</p>
 							</div>
 							{!isSupported && (
 								<p className="text-xs text-red-500">Not supported</p>

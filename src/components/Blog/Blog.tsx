@@ -3,7 +3,7 @@ import HomeLogo from 'Assets/icons/home.svg?react';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
-import { BlogPost as BlogPostType, Blog as BlogType } from 'Types/blog';
+import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { Masonry } from 'masonic';
 import { useMemo } from 'react';
@@ -13,12 +13,13 @@ import BlogSettings from './BlogSettings';
 import PlatformLogo from './PlatformLogo';
 
 interface BlogProps {
-	blog: BlogType;
+	blog: BlogEntry;
+	blogFiles: File[];
 	posts: BlogPostType[];
 	goToBlogSelection: () => void;
 }
 
-const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
+const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 	const remInPixels = useRemToPixels();
 
 	const availablePostTypes = useMemo(
@@ -87,14 +88,14 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 						>
 							<HomeLogo />
 						</button>
-						<PlatformLogo platform={blog.platform} />
+						<PlatformLogo platform={blog.metadata.platform} />
 						<div className="flex flex-col items-start justify-between text-sm">
-							<p className="text-white">{blog.Name}</p>
-							<p>{blog.Title}</p>
+							<p className="text-white">{blog.metadata.Name}</p>
+							<p>{blog.metadata.Title}</p>
 						</div>
 					</div>
 					<a
-						href={`https://tumblr.com/${blog.Name}`}
+						href={`https://tumblr.com/${blog.metadata.Name}`}
 						target="_blank"
 						className="text-sm text-gray-400 transition-colors [&:hover]:text-gray-300"
 					>
@@ -112,12 +113,14 @@ const Blog = ({ blog, posts, goToBlogSelection }: BlogProps) => {
 			</div>
 			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
 				<Masonry
-					key={blog.Name + JSON.stringify(filter)}
+					key={blog.metadata.Name + JSON.stringify(filter)}
 					items={sortedFilteredPosts}
 					render={({ data: post }) => (
 						<BlogPost
 							key={post.id}
+							blog={blog}
 							post={post}
+							blogFiles={blogFiles}
 							addTagFilter={addTagFilter}
 							params={params}
 						/>

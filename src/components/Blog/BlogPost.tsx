@@ -4,19 +4,37 @@ import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { Tooltip } from 'radix-ui';
-import { ComponentProps, memo, ReactNode, RefObject, useState } from 'react';
-import { BlogPost as BlogPostType } from 'Types/blog';
-import { blogPostProcessors, countCollapsedTags } from 'Utils/blogUtils';
+import {
+	ComponentProps,
+	memo,
+	ReactNode,
+	RefObject,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
+import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
+import { countCollapsedTags, getBlogPostProcessors } from 'Utils/blogUtils';
 import UnsafeContent from '../UnsafeContent';
 import Collapsible from './Collapsible';
 
 interface BlogPostProps {
 	post: BlogPostType;
+	blog: BlogEntry;
+	blogFiles: File[];
 	addTagFilter: (tag: string) => void;
 	params: BlogParams;
 }
 
-const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
+const BlogPost = ({
+	post,
+	blog,
+	blogFiles,
+	addTagFilter,
+	params,
+}: BlogPostProps) => {
 	const {
 		collapsedHeightPercent,
 		showDate,
@@ -45,6 +63,60 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 		rebloggedFrom,
 		rebloggedRoot,
 	} = post.calculated ?? {};
+
+	const tagsCollapsedCount = countCollapsedTags(post, 100);
+	const tagsNeedCollapsing = post.tags.length > tagsCollapsedCount;
+	const [tagsCollapsed, setTagsCollapsed] = useState(true);
+	const tagsShown =
+		tagsNeedCollapsing && tagsCollapsed
+			? post.tags.slice(0, tagsCollapsedCount)
+			: post.tags;
+
+	const {
+		fileEntries: { Entries: imgMappingEntries },
+	} = blog;
+
+	const { current: imageUrlsCache } = useRef<Record<string, string>>({});
+	const { current: generatedObjectUrls } = useRef<string[]>([]);
+	const transformMediaUrl = useCallback(
+		(url: string) => {
+			if (imageUrlsCache[url]) return imageUrlsCache[url];
+			let newUrl = url;
+			const lastSlashIndex = url.lastIndexOf('/');
+			const urlFileName = url.slice(lastSlashIndex + 1);
+			const differentResolutionEntry = imgMappingEntries?.find(
+				({ O: originalFileName }) => originalFileName === urlFileName
+			);
+			const originalResolutionEntry = imgMappingEntries?.find(
+				({ L: unChangedFileName }) => unChangedFileName === urlFileName
+			);
+			const newFileName =
+				differentResolutionEntry?.F ||
+				originalResolutionEntry?.F ||
+				originalResolutionEntry?.L;
+			const mediaFile = blogFiles.find(file => file.name === newFileName);
+			if (mediaFile) {
+				console.log(mediaFile.name);
+				newUrl = URL.createObjectURL(mediaFile);
+				generatedObjectUrls.push(newUrl);
+			}
+			imageUrlsCache[url] = newUrl;
+			return newUrl;
+		},
+		[blogFiles, generatedObjectUrls, imageUrlsCache, imgMappingEntries]
+	);
+
+	const blogPostProcessors = useMemo(
+		() => getBlogPostProcessors(transformMediaUrl),
+		[transformMediaUrl]
+	);
+
+	useEffect(() => {
+		return () => {
+			generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const renderDynamic = (
 		content: string | ReactNode | undefined,
@@ -201,14 +273,6 @@ const BlogPost = ({ post, addTagFilter, params }: BlogPostProps) => {
 	) : undefined;
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
-
-	const tagsCollapsedCount = countCollapsedTags(post, 100);
-	const tagsNeedCollapsing = post.tags.length > tagsCollapsedCount;
-	const [tagsCollapsed, setTagsCollapsed] = useState(true);
-	const tagsShown =
-		tagsNeedCollapsing && tagsCollapsed
-			? post.tags.slice(0, tagsCollapsedCount)
-			: post.tags;
 
 	return (
 		<div

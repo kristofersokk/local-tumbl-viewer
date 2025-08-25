@@ -5,8 +5,8 @@ import { BlogPost } from 'Types/blog';
 import { processBlogPost } from 'Utils/blogUtils';
 
 const useBlogPosts = (
-	blogFolder: FileSystemDirectoryHandle | undefined,
-	blogFiles: FileSystemFileHandle[] | undefined
+	blogFolderHandle: FileSystemDirectoryHandle | undefined,
+	blogFiles: File[] | undefined
 ) => {
 	const blogTextsFile = blogFiles?.find(file => file.name === 'texts.txt');
 	const blogImagesFile = blogFiles?.find(file => file.name === 'images.txt');
@@ -29,15 +29,14 @@ const useBlogPosts = (
 	].filter(Boolean);
 
 	const query = useQuery({
-		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolder?.name],
+		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolderHandle?.name],
 		queryFn: blogFiles
 			? async () => {
 					const [texts, images, videos, conversations, answers, quotes, links] =
 						await Promise.all(
 							foundBlogPostsFiles.map(file =>
 								file
-									?.getFile()
-									.then(file => file.text())
+									.text()
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
 									.then(blogs => blogs.map(processBlogPost))
