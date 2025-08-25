@@ -177,6 +177,7 @@ const BlogPost = ({
 					'[&_.tmblr-full_img]:!w-full',
 					'[&_.image]:!w-full',
 					'[&_figure_img]:!w-full',
+					'[&_video]:!w-full',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
 					'[&_img]:my-4 [&_img]:!h-auto',
 					// eslint-disable-next-line no-useless-escape
