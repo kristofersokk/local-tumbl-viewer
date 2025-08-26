@@ -56,7 +56,6 @@ const Initializer = ({ children }: InitializerProps) => {
 		>
 			{initialized && children}
 			{!initialized && (
-				// TODO: use spinner
 				<Center>{inProgress ? <Loader /> : <RootDirSelector />}</Center>
 			)}
 		</RootDirContext.Provider>

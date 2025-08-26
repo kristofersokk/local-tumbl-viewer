@@ -6,7 +6,7 @@ import RootDirResetButton from 'Components/RootDirResetButton';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_initializer/')({
 	component: Index,
 });
 
@@ -49,8 +49,16 @@ function Index() {
 	};
 
 	return (
-		<Center>
-			<BlogSelector blogs={blogs!} selectBlog={selectBlog} />
-		</Center>
+		<>
+			<Center>
+				<BlogSelector blogs={blogs!} selectBlog={selectBlog} />
+			</Center>
+			<button
+				className="fixed top-0 left-0 m-4 cursor-pointer rounded-2xl bg-gray-800 px-4 py-2 transition-colors [&:hover]:bg-gray-700"
+				onClick={() => navigate({ to: '/about' })}
+			>
+				About
+			</button>
+		</>
 	);
 }

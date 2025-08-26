@@ -9,68 +9,116 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as BlogNameIndexRouteImport } from './routes/$blogName/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as InitializerRouteRouteImport } from './routes/_initializer/route'
+import { Route as InitializerIndexRouteImport } from './routes/_initializer/index'
+import { Route as InitializerBlogNameIndexRouteImport } from './routes/_initializer/$blogName/index'
 
-const IndexRoute = IndexRouteImport.update({
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitializerRouteRoute = InitializerRouteRouteImport.update({
+  id: '/_initializer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitializerIndexRoute = InitializerIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => InitializerRouteRoute,
 } as any)
-const BlogNameIndexRoute = BlogNameIndexRouteImport.update({
-  id: '/$blogName/',
-  path: '/$blogName/',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const InitializerBlogNameIndexRoute =
+  InitializerBlogNameIndexRouteImport.update({
+    id: '/$blogName/',
+    path: '/$blogName/',
+    getParentRoute: () => InitializerRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/$blogName': typeof BlogNameIndexRoute
+  '/about': typeof AboutRoute
+  '/': typeof InitializerIndexRoute
+  '/$blogName': typeof InitializerBlogNameIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/$blogName': typeof BlogNameIndexRoute
+  '/about': typeof AboutRoute
+  '/': typeof InitializerIndexRoute
+  '/$blogName': typeof InitializerBlogNameIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/$blogName/': typeof BlogNameIndexRoute
+  '/_initializer': typeof InitializerRouteRouteWithChildren
+  '/about': typeof AboutRoute
+  '/_initializer/': typeof InitializerIndexRoute
+  '/_initializer/$blogName/': typeof InitializerBlogNameIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$blogName'
+  fullPaths: '/about' | '/' | '/$blogName'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$blogName'
-  id: '__root__' | '/' | '/$blogName/'
+  to: '/about' | '/' | '/$blogName'
+  id:
+    | '__root__'
+    | '/_initializer'
+    | '/about'
+    | '/_initializer/'
+    | '/_initializer/$blogName/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  BlogNameIndexRoute: typeof BlogNameIndexRoute
+  InitializerRouteRoute: typeof InitializerRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$blogName/': {
-      id: '/$blogName/'
+    '/_initializer': {
+      id: '/_initializer'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof InitializerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_initializer/': {
+      id: '/_initializer/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof InitializerIndexRouteImport
+      parentRoute: typeof InitializerRouteRoute
+    }
+    '/_initializer/$blogName/': {
+      id: '/_initializer/$blogName/'
       path: '/$blogName'
       fullPath: '/$blogName'
-      preLoaderRoute: typeof BlogNameIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof InitializerBlogNameIndexRouteImport
+      parentRoute: typeof InitializerRouteRoute
     }
   }
 }
 
+interface InitializerRouteRouteChildren {
+  InitializerIndexRoute: typeof InitializerIndexRoute
+  InitializerBlogNameIndexRoute: typeof InitializerBlogNameIndexRoute
+}
+
+const InitializerRouteRouteChildren: InitializerRouteRouteChildren = {
+  InitializerIndexRoute: InitializerIndexRoute,
+  InitializerBlogNameIndexRoute: InitializerBlogNameIndexRoute,
+}
+
+const InitializerRouteRouteWithChildren =
+  InitializerRouteRoute._addFileChildren(InitializerRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  BlogNameIndexRoute: BlogNameIndexRoute,
+  InitializerRouteRoute: InitializerRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

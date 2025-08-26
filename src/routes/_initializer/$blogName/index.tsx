@@ -10,7 +10,7 @@ import useRootFolders from 'Hooks/api/useRootFolders';
 import { useCallback, useEffect } from 'react';
 import { getBlogFolderName } from 'Utils/blogUtils';
 
-export const Route = createFileRoute('/$blogName/')({
+export const Route = createFileRoute('/_initializer/$blogName/')({
 	component: BlogRoute,
 });
 
