@@ -22,7 +22,7 @@ function About() {
 					<HomeLogo />
 				</button>
 				<h1 className="mb-8 text-4xl font-bold">Tumbl Viewer</h1>
-				<div>
+				<div className="flex flex-col items-start">
 					<div>
 						<span>A local viewer for Tumblr blogs downloaded by </span>
 						<a
@@ -44,17 +44,25 @@ function About() {
 						>
 							GitHub repository
 						</a>
+						<div className="mt-4 flex items-center gap-4">
+							<p>Please donate to support development</p>
+							<a href="https://ko-fi.com/R6R2168JSZ" target="_blank">
+								<img
+									height="36"
+									className="h-9 border-0"
+									src="https://storage.ko-fi.com/cdn/kofi5.png?v=6"
+									alt="Buy Me a Coffee at ko-fi.com"
+								/>
+							</a>
+						</div>
 					</div>
-				</div>
-				<div className="mt-4 flex items-center gap-4">
-					<p>Please donate to support development</p>
-					<a href="https://ko-fi.com/R6R2168JSZ" target="_blank">
-						<img
-							height="36"
-							className="h-9 border-0"
-							src="https://storage.ko-fi.com/cdn/kofi5.png?v=6"
-							alt="Buy Me a Coffee at ko-fi.com"
-						/>
+					<a
+						className="mt-4 cursor-pointer text-xl underline"
+						href="https://kristofersokk.dev"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						My website
 					</a>
 				</div>
 			</div>
