@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
@@ -17,6 +18,43 @@ export default defineConfig(() => {
 			tsConfigPaths(),
 			tailwindcss(),
 			svgr(),
+			VitePWA({
+				includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png'],
+				manifest: {
+					name: 'Local Tumbl Viewer',
+					short_name: 'TumblViewer',
+					description:
+						'Application which shows Tumblr blog archives downloaded by TumblThree application',
+					theme_color: '#364153',
+					background_color: '#000',
+					icons: [
+						{
+							src: 'pwa-64x64.png',
+							sizes: '64x64',
+							type: 'image/png',
+						},
+						{
+							src: 'pwa-192x192.png',
+							sizes: '192x192',
+							type: 'image/png',
+						},
+						{
+							src: 'pwa-512x512.png',
+							sizes: '512x512',
+							type: 'image/png',
+						},
+						{
+							src: 'maskable-icon-512x512.png',
+							sizes: '512x512',
+							type: 'image/png',
+							purpose: 'maskable',
+						},
+					],
+				},
+				devOptions: {
+					enabled: true,
+				},
+			}),
 		],
 		server: {
 			port: 3000,
