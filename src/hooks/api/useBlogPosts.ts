@@ -40,7 +40,7 @@ const useBlogPosts = (
 									.then(text => jsonrepair(text))
 									.then(text => JSON.parse(text) as BlogPost[])
 									.then(blogs => blogs.map(processBlogPost))
-									.catch(() => console.log(`Error parsing ${file.name}`))
+									.catch(() => console.error(`Error reading ${file.name}`))
 							)
 						);
 
