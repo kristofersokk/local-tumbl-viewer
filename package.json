@@ -23,6 +23,7 @@
         "dompurify": "^3.2.6",
         "jsonrepair": "^3.13.0",
         "masonic": "^4.1.0",
+        "posthog-js": "^1.261.0",
         "radix-ui": "^1.4.3",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
