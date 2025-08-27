@@ -8,6 +8,6 @@
 
 @layer base {
 	* {
-		@apply text-text box-border font-Inter;
+		@apply text-text font-Inter box-border;
 	}
 }

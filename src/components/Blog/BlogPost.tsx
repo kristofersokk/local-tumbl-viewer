@@ -1,4 +1,5 @@
 import Link from 'Assets/icons/link.svg?react';
+import PanZoom from 'Assets/icons/pan-zoom.svg?react';
 import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
@@ -7,6 +8,7 @@ import { Tooltip } from 'radix-ui';
 import {
 	ComponentProps,
 	ReactNode,
+	Ref,
 	RefObject,
 	useCallback,
 	useMemo,
@@ -22,6 +24,8 @@ import UnsafeContent from '../UnsafeContent';
 import Collapsible from './Collapsible';
 
 interface BlogPostProps {
+	Ref?: RefObject<HTMLElement | null>;
+	className?: string;
 	post: BlogPostType;
 	blog: BlogEntry;
 	blogFiles: File[];
@@ -29,9 +33,13 @@ interface BlogPostProps {
 	params: BlogParams;
 	imageUrlsCache: Record<string, { online?: string; local?: string }>;
 	generatedObjectUrls: string[];
+	zoomInToPost?: (postId: string) => void;
+	forceUncollapsed?: boolean;
 }
 
 const BlogPost = ({
+	Ref,
+	className,
 	post,
 	blog,
 	blogFiles,
@@ -39,11 +47,13 @@ const BlogPost = ({
 	params,
 	imageUrlsCache,
 	generatedObjectUrls,
+	zoomInToPost,
+	forceUncollapsed,
 }: BlogPostProps) => {
 	const {
 		collapsedHeightPercent,
 		showDate,
-		showPostUrl,
+		showPostLink,
 		showRebloggedInfo,
 		showTags,
 		fallbackToOnlineMedia,
@@ -317,32 +327,69 @@ const BlogPost = ({
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
+	const zoomIn = useCallback(() => {
+		zoomInToPost?.(post.id);
+	}, [post.id, zoomInToPost]);
+
+	const getBody = (ref?: RefObject<HTMLElement | null>, className?: string) => (
+		<div ref={ref as RefObject<HTMLDivElement>} className={className}>
+			{renderDynamic(dynamicBody)}
+			{quoteBody ?? null}
+			{answerBody ?? null}
+			{conversationBody ?? null}
+			{linkBody ?? null}
+			{summary && (
+				<div className="text-blog-post-summary mt-2 p-2">{summary}</div>
+			)}
+		</div>
+	);
+
 	return (
 		<div
-			className="z-blog bg-blog-post-card flex w-full flex-col rounded-md"
+			ref={Ref as Ref<HTMLDivElement>}
+			className={classNames(
+				'z-blog bg-blog-post-card flex w-full flex-col rounded-md',
+				className
+			)}
 			key={post.id}
 		>
-			{showRebloggedInfo && rebloggedRoot && (
-				<div className="flex flex-col gap-2 px-4 pt-3">
-					<span>Reblogged from: {rebloggedRoot}</span>
-					{showOriginalPoster && <span>Original poster: {rebloggedFrom}</span>}
+			<div className="flex items-start justify-between">
+				<div>
+					{showRebloggedInfo && rebloggedRoot && (
+						<div className="flex flex-col gap-2 px-4 pt-3">
+							<span>Reblogged from: {rebloggedRoot}</span>
+							{showOriginalPoster && (
+								<span>Original poster: {rebloggedFrom}</span>
+							)}
+						</div>
+					)}
 				</div>
-			)}
-			<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
-				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
-					{title}
-				</span>
-				<div className="flex items-center gap-2">
-					{showPostUrl && url && (
+				<div className="m-1 mx-2 flex items-center">
+					{showPostLink && url && (
 						<a
 							href={url}
-							className="fill-text"
+							className="fill-text m-1 p-1"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
 							<Link />
 						</a>
 					)}
+					{zoomInToPost ? (
+						<button
+							className="fill-text [&:hover]:fill-text-highlight m-1 scale-90 cursor-pointer p-1 transition-colors"
+							onClick={zoomIn}
+						>
+							<PanZoom />
+						</button>
+					) : null}
+				</div>
+			</div>
+			<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
+				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
+					{title}
+				</span>
+				<div className="flex items-center gap-2">
 					{showDate && createdAt && (
 						<Tooltip.Provider>
 							<Tooltip.Root>
@@ -363,38 +410,31 @@ const BlogPost = ({
 				</div>
 			</div>
 			<div>
-				<Collapsible
-					collapsedHeightRem={collapsedHeightRem}
-					expandButton={expand => (
-						<button
-							className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"
-							onClick={expand}
-						>
-							Expand
-						</button>
-					)}
-					collapseButton={collapse => (
-						<button
-							className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
-							onClick={collapse}
-						>
-							Collapse
-						</button>
-					)}
-				>
-					{(ref, className) => (
-						<div ref={ref as RefObject<HTMLDivElement>} className={className}>
-							{renderDynamic(dynamicBody)}
-							{quoteBody ?? null}
-							{answerBody ?? null}
-							{conversationBody ?? null}
-							{linkBody ?? null}
-							{summary && (
-								<div className="text-blog-post-summary mt-2 p-2">{summary}</div>
-							)}
-						</div>
-					)}
-				</Collapsible>
+				{forceUncollapsed ? (
+					getBody()
+				) : (
+					<Collapsible
+						collapsedHeightRem={collapsedHeightRem}
+						expandButton={expand => (
+							<button
+								className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"
+								onClick={expand}
+							>
+								Expand
+							</button>
+						)}
+						collapseButton={collapse => (
+							<button
+								className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
+								onClick={collapse}
+							>
+								Collapse
+							</button>
+						)}
+					>
+						{getBody}
+					</Collapsible>
+				)}
 			</div>
 			{!!post.tags?.length && showTags && (
 				<div className="flex flex-wrap overflow-hidden">

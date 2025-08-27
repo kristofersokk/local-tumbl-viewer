@@ -20,4 +20,6 @@
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
 	--z-index-popover: 60;
+	--z-index-zoomed-post-backdrop: 70;
+	--z-index-zoomed-post: 80;
 }

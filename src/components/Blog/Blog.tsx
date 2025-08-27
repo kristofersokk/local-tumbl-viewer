@@ -1,12 +1,13 @@
 import HomeLogo from 'Assets/icons/home.svg?react';
 
+import ClickOutside from 'Components/ClickOutside';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { Masonry } from 'masonic';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
@@ -93,6 +94,19 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const [zoomedInPostId, setZoomedInPostId] = useState<string | null>(null);
+	const zoomedInPost = sortedFilteredPosts.find(
+		post => post.id === zoomedInPostId
+	);
+
+	const zoomInToPost = useCallback((postId: string) => {
+		setZoomedInPostId(postId);
+	}, []);
+
+	const zoomOut = useCallback(() => {
+		setZoomedInPostId(null);
+	}, []);
+
 	return (
 		<div className="min-h-full w-full">
 			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-2 sm:px-6">
@@ -141,6 +155,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 							params={params}
 							imageUrlsCache={imageUrlsCache}
 							generatedObjectUrls={generatedObjectUrls}
+							zoomInToPost={zoomInToPost}
 						/>
 					)}
 					columnGutter={1 * remInPixels}
@@ -152,6 +167,33 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					overscanBy={5}
 				/>
 			</div>
+			{zoomedInPost && (
+				<div>
+					<div className="z-zoomed-post fixed top-0 right-0 bottom-0 left-0 flex justify-center overflow-y-auto">
+						<div className="h-fit py-10 pb-16 lg:py-16">
+							<div className="h-fit w-[40rem] max-w-[90vw]">
+								<ClickOutside onClickOutside={zoomOut}>
+									{ref => (
+										<BlogPost
+											Ref={ref}
+											className="min-h-fit"
+											blog={blog}
+											post={zoomedInPost}
+											blogFiles={blogFiles}
+											addTagFilter={addTagFilter}
+											params={params}
+											imageUrlsCache={imageUrlsCache}
+											generatedObjectUrls={generatedObjectUrls}
+											forceUncollapsed
+										/>
+									)}
+								</ClickOutside>
+							</div>
+						</div>
+					</div>
+					<div className="z-zoomed-post-backdrop fixed top-0 right-0 bottom-0 left-0 backdrop-blur-xl backdrop-brightness-75" />
+				</div>
+			)}
 		</div>
 	);
 };

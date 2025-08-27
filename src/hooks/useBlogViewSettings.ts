@@ -20,7 +20,7 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [collapsedHeightPercent, setCollapsedHeightPercent] =
 		useState<number>(50);
 	const [showDate, setShowDate] = useState<boolean>(true);
-	const [showPostUrl, setShowPostUrl] = useState<boolean>(true);
+	const [showPostLink, setShowPostLink] = useState<boolean>(true);
 	const [showRebloggedInfo, setShowRebloggedInfo] = useState<boolean>(true);
 	const [showTags, setShowTags] = useState<boolean>(true);
 	const [fallbackToOnlineMedia, setFallbackToOnlineMedia] =
@@ -63,8 +63,8 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 			setCollapsedHeightPercent,
 			showDate,
 			setShowDate,
-			showPostUrl,
-			setShowPostUrl,
+			showPostLink,
+			setShowPostLink,
 			showRebloggedInfo,
 			setShowRebloggedInfo,
 			showTags,
