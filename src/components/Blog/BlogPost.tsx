@@ -368,7 +368,7 @@ const BlogPost = ({
 					{showPostLink && url && (
 						<a
 							href={url}
-							className="fill-text m-1 p-1"
+							className="fill-text [&:hover]:fill-text-highlight m-1 p-1"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
