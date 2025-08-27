@@ -32,8 +32,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 				</button>
 			</Popover.Trigger>
 			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
-				<div className="bg-popover-background rounded-lg px-3 py-4">
-					<p className="mb-4 text-lg">Settings</p>
+				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">
+					<p className="text-lg">Settings</p>
 					<div className="grid grid-cols-[auto_auto] gap-4">
 						<span className="text-sm">Column width:</span>
 						<div className="flex items-center gap-2">
@@ -69,55 +69,77 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 							</Slider.Root>
 							<span className="text-sm">{collapsedHeightPercent}%</span>
 						</div>
-						<span className="text-sm">Show date:</span>
-						<div className="flex items-center gap-2">
-							<Switch.Root
-								className="SwitchRoot"
-								checked={showDate}
-								onCheckedChange={setShowDate}
-							>
-								<Switch.Thumb className="SwitchThumb" />
-							</Switch.Root>
+					</div>
+					<div className="grid grid-cols-[auto_auto_auto_auto] gap-4">
+						<div className="flex items-center">
+							<span className="text-sm">Show date:</span>
 						</div>
-						<span className="text-sm">Show post link:</span>
-						<div className="flex items-center gap-2">
-							<Switch.Root
-								className="SwitchRoot"
-								checked={showPostLink}
-								onCheckedChange={setShowPostLink}
-							>
-								<Switch.Thumb className="SwitchThumb" />
-							</Switch.Root>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={showDate}
+									onCheckedChange={setShowDate}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
 						</div>
-						<span className="text-sm">Show reblogged info:</span>
-						<div className="flex items-center gap-2">
-							<Switch.Root
-								className="SwitchRoot"
-								checked={showRebloggedInfo}
-								onCheckedChange={setShowRebloggedInfo}
-							>
-								<Switch.Thumb className="SwitchThumb" />
-							</Switch.Root>
+						<div className="flex items-center">
+							<span className="text-sm">Show post link:</span>
 						</div>
-						<span className="text-sm">Show tags:</span>
-						<div className="flex items-center gap-2">
-							<Switch.Root
-								className="SwitchRoot"
-								checked={showTags}
-								onCheckedChange={setShowTags}
-							>
-								<Switch.Thumb className="SwitchThumb" />
-							</Switch.Root>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={showPostLink}
+									onCheckedChange={setShowPostLink}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
 						</div>
-						<span className="text-sm">Fallback to online media:</span>
-						<div className="flex items-center gap-2">
-							<Switch.Root
-								className="SwitchRoot"
-								checked={fallbackToOnlineMedia}
-								onCheckedChange={setFallbackToOnlineMedia}
-							>
-								<Switch.Thumb className="SwitchThumb" />
-							</Switch.Root>
+						<div className="flex items-center">
+							<span className="text-sm">Show reblogged info:</span>
+						</div>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={showRebloggedInfo}
+									onCheckedChange={setShowRebloggedInfo}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
+						</div>
+						<div className="flex items-center">
+							<span className="text-sm">Show tags:</span>
+						</div>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={showTags}
+									onCheckedChange={setShowTags}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
+						</div>
+						<div className="flex items-center">
+							<span className="text-sm">Fallback to online media:</span>
+						</div>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={fallbackToOnlineMedia}
+									onCheckedChange={setFallbackToOnlineMedia}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
 						</div>
 					</div>
 				</div>
