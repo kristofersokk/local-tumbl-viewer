@@ -27,10 +27,12 @@
 	--color-blog-post-link-border: theme(colors.gray.500);
 	--color-action-button-bg: #162238;
 	--color-action-button-hover-bg: #1a2842;
+	--color-toast-bg: #0b111c;
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
 	--z-index-popover: 60;
 	--z-index-zoomed-post-backdrop: 70;
 	--z-index-zoomed-post: 80;
+	--z-index-toast: 90;
 }

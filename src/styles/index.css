@@ -5,6 +5,7 @@
 @import './components/slider.css' layer(components);
 @import './components/switch.css' layer(components);
 @import './components/tooltip.css' layer(components);
+@import './components/toast.css' layer(components);
 
 @layer base {
 	* {

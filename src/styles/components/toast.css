@@ -1,0 +1,57 @@
+.ToastViewport {
+	@apply z-toast fixed right-0 bottom-0 m-0 flex max-w-screen flex-col gap-3 p-4 outline-none;
+}
+
+.ToastRoot {
+	@apply bg-toast-bg text-text-highlight grid grid-cols-[auto_max-content] items-center gap-4 rounded-lg p-4;
+}
+.ToastRoot[data-state='open'] {
+	animation: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ToastRoot[data-state='closed'] {
+	animation: hide 100ms ease-in;
+}
+.ToastRoot[data-swipe='move'] {
+	transform: translateX(var(--radix-toast-swipe-move-x));
+}
+.ToastRoot[data-swipe='cancel'] {
+	transform: translateX(0);
+	transition: transform 200ms ease-out;
+}
+.ToastRoot[data-swipe='end'] {
+	animation: swipeOut 100ms ease-out;
+}
+
+@keyframes hide {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(calc(100% + 16px));
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes swipeOut {
+	from {
+		transform: translateX(var(--radix-toast-swipe-end-x));
+	}
+	to {
+		transform: translateX(calc(100% + 16px));
+	}
+}
+
+.ToastDescription {
+}
+
+.ToastAction {
+	@apply bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors;
+}

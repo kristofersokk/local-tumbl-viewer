@@ -31,7 +31,7 @@
             "Types/*": ["src/types/*"],
             "Utils/*": ["src/utils/*"]
         },
-        "types": ["vite/client"]
+        "types": ["vite/client", "vite-plugin-pwa/client"]
     },
     "include": ["src"]
 }
