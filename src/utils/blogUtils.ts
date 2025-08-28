@@ -157,7 +157,7 @@ export const countCollapsedTags = (post: BlogPost, maxChars: number) => {
 	return count;
 };
 
-export type DomProcessor = (el: HTMLElement) => void;
+export type DomProcessor = (el: HTMLElement) => Promise<void>;
 
 export const iterateDomTree = (el: HTMLElement, processor: DomProcessor) => {
 	if (!el) return;
@@ -187,17 +187,18 @@ export const modifyAttribute = (
 };
 
 export const getBlogPostProcessors = (
-	transformMediaUrl: (imageUrl: string | string[]) => {
+	transformMediaUrl: (imageUrl: string | string[]) => Promise<{
 		original: string;
 		transformed: string;
-	}
+	}>
 ): DomProcessor[] => [
-	el => {
-		if (el.tagName.toLowerCase() === 'a') {
+	async el => {
+		const tag = el.tagName.toLowerCase();
+		if (tag === 'a') {
 			el.setAttribute('target', '_blank');
 			el.setAttribute('rel', 'noopener noreferrer');
 		}
-		if (el.tagName.toLowerCase() === 'img') {
+		if (tag === 'img') {
 			const imageEl = el as HTMLImageElement;
 			const parentEl = imageEl.parentElement;
 			const parentUrls = Array.from(parentEl?.attributes || [])
@@ -213,24 +214,24 @@ export const getBlogPostProcessors = (
 			].filter(url => !!url);
 
 			imageEl.srcset = '';
-			const { original, transformed } = transformMediaUrl(urls);
+			const { original, transformed } = await transformMediaUrl(urls);
 			modifyAttribute(imageEl, 'data-src', original);
 			modifyAttribute(imageEl, 'src', transformed);
 		}
-		if (el.tagName.toLowerCase() === 'source') {
+		if (tag === 'source') {
 			const sourceEl = el as HTMLSourceElement;
-			const { original, transformed } = transformMediaUrl([sourceEl.src]);
+			const { original, transformed } = await transformMediaUrl([sourceEl.src]);
 			modifyAttribute(sourceEl, 'data-src', original);
 			modifyAttribute(sourceEl, 'src', transformed);
 		}
-		if (el.tagName.toLowerCase() === 'video') {
+		if (tag === 'video') {
 			const videoEl = el as HTMLVideoElement;
 			const { original: original1, transformed: transformed1 } =
-				transformMediaUrl(videoEl.src);
+				await transformMediaUrl(videoEl.src);
 			modifyAttribute(videoEl, 'data-src', original1);
 			modifyAttribute(videoEl, 'src', transformed1 || undefined);
 			const { original: original2, transformed: transformed2 } =
-				transformMediaUrl(videoEl.poster);
+				await transformMediaUrl(videoEl.poster);
 			modifyAttribute(videoEl, 'data-poster', original2);
 			modifyAttribute(videoEl, 'poster', transformed2 || undefined);
 

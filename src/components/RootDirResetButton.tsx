@@ -21,7 +21,7 @@ const RootDirResetButton = ({ className }: RootDirResetButtonProps) => {
 	return (
 		<button
 			className={classNames(
-				'cursor-pointer rounded-2xl bg-gray-800 px-4 py-2 transition-colors [&:hover]:bg-gray-700',
+				'bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors',
 				className
 			)}
 			onClick={reset}

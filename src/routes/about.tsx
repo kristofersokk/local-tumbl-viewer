@@ -16,7 +16,7 @@ function About() {
 		<div className="flex h-screen w-screen flex-col items-center justify-center">
 			<div className="flex max-w-10/12 flex-col items-center justify-center">
 				<button
-					className="fill-text fixed top-0 left-0 m-4 cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700"
+					className="fill-text fixed top-0 left-0 m-4 cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
 					onClick={() => goHome()}
 				>
 					<HomeLogo />

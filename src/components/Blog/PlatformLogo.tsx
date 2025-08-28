@@ -23,7 +23,7 @@ const PlatformLogo = ({ platform, className }: PlatformLogoProps) => {
 	return (
 		<div
 			className={classNames(
-				'flex h-11 w-11 items-center justify-center rounded-lg border-2 border-white text-4xl font-semibold',
+				'flex min-h-11 min-w-11 items-center justify-center rounded-lg border-2 border-white text-4xl font-semibold',
 				className
 			)}
 			style={{ backgroundColor: bgColor, color }}

@@ -20,6 +20,7 @@ import {
 	getAlternativeFileNames,
 	getBlogPostProcessors,
 } from 'Utils/blogUtils';
+import { cacheValueAsync } from 'Utils/cacheUtils';
 import UnsafeContent from '../UnsafeContent';
 import Collapsible from './Collapsible';
 
@@ -28,7 +29,7 @@ interface BlogPostProps {
 	className?: string;
 	post: BlogPostType;
 	blog: BlogEntry;
-	blogFiles: File[];
+	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
 	params: BlogParams;
 	imageUrlsCache: Record<string, { online?: string; local?: string }>;
@@ -66,6 +67,8 @@ const BlogPost = ({
 		((collapsedHeightPercent / 100) * viewportHeightInPixels) / remInPixels
 	);
 
+	const { Name: blogName } = blog.metadata;
+
 	const {
 		createdAt,
 		title,
@@ -93,7 +96,7 @@ const BlogPost = ({
 	} = blog;
 
 	const transformMediaUrl = useCallback(
-		(inputUrls: string | string[]) => {
+		async (inputUrls: string | string[]) => {
 			const urls = Array.isArray(inputUrls)
 				? inputUrls.filter(Boolean)
 				: [inputUrls];
@@ -111,7 +114,7 @@ const BlogPost = ({
 							: 'unknown'),
 				};
 
-			function getMediaFile(url: string) {
+			function getMediaFileHandle(url: string) {
 				const lastSlashIndex = url.lastIndexOf('/');
 				const urlFileName = url.slice(lastSlashIndex + 1);
 				const differentResolutionEntry = imgMappingEntries?.find(
@@ -135,14 +138,21 @@ const BlogPost = ({
 				return mediaFile;
 			}
 
-			const { url: workingUrl, file: mediaFile } = urls
+			const { url: workingUrl, fileHandle: mediaFileHandle } = urls
 				.map(url => ({
 					url,
-					file: getMediaFile(url),
+					fileHandle: getMediaFileHandle(url),
 				}))
-				.find(file => !!file.file) ?? { url: undefined, file: undefined };
+				.find(file => !!file.fileHandle) ?? {
+				url: undefined,
+				fileHandle: undefined,
+			};
 			let localUrl: string | undefined = undefined;
-			if (mediaFile) {
+			if (mediaFileHandle) {
+				const cacheKey = `mediaFile-${blogName}-${mediaFileHandle.name}`;
+				const mediaFile = await cacheValueAsync(cacheKey, () =>
+					mediaFileHandle.getFile()
+				);
 				localUrl = URL.createObjectURL(mediaFile);
 				generatedObjectUrls.push(localUrl);
 			}
@@ -157,6 +167,7 @@ const BlogPost = ({
 			};
 		},
 		[
+			blogName,
 			blogFiles,
 			fallbackToOnlineMedia,
 			generatedObjectUrls,
@@ -188,7 +199,7 @@ const BlogPost = ({
 					'[&_.image]:!w-full',
 					'[&_figure_img]:!w-full',
 					'[&_video]:!w-full',
-					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:p-2',
+					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:px-2 [&_.reblog-header]:py-1',
 					'[&_img]:my-4 [&_img]:!h-auto',
 					// eslint-disable-next-line no-useless-escape
 					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:!my-0 [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
@@ -348,65 +359,83 @@ const BlogPost = ({
 		<div
 			ref={Ref as Ref<HTMLDivElement>}
 			className={classNames(
-				'z-blog bg-blog-post-card flex w-full flex-col rounded-md',
+				'z-blog bg-blog-post-card flex w-full flex-col md:rounded-md',
 				className
 			)}
 			key={post.id}
 		>
 			<div className="flex items-start justify-between">
-				<div>
+				<div className="flex flex-col gap-1 px-3 py-2">
 					{showRebloggedInfo && rebloggedRoot && (
-						<div className="flex flex-col gap-2 px-4 pt-3">
-							<span>Reblogged from: {rebloggedRoot}</span>
+						<>
+							<a
+								href={`https://tumblr.com/${rebloggedRoot}`}
+								target="_blank"
+								rel="noreferrer noopener"
+								className="[&:hover>span]:underline"
+							>
+								From: <span>{rebloggedRoot}</span>
+							</a>
 							{showOriginalPoster && (
-								<span>Original poster: {rebloggedFrom}</span>
+								<a
+									href={`https://tumblr.com/${rebloggedFrom}`}
+									target="_blank"
+									rel="noreferrer noopener"
+									className="[&:hover>span]:underline"
+								>
+									OP: <span>{rebloggedFrom}</span>
+								</a>
 							)}
+						</>
+					)}
+					{title && (
+						<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
+							<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
+								{title}
+							</span>
 						</div>
 					)}
 				</div>
-				<div className="m-1 mx-2 flex items-center">
-					{showPostLink && url && (
-						<a
-							href={url}
-							className="fill-text [&:hover]:fill-text-highlight m-1 p-1"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							<Link />
-						</a>
-					)}
-					{zoomInToPost ? (
-						<button
-							className="fill-text [&:hover]:fill-text-highlight m-1 scale-90 cursor-pointer p-1 transition-colors"
-							onClick={zoomIn}
-						>
-							<PanZoom />
-						</button>
-					) : null}
-				</div>
-			</div>
-			<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
-				<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
-					{title}
-				</span>
-				<div className="flex items-center gap-2">
-					{showDate && createdAt && (
-						<Tooltip.Provider>
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild>
-									<span className="text-sm">
-										{createdAt.toLocaleDateString()}
-									</span>
-								</Tooltip.Trigger>
-								<Tooltip.Portal>
-									<Tooltip.Content className="TooltipContent" sideOffset={5}>
-										{createdAt.toLocaleString()}
-										<Tooltip.Arrow className="TooltipArrow" />
-									</Tooltip.Content>
-								</Tooltip.Portal>
-							</Tooltip.Root>
-						</Tooltip.Provider>
-					)}
+				<div className="m-1 mx-2 flex flex-row-reverse flex-wrap items-center gap-x-2">
+					<div className="flex items-center gap-1">
+						{showPostLink && url && (
+							<a
+								href={url}
+								className="fill-text [&:hover]:fill-text-highlight p-1"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<Link />
+							</a>
+						)}
+						{zoomInToPost ? (
+							<button
+								className="fill-text [&:hover]:fill-text-highlight scale-90 cursor-pointer p-1 transition-colors"
+								onClick={zoomIn}
+							>
+								<PanZoom />
+							</button>
+						) : null}
+					</div>
+					<div>
+						{showDate && createdAt && (
+							<Tooltip.Provider>
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild>
+										<span className="text-sm">
+											{createdAt.toLocaleDateString()}
+										</span>
+									</Tooltip.Trigger>
+									<Tooltip.Portal>
+										<Tooltip.Content className="TooltipContent" sideOffset={5}>
+											{createdAt.toLocaleString()}
+											<Tooltip.Arrow className="TooltipArrow" />
+										</Tooltip.Content>
+									</Tooltip.Portal>
+								</Tooltip.Root>
+							</Tooltip.Provider>
+						)}
+					</div>
 				</div>
 			</div>
 			<div>

@@ -22,7 +22,7 @@ const RootDirSelector = () => {
 						Initialize
 					</button>
 					<button
-						className="fixed top-0 left-0 m-4 cursor-pointer rounded-2xl bg-gray-800 px-4 py-2 transition-colors [&:hover]:bg-gray-700"
+						className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg fixed top-0 left-0 m-4 cursor-pointer rounded-2xl px-4 py-2 transition-colors"
 						onClick={() => navigate({ to: '/about' })}
 					>
 						About

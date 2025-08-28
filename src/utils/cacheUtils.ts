@@ -7,7 +7,7 @@ export const CACHES = {
 type CacheName = (typeof CACHES)[keyof typeof CACHES];
 
 export const cacheValueAsync = async <T>(
-	key: CacheName & (string & {}),
+	key: CacheName | (string & {}),
 	valueSupplier: () => Promise<T>
 ) => {
 	const value = (cache as Record<string, T | undefined>)[key];

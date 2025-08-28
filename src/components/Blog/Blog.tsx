@@ -15,7 +15,7 @@ import PlatformLogo from './PlatformLogo';
 
 interface BlogProps {
 	blog: BlogEntry;
-	blogFiles: File[];
+	blogFiles: FileSystemFileHandle[];
 	posts: BlogPostType[];
 	goToBlogSelection: () => void;
 }
@@ -109,27 +109,27 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 
 	return (
 		<div className="min-h-full w-full">
-			<div className="z-sticky sticky top-0 bottom-0 flex h-16 w-full items-center justify-between bg-[#111] px-2 sm:px-6">
-				<div className="flex items-center gap-4">
-					<div className="flex items-center gap-4">
-						<button
-							className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700"
-							onClick={() => goHome()}
-						>
-							<HomeLogo />
-						</button>
-						<PlatformLogo platform={blog.metadata.platform} />
-						<div className="flex flex-col items-start justify-between text-sm">
-							<p className="text-white">{blog.metadata.Name}</p>
-							<p>{blog.metadata.Title}</p>
-						</div>
-					</div>
+			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
+				<div className="flex min-w-0 items-center gap-4">
+					<button
+						className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
+						onClick={() => goHome()}
+					>
+						<HomeLogo />
+					</button>
+					<PlatformLogo platform={blog.metadata.platform} />
 					<a
+						className="flex min-w-0 flex-col items-start justify-between text-sm [&:hover]:underline [&>*]:max-w-full"
 						href={`https://tumblr.com/${blog.metadata.Name}`}
 						target="_blank"
-						className="text-sm text-gray-400 transition-colors [&:hover]:text-gray-300"
+						rel="noreferrer noopener"
 					>
-						Visit Blog
+						<p className="overflow-hidden text-nowrap text-ellipsis text-white">
+							{blog.metadata.Name}
+						</p>
+						<p className="overflow-hidden text-nowrap text-ellipsis">
+							{blog.metadata.Title}
+						</p>
 					</a>
 				</div>
 				<div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					<BlogSettings params={params} />
 				</div>
 			</div>
-			<div className="w-full px-4 py-8 md:px-8 lg:px-12">
+			<div className="w-full px-0 py-8 md:px-8 lg:px-12">
 				<Masonry
 					key={blog.metadata.Name + JSON.stringify(filter)}
 					items={sortedFilteredPosts}

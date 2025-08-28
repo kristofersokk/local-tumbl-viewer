@@ -27,7 +27,7 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 	return (
 		<Popover.Root>
 			<Popover.Trigger asChild>
-				<button className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700">
+				<button className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800">
 					<SettingsLogo />
 				</button>
 			</Popover.Trigger>

@@ -48,17 +48,5 @@ function Index() {
 		navigate({ to: blogName });
 	};
 
-	return (
-		<>
-			<Center>
-				<BlogSelector blogs={blogs!} selectBlog={selectBlog} />
-			</Center>
-			<button
-				className="fixed top-0 left-0 m-4 cursor-pointer rounded-2xl bg-gray-800 px-4 py-2 transition-colors [&:hover]:bg-gray-700"
-				onClick={() => navigate({ to: '/about' })}
-			>
-				About
-			</button>
-		</>
-	);
+	return <BlogSelector blogs={blogs!} selectBlog={selectBlog} />;
 }

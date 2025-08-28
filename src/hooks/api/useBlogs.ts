@@ -29,15 +29,29 @@ const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 										file
 											.getFile()
 											.then(file => file.text())
-											.then(jsonrepair)
-											.then(text => JSON.parse(text) as BlogMetadata)
+											.then(text => {
+												try {
+													return JSON.parse(text) as BlogMetadata;
+													// eslint-disable-next-line @typescript-eslint/no-unused-vars
+												} catch (ignored) {
+													return JSON.parse(jsonrepair(text)) as BlogMetadata;
+												}
+											})
 											.then(processBlog)
 											.catch(() => undefined),
 										fileEntriesFile
 											.getFile()
 											.then(file => file.text())
-											.then(jsonrepair)
-											.then(text => JSON.parse(text) as BlogFileEntries)
+											.then(text => {
+												try {
+													return JSON.parse(text) as BlogFileEntries;
+													// eslint-disable-next-line @typescript-eslint/no-unused-vars
+												} catch (ignored) {
+													return JSON.parse(
+														jsonrepair(text)
+													) as BlogFileEntries;
+												}
+											})
 											.catch(() => undefined),
 									]);
 									if (!metadata || !fileEntries) return undefined;

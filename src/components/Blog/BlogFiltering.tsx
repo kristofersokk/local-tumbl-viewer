@@ -37,7 +37,7 @@ const BlogFiltering = ({
 	return (
 		<Popover.Root>
 			<Popover.Trigger asChild>
-				<button className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-700">
+				<button className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800">
 					<FilterLogo />
 					<Counter count={filterCount || undefined} />
 				</button>

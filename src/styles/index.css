@@ -10,4 +10,20 @@
 	* {
 		@apply text-text font-Inter box-border;
 	}
+
+	::-webkit-scrollbar {
+		@apply w-[12px];
+	}
+
+	::-webkit-scrollbar-track {
+		@apply bg-scrollbar-bg rounded-lg;
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply bg-scrollbar-thumb rounded-lg;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-scrollbar-thumb-hover;
+	}
 }

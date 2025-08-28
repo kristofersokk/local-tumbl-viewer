@@ -2,20 +2,31 @@
 	--font-Inter: 'Inter', sans-serif;
 	--font-Tinos: 'Tinos', Times, Times New Roman, serif;
 
-	--color-background: black;
+	--color-background: #04060a;
+	--color-navbar: #0b111c;
+	--color-scrollbar-bg: #101828;
+	--color-scrollbar-thumb: #1d2b48;
+	--color-scrollbar-thumb-hover: #2a3f69;
+
 	--color-text: #bbb;
 	--color-text-highlight: #ddd;
 	--color-text-tag: #999;
 	--color-blog-collapse-color: theme(colors.gray.900);
 	--color-blog-collapse-color-hover: theme(colors.gray.800);
-	--color-popover-background: #222;
+	--color-popover-background: #111a2b;
 	--color-counter: #a11;
 	--color-tooltip-bg: #ddd;
 	--color-tooltip-text: #222;
+	--color-switch-bg: #151515;
+	--color-switch-thumb: #ddd;
+	--color-switch-checked-bg: #ddd;
+	--color-switch-checked-thumb: #151515;
 	--color-blog-post-card: theme(colors.gray.900);
 	--color-blog-post-question-bg: theme(colors.gray.800);
 	--color-blog-post-summary: #888;
 	--color-blog-post-link-border: theme(colors.gray.500);
+	--color-action-button-bg: #162238;
+	--color-action-button-hover-bg: #1a2842;
 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;

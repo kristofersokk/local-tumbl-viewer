@@ -7,13 +7,8 @@ const useBlogFiles = (blogFolder: FileSystemDirectoryHandle | undefined) => {
 		queryFn: blogFolder
 			? async () =>
 					Array.fromAsync(blogFolder.values()).then(handles =>
-						Promise.all(
-							handles
-								.filter(
-									(handle): handle is FileSystemFileHandle =>
-										handle.kind === 'file'
-								)
-								.map(handle => handle.getFile())
+						handles.filter(
+							(handle): handle is FileSystemFileHandle => handle.kind === 'file'
 						)
 					)
 			: skipToken,

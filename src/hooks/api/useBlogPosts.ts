@@ -6,7 +6,7 @@ import { processBlogPost } from 'Utils/blogUtils';
 
 const useBlogPosts = (
 	blogFolderHandle: FileSystemDirectoryHandle | undefined,
-	blogFiles: File[] | undefined
+	blogFiles: FileSystemFileHandle[] | undefined
 ) => {
 	const blogTextsFile = blogFiles?.find(file => file.name === 'texts.txt');
 	const blogImagesFile = blogFiles?.find(file => file.name === 'images.txt');
@@ -36,9 +36,16 @@ const useBlogPosts = (
 						await Promise.all(
 							foundBlogPostsFiles.map(file =>
 								file
-									.text()
-									.then(text => jsonrepair(text))
-									.then(text => JSON.parse(text) as BlogPost[])
+									.getFile()
+									.then(file => file.text())
+									.then(text => {
+										try {
+											return JSON.parse(text) as BlogPost[];
+											// eslint-disable-next-line @typescript-eslint/no-unused-vars
+										} catch (ignored) {
+											return JSON.parse(jsonrepair(text)) as BlogPost[];
+										}
+									})
 									.then(blogs => blogs.map(processBlogPost))
 									.catch(() => console.error(`Error reading ${file.name}`))
 							)
