@@ -1,12 +1,20 @@
 import { Toast } from 'radix-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface NeedRefreshProps {
 	updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>;
 }
 
 const NeedRefresh = ({ updateServiceWorker }: NeedRefreshProps) => {
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setOpen(true);
+		}, 5000);
+
+		return () => clearTimeout(timeout);
+	}, []);
 
 	return (
 		<Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>

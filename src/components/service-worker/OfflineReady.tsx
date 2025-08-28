@@ -1,8 +1,16 @@
 import { Toast } from 'radix-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const OfflineReady = () => {
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setOpen(true);
+		}, 2000);
+
+		return () => clearTimeout(timeout);
+	}, []);
 
 	return (
 		<Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
