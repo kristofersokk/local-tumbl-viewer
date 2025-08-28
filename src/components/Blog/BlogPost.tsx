@@ -12,6 +12,7 @@ import {
 	RefObject,
 	useCallback,
 	useMemo,
+	useRef,
 	useState,
 } from 'react';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
@@ -355,15 +356,18 @@ const BlogPost = ({
 		</div>
 	);
 
+	const topRef = useRef<HTMLDivElement | null>(null);
+
 	return (
 		<div
 			ref={Ref as Ref<HTMLDivElement>}
 			className={classNames(
-				'z-blog bg-blog-post-card flex w-full flex-col md:rounded-md',
+				'z-blog bg-blog-post-card relative flex w-full flex-col md:rounded-md',
 				className
 			)}
 			key={post.id}
 		>
+			<div ref={topRef} className="absolute -top-30" />
 			<div className="flex items-start justify-between">
 				<div className="flex flex-col gap-1 px-3 py-2">
 					{showRebloggedInfo && rebloggedRoot && (
@@ -455,7 +459,10 @@ const BlogPost = ({
 						collapseButton={collapse => (
 							<button
 								className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
-								onClick={collapse}
+								onClick={() => {
+									collapse?.();
+									topRef.current?.scrollIntoView({ behavior: 'smooth' });
+								}}
 							>
 								Collapse
 							</button>
