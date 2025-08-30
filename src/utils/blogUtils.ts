@@ -1,4 +1,10 @@
-import { BlogMetadata, BlogPost, BlogType, Platform } from 'Types/blog';
+import {
+	BlogFileEntry,
+	BlogMetadata,
+	BlogPost,
+	BlogType,
+	Platform,
+} from 'Types/blog';
 import { deduplicateArray } from './arrayUtils';
 
 export function getBlogFolderName(blog: BlogMetadata | undefined) {
@@ -70,6 +76,28 @@ const calculatedCreatedAt = (post: BlogPost): Date | undefined => {
 	return createdAt ? new Date(createdAt) : undefined;
 };
 
+function getPhotoUrls(post: BlogPost): string[] {
+	const singlePhotoUrl =
+		post['photo-url-1280'] ||
+		post['photo-url-500'] ||
+		post['photo-url-400'] ||
+		post['photo-url-250'] ||
+		post['photo-url-100'] ||
+		post['photo-url-75'];
+	const multiplePhotoUrls = (post.photos || [])
+		.map(
+			photo =>
+				photo['photo-url-1280'] ||
+				photo['photo-url-500'] ||
+				photo['photo-url-400'] ||
+				photo['photo-url-250'] ||
+				photo['photo-url-100'] ||
+				photo['photo-url-75']
+		)
+		.filter(Boolean);
+	return singlePhotoUrl ? [singlePhotoUrl] : multiplePhotoUrls;
+}
+
 export const processBlogPost = (post: BlogPost): BlogPost => {
 	return {
 		...post,
@@ -87,6 +115,7 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 				post['regular-body'] ||
 				post.body ||
 				'',
+			photo: post.type === 'photo' ? { urls: getPhotoUrls(post) } : undefined,
 			quote:
 				post.type === 'quote'
 					? {
@@ -244,9 +273,7 @@ export const getBlogPostProcessors = (
 
 const alternativeExtensions: string[][] = [['jpeg', 'jpg', 'png', 'webp']];
 
-export function getAlternativeFileNames(
-	fileName: string | undefined
-): string[] {
+function getAlternativeFileNames(fileName: string | undefined): string[] {
 	if (!fileName || !fileName.includes('.')) return [fileName || ''];
 
 	const lastIndexOfDot = fileName.lastIndexOf('.');
@@ -257,4 +284,32 @@ export function getAlternativeFileNames(
 	).map(ext => `${fileNameWithoutExtension}.${ext}`);
 
 	return [fileName, ...alternativeFileNames];
+}
+
+export function getMediaFileHandle(
+	imgMappingEntries: BlogFileEntry[],
+	blogFiles: FileSystemFileHandle[],
+	url: string
+) {
+	const lastSlashIndex = url.lastIndexOf('/');
+	const urlFileName = url.slice(lastSlashIndex + 1);
+	const differentResolutionEntry = imgMappingEntries?.find(
+		({ O: originalFileName }) => originalFileName === urlFileName
+	);
+	const originalResolutionEntry = imgMappingEntries?.find(
+		({ L: unChangedFileName }) => unChangedFileName === urlFileName
+	);
+	const newFileNames = [
+		differentResolutionEntry?.F,
+		differentResolutionEntry?.L,
+		differentResolutionEntry?.O,
+		originalResolutionEntry?.F,
+		originalResolutionEntry?.L,
+		originalResolutionEntry?.O,
+	];
+	const possibleFileNames = newFileNames.flatMap(getAlternativeFileNames);
+	const mediaFile = blogFiles.find(file =>
+		possibleFileNames.includes(file.name)
+	);
+	return mediaFile;
 }

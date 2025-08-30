@@ -62,7 +62,13 @@ const Initializer = ({ children }: InitializerProps) => {
 		>
 			{initialized && children}
 			{!initialized && (
-				<Center>{inProgress ? <Loader /> : <RootDirSelector />}</Center>
+				<Center>
+					{inProgress ? (
+						<Loader type="pacman" size={60} />
+					) : (
+						<RootDirSelector />
+					)}
+				</Center>
 			)}
 		</RootDirContext.Provider>
 	);

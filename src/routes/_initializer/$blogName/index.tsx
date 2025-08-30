@@ -54,7 +54,7 @@ function BlogRoute() {
 	if (isFetching) {
 		return (
 			<Center>
-				<Loader />
+				<Loader type="pacman" size={60} />
 			</Center>
 		);
 	}

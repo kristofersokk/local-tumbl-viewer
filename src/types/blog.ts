@@ -198,19 +198,19 @@ export interface BlogPost {
 		height: number;
 		width: number;
 		offset: string; // o1, o2, o3, ...
-		// photo-url-75
-		// photo-url-100
-		// photo-url-250
-		// photo-url-400
-		// photo-url-500
-		// photo-url-1280
+		'photo-url-75'?: string;
+		'photo-url-100'?: string;
+		'photo-url-250'?: string;
+		'photo-url-400'?: string;
+		'photo-url-500'?: string;
+		'photo-url-1280'?: string;
 	}[];
-	// photo-url-75
-	// photo-url-100
-	// photo-url-250
-	// photo-url-400
-	// photo-url-500
-	// photo-url-1280
+	'photo-url-75'?: string;
+	'photo-url-100'?: string;
+	'photo-url-250'?: string;
+	'photo-url-400'?: string;
+	'photo-url-500'?: string;
+	'photo-url-1280'?: string;
 	photoset_layout?: string; // 11, 1111, 222
 	photoset_photos?: {
 		height: number;
@@ -259,6 +259,9 @@ export interface BlogPost {
 		url?: string;
 		body?: string;
 		summary?: string;
+		photo?: {
+			urls: string[];
+		};
 		quote?: {
 			quote: string;
 			source: string;
