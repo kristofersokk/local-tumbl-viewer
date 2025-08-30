@@ -1,5 +1,5 @@
+import DownloadLogo from 'Assets/icons/download.svg?react';
 import HomeLogo from 'Assets/icons/home.svg?react';
-
 import ClickOutside from 'Components/ClickOutside';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
@@ -8,6 +8,7 @@ import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { Masonry } from 'masonic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
@@ -111,6 +112,11 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		});
 	}, []);
 
+	const {
+		needRefresh: [needRefresh],
+		updateServiceWorker,
+	} = useRegisterSW();
+
 	return (
 		<div className="min-h-full w-full">
 			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
@@ -136,7 +142,15 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 						</p>
 					</a>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="xs:gap-1 flex items-center md:gap-2">
+					{needRefresh && (
+						<button
+							className="fill-download-icon-fill [&:hover]:bg-download-icon-hover cursor-pointer rounded-full p-2 transition-colors"
+							onClick={() => updateServiceWorker(true)}
+						>
+							<DownloadLogo />
+						</button>
+					)}
 					<BlogFiltering
 						filteredPosts={sortedFilteredPosts}
 						allPostsCount={posts.length}
