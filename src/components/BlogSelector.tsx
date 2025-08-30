@@ -1,8 +1,9 @@
+import { useNavigate } from '@tanstack/react-router';
 import classNames from 'classnames';
+import { useMemo } from 'react';
 import { BlogEntry } from 'Types/blog';
 import PlatformLogo from './Blog/PlatformLogo';
 import RootDirResetButton from './RootDirResetButton';
-import { useNavigate } from '@tanstack/react-router';
 
 interface BlogSelectorProps {
 	blogs: BlogEntry[];
@@ -11,6 +12,14 @@ interface BlogSelectorProps {
 
 const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	const navigate = useNavigate({ from: '/' });
+
+	const sortedBlogs = useMemo(() => {
+		return [...blogs].sort(
+			(a, b) =>
+				a.metadata.Name.localeCompare(b.metadata.Name) ||
+				a.metadata.platform.localeCompare(b.metadata.platform)
+		);
+	}, [blogs]);
 
 	return (
 		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
@@ -28,7 +37,7 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 				<div className="flex flex-col items-center gap-4 px-2 py-8">
 					<div className="flex flex-col gap-0.5">
 						<p className="mb-2 ml-2">Select a blog</p>
-						{blogs.map(blog => {
+						{sortedBlogs.map(blog => {
 							const isSupported = blog.metadata.platform === 'tumblr';
 							return (
 								<div
