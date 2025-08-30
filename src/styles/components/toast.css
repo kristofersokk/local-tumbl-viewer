@@ -1,5 +1,5 @@
 .ToastViewport {
-	@apply z-toast fixed right-0 bottom-0 m-0 flex max-w-screen flex-col gap-3 p-4 outline-none;
+	@apply z-toast fixed right-0 bottom-0 m-0 flex max-w-dvw flex-col gap-3 p-4 outline-none;
 }
 
 .ToastRoot {

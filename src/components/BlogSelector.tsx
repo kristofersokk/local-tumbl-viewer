@@ -13,7 +13,7 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	const navigate = useNavigate({ from: '/' });
 
 	return (
-		<div className="grid h-screen w-screen grid-rows-[auto_1fr]">
+		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
 			<div className="bg-navbar flex items-center justify-between px-4 py-2.5">
 				<button
 					className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors"

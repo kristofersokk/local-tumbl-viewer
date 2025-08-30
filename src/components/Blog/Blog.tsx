@@ -170,7 +170,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 			{zoomedInPost && (
 				<div>
 					<div className="z-zoomed-post fixed top-0 right-0 bottom-0 left-0 flex justify-center overflow-y-auto overscroll-none [&::-webkit-scrollbar]:hidden">
-						<div className="min-h-[calc(100vh+1px)]">
+						<div className="min-h-[calc(100dvh+1px)]">
 							<div className="h-fit py-10 pb-16 lg:py-16">
 								<div className="h-fit w-[40rem] max-w-[90vw]">
 									<ClickOutside onClickOutside={zoomOut}>

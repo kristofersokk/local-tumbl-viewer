@@ -68,7 +68,7 @@ const BlogFiltering = ({
 												{
 													<button
 														// On hover, change background drop-shadow instead of text color
-														className="h-4 w-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
+														className="size-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
 														onClick={() => removeTagFilter(tag)}
 													>
 														x
