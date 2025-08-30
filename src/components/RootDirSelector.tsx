@@ -8,6 +8,12 @@ const RootDirSelector = () => {
 
 	const fileSystemAPIIsSupported = !!window.showDirectoryPicker;
 
+	const navigateToAbout = () => {
+		document.startViewTransition(() => {
+			navigate({ to: '/about' });
+		});
+	};
+
 	return (
 		<div className="flex flex-col items-center gap-4">
 			{fileSystemAPIIsSupported ? (
@@ -16,14 +22,16 @@ const RootDirSelector = () => {
 					<button
 						className="cursor-pointer rounded-4xl bg-slate-900 px-6 py-3 text-2xl transition-colors [&:hover]:bg-slate-950"
 						onClick={() => {
-							initializeRootDirHandle?.(true);
+							document.startViewTransition(() => {
+								initializeRootDirHandle?.(true);
+							});
 						}}
 					>
 						Initialize
 					</button>
 					<button
 						className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg fixed top-0 left-0 m-4 cursor-pointer rounded-2xl px-4 py-2 transition-colors"
-						onClick={() => navigate({ to: '/about' })}
+						onClick={navigateToAbout}
 					>
 						About
 					</button>

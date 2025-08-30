@@ -1,46 +1,52 @@
 import { useQueryClient } from '@tanstack/react-query';
 import RootDirContext from 'Contexts/InitializationContext';
+import { atom, useAtom } from 'jotai';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
-import Center from './Center';
 import Loader from './Loader';
 import RootDirSelector from './RootDirSelector';
+import Center from './utils/Center';
 
 interface InitializerProps {
 	children: ReactNode | ReactNode[];
 }
 
+const rootDirHandleAtom = atom<FileSystemDirectoryHandle>();
+
 const Initializer = ({ children }: InitializerProps) => {
 	const queryClient = useQueryClient();
 
-	const [rootDirHandle, setRootDirHandle] =
-		useState<FileSystemDirectoryHandle>();
+	const [rootDirHandle, setRootDirHandle] = useAtom(rootDirHandleAtom);
 	const [inProgress, setInProgress] = useState(false);
 
-	const initializeRootDirHandle = useCallback((allowPrompt?: boolean) => {
-		setInProgress(true);
-		getPermittedRootDirectoryHandle(allowPrompt)
-			.then(dirHandle => {
-				if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
-					setRootDirHandle(dirHandle);
-				}
-				setInProgress(false);
-			})
-			.catch(() => {
-				setInProgress(false);
-			});
-	}, []);
+	const initializeRootDirHandle = useCallback(
+		(allowPrompt?: boolean) => {
+			setInProgress(true);
+			getPermittedRootDirectoryHandle(allowPrompt)
+				.then(dirHandle => {
+					if (dirHandle && dirHandle instanceof FileSystemDirectoryHandle) {
+						setRootDirHandle(dirHandle);
+					}
+					setInProgress(false);
+				})
+				.catch(() => {
+					setInProgress(false);
+				});
+		},
+		[setRootDirHandle]
+	);
 
 	const clearRootDirectoryHandle = useCallback(() => {
 		setRootDirHandle(undefined);
 		setInProgress(false);
 		queryClient.resetQueries();
-	}, [queryClient]);
+	}, [queryClient, setRootDirHandle]);
 
 	useEffect(() => {
-		if (window.showDirectoryPicker) {
+		if (window.showDirectoryPicker && !rootDirHandle) {
 			initializeRootDirHandle();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [initializeRootDirHandle]);
 
 	const initialized = !!rootDirHandle;

@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import BlogSelector from 'Components/BlogSelector';
-import Center from 'Components/Center';
 import Loader from 'Components/Loader';
 import RootDirResetButton from 'Components/RootDirResetButton';
+import Center from 'Components/utils/Center';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
 
@@ -45,7 +45,9 @@ function Index() {
 	}
 
 	const selectBlog = (blogName: string) => {
-		navigate({ to: blogName });
+		document.startViewTransition(() => {
+			navigate({ to: blogName });
+		});
 	};
 
 	return <BlogSelector blogs={blogs!} selectBlog={selectBlog} />;

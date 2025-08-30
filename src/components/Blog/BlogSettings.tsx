@@ -1,6 +1,8 @@
 import SettingsLogo from 'Assets/icons/settings.svg?react';
+import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import { Popover, Slider, Switch } from 'radix-ui';
+import { useState } from 'react';
 
 interface BlogSettingsProps {
 	params: BlogParams;
@@ -24,12 +26,35 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setFallbackToOnlineMedia,
 	} = params;
 
+	const [open, setOpen] = useState(false);
+
 	return (
-		<Popover.Root>
+		<Popover.Root
+			open={open}
+			onOpenChange={newOpen => {
+				document.startViewTransition(() => {
+					setOpen(newOpen);
+				});
+			}}
+		>
 			<Popover.Trigger asChild>
-				<button className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800">
-					<SettingsLogo />
-				</button>
+				<InterceptCallbacks
+					intercept={{
+						onClick: (prevCb, args) => {
+							document.startViewTransition(() => {
+								prevCb(...args);
+							});
+						},
+					}}
+					render={props => (
+						<button
+							className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
+							{...props}
+						>
+							<SettingsLogo />
+						</button>
+					)}
+				/>
 			</Popover.Trigger>
 			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
 				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">

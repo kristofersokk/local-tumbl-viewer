@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import ArrowLeft from 'Assets/icons/arrow-left.svg?react';
 import Blog from 'Components/Blog/Blog';
-import Center from 'Components/Center';
 import Loader from 'Components/Loader';
+import Center from 'Components/utils/Center';
 import useBlogFiles from 'Hooks/api/useBlogFiles';
 import useBlogPosts from 'Hooks/api/useBlogPosts';
 import useBlogs from 'Hooks/api/useBlogs';
@@ -34,7 +34,9 @@ function BlogRoute() {
 	} = useBlogPosts(blogFolderHandle, blogFiles);
 
 	const goToBlogSelection = useCallback(() => {
-		navigate({ to: '..' });
+		document.startViewTransition(() => {
+			navigate({ to: '..' });
+		});
 	}, [navigate]);
 
 	useEffect(() => {

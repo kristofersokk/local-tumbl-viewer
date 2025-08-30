@@ -2,7 +2,9 @@ import { Popover, Switch } from 'radix-ui';
 
 import FilterLogo from 'Assets/icons/filter.svg?react';
 import Counter from 'Components/utils/Counter';
+import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogViewSettings } from 'Hooks/useBlogViewSettings';
+import { useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { countAllTags } from 'Utils/blogUtils';
 
@@ -34,13 +36,36 @@ const BlogFiltering = ({
 		.toSorted((a, b) => b.count - a.count)
 		.map(tag => tag.tag);
 
+	const [open, setOpen] = useState(false);
+
 	return (
-		<Popover.Root>
+		<Popover.Root
+			open={open}
+			onOpenChange={newOpen => {
+				document.startViewTransition(() => {
+					setOpen(newOpen);
+				});
+			}}
+		>
 			<Popover.Trigger asChild>
-				<button className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800">
-					<FilterLogo />
-					<Counter count={filterCount || undefined} />
-				</button>
+				<InterceptCallbacks
+					intercept={{
+						onClick: (prevCb, args) => {
+							document.startViewTransition(() => {
+								prevCb(...args);
+							});
+						},
+					}}
+					render={props => (
+						<button
+							className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
+							{...props}
+						>
+							<FilterLogo />
+							<Counter count={filterCount || undefined} />
+						</button>
+					)}
+				/>
 			</Popover.Trigger>
 			<Popover.Content align="end" sideOffset={5} className="w-80 max-w-[90vw]">
 				<div className="bg-popover-background rounded-lg px-3 py-4">

@@ -9,10 +9,14 @@ export const useClickOutside = (
 			if (!ref.current || ref.current.contains(event.target as Node)) {
 				return;
 			}
+			event.preventDefault();
+			event.stopPropagation();
 			handler();
 		};
 		const escapeListener = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
+				event.preventDefault();
+				event.stopPropagation();
 				handler();
 			}
 		};

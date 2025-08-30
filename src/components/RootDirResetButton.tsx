@@ -14,8 +14,10 @@ const RootDirResetButton = ({ className }: RootDirResetButtonProps) => {
 
 	const reset = async () => {
 		await resetRootDirectoryHandle();
-		clearRootDirectoryHandle?.();
-		queryClient.clear();
+		document.startViewTransition(() => {
+			clearRootDirectoryHandle?.();
+			queryClient.clear();
+		});
 	};
 
 	return (

@@ -9,7 +9,9 @@ function About() {
 	const navigate = useNavigate({ from: '/about' });
 
 	const goHome = () => {
-		navigate({ to: '/' });
+		document.startViewTransition(() => {
+			navigate({ to: '/' });
+		});
 	};
 
 	return (
