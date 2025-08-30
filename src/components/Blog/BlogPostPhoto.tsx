@@ -14,6 +14,8 @@ const BlogPostPhoto = ({ url, transformMediaUrl }: BlogPostPhotoProps) => {
 		transformed: string;
 	} | null>(null);
 
+	// TODO: investigate low height post until refresh
+
 	useEffect(() => {
 		transformMediaUrl(url).then(mediaInfo => {
 			setMediaInfo(mediaInfo);
