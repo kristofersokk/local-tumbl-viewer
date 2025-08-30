@@ -92,7 +92,7 @@ const Collapsible = ({
 
 	return (
 		<div className={classNames('relative overflow-hidden', className)}>
-			{children(contentRef, 'transition-[max-height] duration-500', collapsed)}
+			{children(contentRef, 'transition-[max-height] duration-700', collapsed)}
 			{collapsed && expandButton(expand)}
 			{!collapsed && !isNonCollapsible && collapseButton(collapse)}
 		</div>
