@@ -182,7 +182,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
 					itemKey={post => post.id || post.url || ''}
 					scrollFps={12}
-					overscanBy={5}
+					overscanBy={3}
 				/>
 			</div>
 			{zoomedInPost && (

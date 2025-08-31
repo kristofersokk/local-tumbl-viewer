@@ -1,11 +1,10 @@
 import classNames from 'classnames';
 import useElementSize from 'Hooks/useElementSize';
-import useRemToPixels from 'Hooks/useRemToPixels';
 import {
+	CSSProperties,
 	ReactNode,
 	RefObject,
 	useCallback,
-	useEffect,
 	useRef,
 	useState,
 } from 'react';
@@ -14,12 +13,13 @@ interface CollapsibleProps {
 	children: (
 		ref: RefObject<HTMLElement | null>,
 		className?: string,
-		collapsed?: boolean
+		style?: CSSProperties,
+		expanded?: boolean
 	) => ReactNode | ReactNode[];
 	className?: string;
 	expandButton: (expand?: () => void) => ReactNode;
 	collapseButton: (collapse?: () => void) => ReactNode;
-	collapsedHeightRem: number;
+	collapsedHeightPx: number;
 }
 
 const Collapsible = ({
@@ -27,74 +27,48 @@ const Collapsible = ({
 	className,
 	expandButton,
 	collapseButton,
-	collapsedHeightRem,
+	collapsedHeightPx,
 }: CollapsibleProps) => {
 	const contentRef = useRef<HTMLDivElement>(null);
-	const [collapsed, setCollapsed] = useState(true);
-	const [isNonCollapsible, setIsNonCollapsible] = useState(false);
+	const [expanded, setExpanded] = useState(false);
 	const { scrollHeight } = useElementSize(contentRef);
-	const remToPixels = useRemToPixels();
 
-	const collapsedMaxHeightRem = collapsedHeightRem * (remToPixels / 16);
-	const nonCollapsibleHeightRem = collapsedHeightRem * (remToPixels / 16);
+	const collapsedMaxHeightPx = collapsedHeightPx;
 
-	const collapse = () => {
-		setCollapsed(true);
-
-		const contentEl = contentRef.current;
-		if (contentEl) {
-			contentEl.style.maxHeight = `${scrollHeight}px`;
-			requestAnimationFrame(() =>
-				requestAnimationFrame(() => {
-					contentEl.style.maxHeight = `${collapsedMaxHeightRem}rem`;
-				})
-			);
-		}
-	};
+	const collapse = useCallback(() => {
+		setExpanded(true);
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				setExpanded(false);
+			});
+		});
+	}, []);
 
 	const expand = useCallback(() => {
-		setCollapsed(false);
+		setExpanded(false);
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				setExpanded(true);
+			});
+		});
+	}, []);
 
-		const contentEl = contentRef.current;
-		if (contentEl) {
-			contentEl.style.maxHeight = `${collapsedMaxHeightRem}rem`;
-			requestAnimationFrame(() =>
-				requestAnimationFrame(() => {
-					contentEl.style.maxHeight = `${scrollHeight}px`;
-				})
-			);
-		}
-	}, [collapsedMaxHeightRem, scrollHeight]);
-
-	useEffect(() => {
-		const contentEl = contentRef.current;
-		if (contentEl) {
-			if (collapsed) {
-				contentEl.style.maxHeight = `${collapsedMaxHeightRem}rem`;
-			} else if (scrollHeight) {
-				contentEl.style.maxHeight = `${scrollHeight}px`;
-			}
-		}
-	});
-
-	useEffect(() => {
-		const element = contentRef.current;
-		if (
-			element &&
-			scrollHeight > 0 &&
-			scrollHeight < nonCollapsibleHeightRem * remToPixels &&
-			collapsed
-		) {
-			expand();
-			setIsNonCollapsible(true);
-		}
-	}, [scrollHeight, collapsed, remToPixels, expand, nonCollapsibleHeightRem]);
+	const higherThanCollapseLimit = scrollHeight > collapsedMaxHeightPx;
+	const showExpandButton = !expanded && higherThanCollapseLimit;
+	const showCollapseButton = expanded;
 
 	return (
 		<div className={classNames('relative overflow-hidden', className)}>
-			{children(contentRef, 'transition-[max-height] duration-700', collapsed)}
-			{collapsed && expandButton(expand)}
-			{!collapsed && !isNonCollapsible && collapseButton(collapse)}
+			{children(
+				contentRef,
+				'transition-[max-height] duration-700',
+				{
+					maxHeight: `${expanded ? scrollHeight : collapsedMaxHeightPx}px`,
+				},
+				expanded
+			)}
+			{showExpandButton && expandButton(expand)}
+			{showCollapseButton && collapseButton(collapse)}
 		</div>
 	);
 };

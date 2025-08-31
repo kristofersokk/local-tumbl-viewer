@@ -1,10 +1,16 @@
 import classNames from 'classnames';
 import UnsafeContent from 'Components/UnsafeContent';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import useRemToPixels from 'Hooks/useRemToPixels';
 import useTransformMediaUrl from 'Hooks/useTransformMediaUrl';
 import useWindowSize from 'Hooks/useWindowSize';
-import { ComponentProps, ReactNode, RefObject, useMemo, useRef } from 'react';
+import {
+	ComponentProps,
+	CSSProperties,
+	ReactNode,
+	RefObject,
+	useMemo,
+	useRef,
+} from 'react';
 import { BlogEntry, BlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogUtils';
 import BlogPostPhoto from './BlogPostPhoto';
@@ -31,11 +37,10 @@ const BlogPostBody = ({
 }: BlogPostBodyProps) => {
 	const { collapsedHeightPercent, fallbackToOnlineMedia } = params;
 
-	const remInPixels = useRemToPixels();
 	const { height: viewportHeightInPixels } = useWindowSize();
 
-	const collapsedHeightRem = Math.floor(
-		((collapsedHeightPercent / 100) * viewportHeightInPixels) / remInPixels
+	const collapsedHeightPx = Math.floor(
+		(collapsedHeightPercent / 100) * viewportHeightInPixels
 	);
 
 	const { Name: blogName } = blog.metadata;
@@ -235,8 +240,16 @@ const BlogPostBody = ({
 		</div>
 	) : undefined;
 
-	const getBody = (ref?: RefObject<HTMLElement | null>, className?: string) => (
-		<div ref={ref as RefObject<HTMLDivElement>} className={className}>
+	const getBody = (
+		ref?: RefObject<HTMLElement | null>,
+		className?: string,
+		style?: CSSProperties
+	) => (
+		<div
+			ref={ref as RefObject<HTMLDivElement>}
+			className={className}
+			style={style}
+		>
 			{renderDynamic(dynamicBody)}
 			{photoBody ?? null}
 			{quoteBody ?? null}
@@ -263,7 +276,7 @@ const BlogPostBody = ({
 					getBody()
 				) : (
 					<Collapsible
-						collapsedHeightRem={collapsedHeightRem}
+						collapsedHeightPx={collapsedHeightPx}
 						expandButton={expand => (
 							<button
 								className="bg-blog-collapse-color/50 [&:hover]:bg-blog-collapse-color-hover/50 absolute right-0 bottom-0 left-0 cursor-pointer p-2 transition-colors"

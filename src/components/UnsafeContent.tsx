@@ -1,6 +1,14 @@
 import DOMPurify from 'dompurify';
-import { createElement, JSX, memo, RefObject, useMemo } from 'react';
+import {
+	createElement,
+	JSX,
+	memo,
+	RefObject,
+	useEffect,
+	useState,
+} from 'react';
 import { DomProcessor, iterateDomTree } from 'Utils/blogUtils';
+import Loader from './Loader';
 
 type Props<E extends keyof JSX.IntrinsicElements = 'div'> = {
 	tag?: E;
@@ -20,24 +28,36 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 		tag: tag || ('div' as E),
 	};
 
-	const bodyWithSanitizedContent = useMemo(() => {
+	const [body, setBody] = useState<HTMLBodyElement | null>(null);
+
+	useEffect(() => {
 		const body = DOMPurify.sanitize(content, {
 			RETURN_DOM: true,
 			FORBID_TAGS: ['script'],
 		}) as HTMLBodyElement;
 
-		domProcessors?.forEach(processor => {
-			iterateDomTree(body, processor);
+		Promise.all(
+			(domProcessors || []).map(processor => {
+				iterateDomTree(body, processor);
+			})
+		).then(() => {
+			setBody(body);
 		});
-
-		return body;
 	}, [content, domProcessors]);
+
+	if (!body) {
+		return (
+			<div className="flex h-20 w-full items-center justify-center">
+				<Loader type="spinner" size={20} />
+			</div>
+		);
+	}
 
 	return createElement(tagContainer.tag, {
 		key: content,
 		ref: Ref,
 		...rest,
-		dangerouslySetInnerHTML: { __html: bodyWithSanitizedContent.innerHTML },
+		dangerouslySetInnerHTML: { __html: body.innerHTML },
 	});
 };
 

@@ -188,14 +188,18 @@ export const countCollapsedTags = (post: BlogPost, maxChars: number) => {
 
 export type DomProcessor = (el: HTMLElement) => Promise<void>;
 
-export const iterateDomTree = (el: HTMLElement, processor: DomProcessor) => {
+export const iterateDomTree = async (
+	el: HTMLElement,
+	processor: DomProcessor
+): Promise<void> => {
 	if (!el) return;
 
-	processor(el);
-
-	for (const child of el.children) {
-		iterateDomTree(child as HTMLElement, processor);
-	}
+	return Promise.all([
+		processor(el),
+		...Array.from(el.children).map(child =>
+			iterateDomTree(child as HTMLElement, processor)
+		),
+	]).then(() => {});
 };
 
 export function extractUrls(input: string): string[] {
@@ -242,25 +246,33 @@ export const getBlogPostProcessors = (
 				...parentUrls,
 			].filter(url => !!url);
 
-			imageEl.srcset = '';
+			imageEl.removeAttribute('src');
+			imageEl.removeAttribute('srcset');
 			const { original, transformed } = await transformMediaUrl(urls);
 			modifyAttribute(imageEl, 'data-src', original);
 			modifyAttribute(imageEl, 'src', transformed);
 		}
 		if (tag === 'source') {
 			const sourceEl = el as HTMLSourceElement;
-			const { original, transformed } = await transformMediaUrl([sourceEl.src]);
+			const src = sourceEl.src;
+			sourceEl.removeAttribute('src');
+			const { original, transformed } = await transformMediaUrl([src]);
 			modifyAttribute(sourceEl, 'data-src', original);
 			modifyAttribute(sourceEl, 'src', transformed);
 		}
 		if (tag === 'video') {
 			const videoEl = el as HTMLVideoElement;
+			const src = videoEl.src;
+			videoEl.removeAttribute('src');
 			const { original: original1, transformed: transformed1 } =
-				await transformMediaUrl(videoEl.src);
+				await transformMediaUrl(src);
 			modifyAttribute(videoEl, 'data-src', original1);
 			modifyAttribute(videoEl, 'src', transformed1 || undefined);
+
+			const poster = videoEl.poster;
+			videoEl.removeAttribute('poster');
 			const { original: original2, transformed: transformed2 } =
-				await transformMediaUrl(videoEl.poster);
+				await transformMediaUrl(poster);
 			modifyAttribute(videoEl, 'data-poster', original2);
 			modifyAttribute(videoEl, 'poster', transformed2 || undefined);
 
