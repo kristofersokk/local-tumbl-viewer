@@ -117,12 +117,24 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		updateServiceWorker,
 	} = useRegisterSW();
 
+	const [, refreshRaw] = useState({});
+	const refresh = useCallback(() => {
+		refreshRaw({});
+	}, []);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			refresh();
+		}, 1000);
+		return () => clearTimeout(timeout);
+	}, [refresh]);
+
 	return (
 		<div className="min-h-full w-full">
 			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
 				<div className="flex min-w-0 items-center gap-4">
 					<Tooltip content={<p>Back to blog selection</p>}>
-					<IconButton icon="home" onClick={() => goHome()} />
+						<IconButton icon="home" onClick={() => goHome()} />
 					</Tooltip>
 					<PlatformLogo platform={blog.metadata.platform} />
 					<a
