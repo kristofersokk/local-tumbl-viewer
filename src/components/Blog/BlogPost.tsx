@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import { Ref, RefObject } from 'react';
+import { HTMLAttributes, Ref } from 'react';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import BlogPostBody from './BlogPostBody';
 import BlogPostFooter from './BlogPostFooter';
 import BlogPostHeader from './BlogPostHeader';
 
 interface BlogPostProps {
-	Ref?: RefObject<HTMLElement | null>;
-	className?: string;
+	Ref?: Ref<HTMLElement | null>;
+	containerProps?: HTMLAttributes<HTMLDivElement>;
 	post: BlogPostType;
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
@@ -22,7 +22,7 @@ interface BlogPostProps {
 
 const BlogPost = ({
 	Ref,
-	className,
+	containerProps,
 	post,
 	blog,
 	blogFiles,
@@ -38,9 +38,10 @@ const BlogPost = ({
 			ref={Ref as Ref<HTMLDivElement>}
 			className={classNames(
 				'z-blog bg-blog-post-card relative flex w-full flex-col md:rounded-md',
-				className
+				containerProps?.className
 			)}
 			key={post.id}
+			{...containerProps}
 		>
 			<BlogPostHeader post={post} params={params} zoomInToPost={zoomInToPost} />
 			<BlogPostBody

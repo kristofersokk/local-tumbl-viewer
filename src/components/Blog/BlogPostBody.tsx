@@ -6,6 +6,7 @@ import useWindowSize from 'Hooks/useWindowSize';
 import {
 	ComponentProps,
 	CSSProperties,
+	memo,
 	ReactNode,
 	RefObject,
 	useMemo,
@@ -109,7 +110,10 @@ const BlogPostBody = ({
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
 					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
 					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',
-					'[&_*]:first:mt-0 [&_*]:last:mb-0'
+					'[&_*]:first:mt-0 [&_*]:last:mb-0',
+					{
+						'[&_.reblog-header]:hidden': !params.showRebloggedInfo,
+					}
 				)}
 				{...rest}
 			>
@@ -272,7 +276,7 @@ const BlogPostBody = ({
 		<>
 			<div ref={topRef} className="absolute -top-30" />
 			<div>
-				{forceUncollapsed ? (
+				{forceUncollapsed || params.layoutMode === 'list' ? (
 					getBody()
 				) : (
 					<Collapsible
@@ -305,4 +309,9 @@ const BlogPostBody = ({
 	);
 };
 
-export default BlogPostBody;
+export default memo(BlogPostBody, (prevProps, nextProps) => {
+	return (
+		prevProps.post.id === nextProps.post.id &&
+		prevProps.params === nextProps.params
+	);
+});

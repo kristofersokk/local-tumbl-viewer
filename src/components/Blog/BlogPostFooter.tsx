@@ -1,5 +1,5 @@
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { countCollapsedTags } from 'Utils/blogUtils';
 
@@ -60,4 +60,9 @@ const BlogPostFooter = ({
 	);
 };
 
-export default BlogPostFooter;
+export default memo(BlogPostFooter, (prevProps, nextProps) => {
+	return (
+		prevProps.post.id === nextProps.post.id &&
+		prevProps.params === nextProps.params
+	);
+});

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import HomeLogo from 'Assets/icons/home.svg?react';
+import IconButton from 'Components/IconButton';
 
 export const Route = createFileRoute('/about')({
 	component: About,
@@ -17,12 +17,11 @@ function About() {
 	return (
 		<div className="flex h-dvh w-dvw flex-col items-center justify-center">
 			<div className="flex max-w-10/12 flex-col items-center justify-center">
-				<button
-					className="fill-text fixed top-0 left-0 m-4 cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
+				<IconButton
+					icon="home"
+					className="fixed top-0 left-0 m-4"
 					onClick={() => goHome()}
-				>
-					<HomeLogo />
-				</button>
+				/>
 				<h1 className="mb-8 text-4xl font-bold">Tumbl Viewer</h1>
 				<div className="flex flex-col items-start">
 					<div>

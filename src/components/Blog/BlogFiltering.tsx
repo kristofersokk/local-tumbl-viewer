@@ -1,6 +1,6 @@
 import { Popover, Switch } from 'radix-ui';
 
-import FilterLogo from 'Assets/icons/filter.svg?react';
+import IconButton from 'Components/IconButton';
 import Counter from 'Components/utils/Counter';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogViewSettings } from 'Hooks/useBlogViewSettings';
@@ -57,13 +57,9 @@ const BlogFiltering = ({
 						},
 					}}
 					render={props => (
-						<button
-							className="fill-text relative cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
-							{...props}
-						>
-							<FilterLogo />
+						<IconButton icon="filter" {...props}>
 							<Counter count={filterCount || undefined} />
-						</button>
+						</IconButton>
 					)}
 				/>
 			</Popover.Trigger>

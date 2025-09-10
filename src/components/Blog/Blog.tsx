@@ -1,6 +1,5 @@
-import DownloadLogo from 'Assets/icons/download.svg?react';
-import HomeLogo from 'Assets/icons/home.svg?react';
 import ClickOutside from 'Components/ClickOutside';
+import IconButton from 'Components/IconButton';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
@@ -121,12 +120,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		<div className="min-h-full w-full">
 			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
 				<div className="flex min-w-0 items-center gap-4">
-					<button
-						className="fill-text cursor-pointer rounded-full p-2 transition-colors [&:hover]:bg-gray-800"
-						onClick={() => goHome()}
-					>
-						<HomeLogo />
-					</button>
+					<IconButton icon="home" onClick={() => goHome()} />
 					<PlatformLogo platform={blog.metadata.platform} />
 					<a
 						className="flex min-w-0 flex-col items-start justify-between text-sm [&:hover]:underline [&>*]:max-w-full"
@@ -144,12 +138,11 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 				</div>
 				<div className="xs:gap-1 flex items-center md:gap-2">
 					{needRefresh && (
-						<button
-							className="fill-download-icon-fill [&:hover]:bg-download-icon-hover cursor-pointer rounded-full p-2 transition-colors"
+						<IconButton
+							icon="download"
+							className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
 							onClick={() => updateServiceWorker(true)}
-						>
-							<DownloadLogo />
-						</button>
+						/>
 					)}
 					<BlogFiltering
 						filteredPosts={sortedFilteredPosts}
@@ -159,31 +152,47 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					<BlogSettings params={params} />
 				</div>
 			</div>
-			<div className="w-full px-0 py-8 md:px-8 lg:px-12">
-				<Masonry
-					key={blog.metadata.Name + JSON.stringify(filter)}
-					items={sortedFilteredPosts}
-					render={({ data: post }) => (
-						<BlogPost
-							key={post.id}
-							blog={blog}
-							post={post}
-							blogFiles={blogFiles}
-							addTagFilter={addTagFilter}
-							params={params}
-							imageUrlsCache={imageUrlsCache}
-							generatedObjectUrls={generatedObjectUrls}
-							zoomInToPost={zoomInToPost}
-						/>
-					)}
-					columnGutter={1 * remInPixels}
-					rowGutter={1 * remInPixels}
-					columnWidth={columnWidthRem * remInPixels}
-					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
-					itemKey={post => post.id || post.url || ''}
-					scrollFps={12}
-					overscanBy={3}
-				/>
+			<div className="flex w-full justify-center px-0 py-8 md:px-8 lg:px-12">
+				<div
+					style={{
+						width:
+							params.layoutMode === 'list'
+								? columnWidthRem * remInPixels
+								: '100%',
+						maxWidth: '100%',
+					}}
+				>
+					<Masonry
+						key={blog.metadata.Name + JSON.stringify(filter)}
+						items={sortedFilteredPosts}
+						render={({ data: post }) => (
+							<BlogPost
+								key={post.id}
+								blog={blog}
+								post={post}
+								blogFiles={blogFiles}
+								addTagFilter={addTagFilter}
+								params={params}
+								imageUrlsCache={imageUrlsCache}
+								generatedObjectUrls={generatedObjectUrls}
+								zoomInToPost={zoomInToPost}
+							/>
+						)}
+						maxColumnWidth={
+							params.layoutMode === 'list'
+								? columnWidthRem * remInPixels
+								: undefined
+						}
+						columnCount={params.layoutMode === 'list' ? 1 : undefined}
+						columnGutter={1 * remInPixels}
+						rowGutter={1 * remInPixels}
+						columnWidth={columnWidthRem * remInPixels}
+						itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
+						itemKey={post => post.id || post.url || ''}
+						scrollFps={12}
+						overscanBy={3}
+					/>
+				</div>
 			</div>
 			{zoomedInPost && (
 				<div>
@@ -195,7 +204,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 										{ref => (
 											<BlogPost
 												Ref={ref}
-												className="min-h-fit"
 												blog={blog}
 												post={zoomedInPost}
 												blogFiles={blogFiles}

@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { shouldSaveData } from 'Utils/networkUtils';
+import useWindowSize from './useWindowSize';
 
 const sortingFields = ['createdBy'];
 const sortingDirections = ['asc', 'desc'];
@@ -15,7 +16,12 @@ interface BlogViewSettingsProps {
 }
 
 const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
+	const { width } = useWindowSize();
+
 	// Params
+	const [layoutMode, setLayoutMode] = useState<'masonry' | 'list'>(
+		width > 600 ? 'masonry' : 'list'
+	);
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);
 	const [collapsedHeightPercent, setCollapsedHeightPercent] =
 		useState<number>(50);
@@ -57,6 +63,8 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 
 	return {
 		params: {
+			layoutMode,
+			setLayoutMode,
 			columnWidthRem,
 			setColumnWidthRem,
 			collapsedHeightPercent,

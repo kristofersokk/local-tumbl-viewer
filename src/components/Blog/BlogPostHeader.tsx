@@ -1,8 +1,7 @@
-import Link from 'Assets/icons/link.svg?react';
-import PanZoom from 'Assets/icons/pan-zoom.svg?react';
+import Icon from 'Components/Icon';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import { Tooltip } from 'radix-ui';
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { BlogPost } from 'Types/blog';
 
 interface BlogPostHeaderProps {
@@ -68,7 +67,7 @@ const BlogPostHeader = ({
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							<Link />
+							<Icon icon="link" />
 						</a>
 					)}
 					{zoomInToPost ? (
@@ -76,7 +75,7 @@ const BlogPostHeader = ({
 							className="fill-text [&:hover]:fill-text-highlight scale-90 cursor-pointer p-1 transition-colors"
 							onClick={zoomIn}
 						>
-							<PanZoom />
+							<Icon icon="pan-zoom" />
 						</button>
 					) : null}
 				</div>
@@ -104,4 +103,9 @@ const BlogPostHeader = ({
 	);
 };
 
-export default BlogPostHeader;
+export default memo(BlogPostHeader, (prevProps, nextProps) => {
+	return (
+		prevProps.post.id === nextProps.post.id &&
+		prevProps.params === nextProps.params
+	);
+});

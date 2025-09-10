@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import ArrowLeft from 'Assets/icons/arrow-left.svg?react';
 import Blog from 'Components/Blog/Blog';
+import IconButton from 'Components/IconButton';
 import Loader from 'Components/Loader';
 import Center from 'Components/utils/Center';
 import useBlogFiles from 'Hooks/api/useBlogFiles';
@@ -64,13 +64,9 @@ function BlogRoute() {
 	}
 
 	const returnToBlogSelectionButton = (
-		<button
-			className="fill-text flex cursor-pointer gap-2 rounded-xl bg-gray-800 p-2 transition-colors [&:hover]:bg-gray-700"
-			onClick={goToBlogSelection}
-		>
-			<ArrowLeft />
+		<IconButton icon="arrow-left" className="gap-2" onClick={goToBlogSelection}>
 			<p>Back to Blog Selection</p>
-		</button>
+		</IconButton>
 	);
 
 	const error =
