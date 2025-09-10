@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import IconButton from 'Components/IconButton';
+import Tooltip from 'Components/Tooltip';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
 import { Popover, Slider, Switch } from 'radix-ui';
@@ -40,18 +41,20 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 				});
 			}}
 		>
-			<Popover.Trigger asChild>
-				<InterceptCallbacks
-					intercept={{
-						onClick: (prevCb, args) => {
-							document.startViewTransition(() => {
-								prevCb(...args);
-							});
-						},
-					}}
-					render={props => <IconButton icon="page-info" {...props} />}
-				/>
-			</Popover.Trigger>
+			<Tooltip content={<p>Settings</p>}>
+				<Popover.Trigger asChild>
+					<InterceptCallbacks
+						intercept={{
+							onClick: (prevCb, args) => {
+								document.startViewTransition(() => {
+									prevCb(...args);
+								});
+							},
+						}}
+						render={props => <IconButton icon="page-info" {...props} />}
+					/>
+				</Popover.Trigger>
+			</Tooltip>
 			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
 				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">
 					<p className="text-lg">Settings</p>

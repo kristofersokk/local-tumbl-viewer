@@ -12,6 +12,7 @@ import BlogFiltering from './BlogFiltering';
 import BlogPost from './BlogPost';
 import BlogSettings from './BlogSettings';
 import PlatformLogo from './PlatformLogo';
+import Tooltip from 'Components/Tooltip';
 
 interface BlogProps {
 	blog: BlogEntry;
@@ -120,7 +121,9 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		<div className="min-h-full w-full">
 			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
 				<div className="flex min-w-0 items-center gap-4">
+					<Tooltip content={<p>Back to blog selection</p>}>
 					<IconButton icon="home" onClick={() => goHome()} />
+					</Tooltip>
 					<PlatformLogo platform={blog.metadata.platform} />
 					<a
 						className="flex min-w-0 flex-col items-start justify-between text-sm [&:hover]:underline [&>*]:max-w-full"

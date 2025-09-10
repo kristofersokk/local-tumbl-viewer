@@ -1,12 +1,13 @@
 import { Popover, Switch } from 'radix-ui';
+import { useState } from 'react';
 
 import IconButton from 'Components/IconButton';
 import Counter from 'Components/utils/Counter';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogViewSettings } from 'Hooks/useBlogViewSettings';
-import { useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { countAllTags } from 'Utils/blogUtils';
+import Tooltip from 'Components/Tooltip';
 
 type Filter = BlogViewSettings['filter'];
 
@@ -47,22 +48,24 @@ const BlogFiltering = ({
 				});
 			}}
 		>
-			<Popover.Trigger asChild>
-				<InterceptCallbacks
-					intercept={{
-						onClick: (prevCb, args) => {
-							document.startViewTransition(() => {
-								prevCb(...args);
-							});
-						},
-					}}
-					render={props => (
-						<IconButton icon="filter" {...props}>
-							<Counter count={filterCount || undefined} />
-						</IconButton>
-					)}
-				/>
-			</Popover.Trigger>
+			<Tooltip content={<p>Filtering</p>}>
+				<Popover.Trigger asChild>
+					<InterceptCallbacks
+						intercept={{
+							onClick: (prevCb, args) => {
+								document.startViewTransition(() => {
+									prevCb(...args);
+								});
+							},
+						}}
+						render={props => (
+							<IconButton icon="filter" {...props}>
+								<Counter count={filterCount || undefined} />
+							</IconButton>
+						)}
+					/>
+				</Popover.Trigger>
+			</Tooltip>
 			<Popover.Content align="end" sideOffset={5} className="w-80 max-w-[90vw]">
 				<div className="bg-popover-background rounded-lg px-3 py-4">
 					<div className="flex justify-between">

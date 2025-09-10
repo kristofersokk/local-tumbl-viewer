@@ -1,6 +1,6 @@
 import Icon from 'Components/Icon';
+import Tooltip from 'Components/Tooltip';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import { Tooltip } from 'radix-ui';
 import { memo, useCallback } from 'react';
 import { BlogPost } from 'Types/blog';
 
@@ -81,21 +81,13 @@ const BlogPostHeader = ({
 				</div>
 				<div>
 					{showDate && createdAt && (
-						<Tooltip.Provider>
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild>
-									<span className="text-sm">
-										{createdAt.toLocaleDateString()}
-									</span>
-								</Tooltip.Trigger>
-								<Tooltip.Portal>
-									<Tooltip.Content className="TooltipContent" sideOffset={5}>
-										{createdAt.toLocaleString()}
-										<Tooltip.Arrow className="TooltipArrow" />
-									</Tooltip.Content>
-								</Tooltip.Portal>
-							</Tooltip.Root>
-						</Tooltip.Provider>
+						<Tooltip content={createdAt.toLocaleString()}>
+							{
+								<span className="text-sm">
+									{createdAt.toLocaleDateString()}
+								</span>
+							}
+						</Tooltip>
 					)}
 				</div>
 			</div>

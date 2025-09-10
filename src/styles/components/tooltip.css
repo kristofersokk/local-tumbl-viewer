@@ -3,7 +3,6 @@
 	padding: 10px 15px;
 	font-size: 15px;
 	line-height: 1;
-	color: var(--color-tooltip-text);
 	background-color: var(--color-tooltip-bg);
 	box-shadow:
 		hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
@@ -12,6 +11,11 @@
 	animation-duration: 400ms;
 	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: transform, opacity;
+
+	&,
+	& * {
+		color: var(--color-tooltip-text);
+	}
 }
 .TooltipContent[data-state='delayed-open'][data-side='top'] {
 	animation-name: slideDownAndFade;
