@@ -1,7 +1,3 @@
-ignoredBuiltDependencies:
-  - rollup
-  - sharp
-
 onlyBuiltDependencies:
   - esbuild
   - rollup
