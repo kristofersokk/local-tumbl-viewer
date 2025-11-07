@@ -297,7 +297,7 @@ export const getBlogPostProcessors = (
 				'allow',
 				'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 			);
-			iframeEl.setAttribute('allowfullscreen', 'false');
+			iframeEl.removeAttribute('allowfullscreen');
 			iframeEl.setAttribute('frameborder', '0');
 			iframeEl.setAttribute('scrolling', 'no');
 		}
