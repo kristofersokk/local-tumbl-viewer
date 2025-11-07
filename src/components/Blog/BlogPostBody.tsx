@@ -50,6 +50,7 @@ const BlogPostBody = ({
 		body: dynamicBody,
 		summary,
 		photo,
+		video,
 		quote,
 		answer,
 		conversation,
@@ -172,6 +173,22 @@ const BlogPostBody = ({
 			)
 		: undefined;
 
+	const videoBody = video ? (
+		<div>
+			<UnsafeContent
+				tag="div"
+				content={video.caption ?? ''}
+				domProcessors={blogPostProcessors}
+			/>
+			<UnsafeContent
+				tag="div"
+				content={video.source ?? ''}
+				domProcessors={blogPostProcessors}
+				allowIframes
+			/>
+		</div>
+	) : undefined;
+
 	const answerBody = answer ? (
 		<div>
 			<div className="bg-blog-post-question-bg mx-4 p-4">
@@ -256,6 +273,7 @@ const BlogPostBody = ({
 		>
 			{renderDynamic(dynamicBody)}
 			{photoBody ?? null}
+			{videoBody ?? null}
 			{quoteBody ?? null}
 			{answerBody ?? null}
 			{conversationBody ?? null}

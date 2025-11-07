@@ -116,6 +116,13 @@ export const processBlogPost = (post: BlogPost): BlogPost => {
 				post.body ||
 				'',
 			photo: post.type === 'photo' ? { urls: getPhotoUrls(post) } : undefined,
+			video:
+				post.type === 'video'
+					? {
+							caption: post['video-caption'] || post.video_caption || '',
+							source: post['video-source'] || post.video_source || '',
+						}
+					: undefined,
 			quote:
 				post.type === 'quote'
 					? {
@@ -279,6 +286,20 @@ export const getBlogPostProcessors = (
 			videoEl.setAttribute('autoplay', 'true');
 			videoEl.setAttribute('muted', 'true');
 			videoEl.setAttribute('loop', 'true');
+		}
+		if (tag === 'iframe') {
+			const iframeEl = el as HTMLIFrameElement;
+			iframeEl.style.width = '100%';
+			iframeEl.style.aspectRatio = '16/9';
+			iframeEl.style.height = 'auto';
+			iframeEl.setAttribute('loading', 'lazy');
+			iframeEl.setAttribute(
+				'allow',
+				'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+			);
+			iframeEl.setAttribute('allowfullscreen', 'false');
+			iframeEl.setAttribute('frameborder', '0');
+			iframeEl.setAttribute('scrolling', 'no');
 		}
 	},
 ];

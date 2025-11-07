@@ -222,6 +222,10 @@ export interface BlogPost {
 	// type video
 	video_type?: string; // "tumblr"
 	video_url?: string;
+	'video-caption'?: string;
+	video_caption?: string;
+	'video-source'?: string;
+	video_source?: string;
 
 	// type conversation
 	conversation_title?: string;
@@ -261,6 +265,10 @@ export interface BlogPost {
 		summary?: string;
 		photo?: {
 			urls: string[];
+		};
+		video?: {
+			caption?: string;
+			source?: string;
 		};
 		quote?: {
 			quote: string;

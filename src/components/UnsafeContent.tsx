@@ -15,6 +15,7 @@ type Props<E extends keyof JSX.IntrinsicElements = 'div'> = {
 	Ref?: RefObject<HTMLElement | null>;
 	content: string;
 	domProcessors?: DomProcessor[]; // needs to be stable
+	allowIframes?: boolean;
 } & JSX.IntrinsicElements[E];
 
 const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
@@ -22,6 +23,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	Ref,
 	content,
 	domProcessors,
+	allowIframes = false,
 	...rest
 }: Props<E>) => {
 	const tagContainer = {
@@ -34,6 +36,10 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 		const body = DOMPurify.sanitize(content, {
 			RETURN_DOM: true,
 			FORBID_TAGS: ['script'],
+			ADD_TAGS: allowIframes ? ['iframe'] : [],
+			ADD_ATTR: allowIframes
+				? ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+				: [],
 		}) as HTMLBodyElement;
 
 		Promise.all(
@@ -43,7 +49,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 		).then(() => {
 			setBody(body);
 		});
-	}, [content, domProcessors]);
+	}, [allowIframes, content, domProcessors]);
 
 	if (!body) {
 		return (
