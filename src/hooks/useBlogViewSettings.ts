@@ -31,6 +31,7 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [showTags, setShowTags] = useState<boolean>(true);
 	const [fallbackToOnlineMedia, setFallbackToOnlineMedia] =
 		useState<boolean>(!shouldSaveData());
+	const [debugMode, setDebugMode] = useState<boolean>(false);
 
 	// Filter
 	const [blogPostTypes, setBlogPostTypes] = useState(
@@ -79,6 +80,8 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 			setShowTags,
 			fallbackToOnlineMedia,
 			setFallbackToOnlineMedia,
+			debugMode,
+			setDebugMode,
 		},
 		filter: {
 			tagsForFilter,

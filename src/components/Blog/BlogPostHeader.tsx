@@ -1,21 +1,26 @@
+import classNames from 'classnames';
 import Icon from 'Components/Icon';
 import Tooltip from 'Components/Tooltip';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import { memo, useCallback } from 'react';
+import { Dispatch, memo, SetStateAction, useCallback } from 'react';
 import { BlogPost } from 'Types/blog';
 
 interface BlogPostHeaderProps {
 	post: BlogPost;
 	params: BlogParams;
 	zoomInToPost?: (postId: string) => void;
+	isDebugging: boolean;
+	setIsDebugging: Dispatch<SetStateAction<boolean>>;
 }
 
 const BlogPostHeader = ({
 	post,
 	params,
 	zoomInToPost,
+	isDebugging,
+	setIsDebugging,
 }: BlogPostHeaderProps) => {
-	const { showDate, showPostLink, showRebloggedInfo } = params;
+	const { showDate, showPostLink, showRebloggedInfo, debugMode } = params;
 	const { createdAt, title, url, rebloggedFrom, rebloggedRoot } =
 		post.calculated ?? {};
 
@@ -60,6 +65,20 @@ const BlogPostHeader = ({
 			</div>
 			<div className="m-1 mx-2 flex flex-row-reverse flex-wrap items-center gap-x-2">
 				<div className="flex items-center gap-1">
+					{debugMode ? (
+						<button
+							className={classNames(
+								'scale-90 cursor-pointer rounded-xl p-1 transition-colors',
+								{
+									'fill-text [&:hover]:fill-text-highlight': !isDebugging,
+									'bg-switch-checked-bg fill-switch-checked-thumb': isDebugging,
+								}
+							)}
+							onClick={() => setIsDebugging(prev => !prev)}
+						>
+							<Icon icon="debug" />
+						</button>
+					) : null}
 					{showPostLink && url && (
 						<a
 							href={url}
@@ -98,6 +117,7 @@ const BlogPostHeader = ({
 export default memo(BlogPostHeader, (prevProps, nextProps) => {
 	return (
 		prevProps.post.id === nextProps.post.id &&
-		prevProps.params === nextProps.params
+		prevProps.params === nextProps.params &&
+		prevProps.isDebugging === nextProps.isDebugging
 	);
 });

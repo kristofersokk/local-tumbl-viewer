@@ -28,6 +28,8 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 		setShowTags,
 		fallbackToOnlineMedia,
 		setFallbackToOnlineMedia,
+		debugMode,
+		setDebugMode,
 	} = params;
 
 	const [open, setOpen] = useState(false);
@@ -183,6 +185,20 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 									className="SwitchRoot"
 									checked={fallbackToOnlineMedia}
 									onCheckedChange={setFallbackToOnlineMedia}
+								>
+									<Switch.Thumb className="SwitchThumb" />
+								</Switch.Root>
+							</div>
+						</div>
+						<div className="flex items-center">
+							<span className="text-sm">Debug mode:</span>
+						</div>
+						<div className="flex items-center">
+							<div className="flex items-center gap-2">
+								<Switch.Root
+									className="SwitchRoot"
+									checked={debugMode}
+									onCheckedChange={setDebugMode}
 								>
 									<Switch.Thumb className="SwitchThumb" />
 								</Switch.Root>

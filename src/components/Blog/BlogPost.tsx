@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { BlogParams } from 'Hooks/useBlogViewSettings';
-import { HTMLAttributes, Ref } from 'react';
+import { HTMLAttributes, Ref, useState } from 'react';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import BlogPostBody from './BlogPostBody';
+import BlogPostDebug from './BlogPostDebug';
 import BlogPostFooter from './BlogPostFooter';
 import BlogPostHeader from './BlogPostHeader';
 
@@ -33,6 +34,8 @@ const BlogPost = ({
 	zoomInToPost,
 	forceUncollapsed,
 }: BlogPostProps) => {
+	const [isDebugging, setIsDebugging] = useState(false);
+
 	return (
 		<div
 			ref={Ref as Ref<HTMLDivElement>}
@@ -43,16 +46,26 @@ const BlogPost = ({
 			key={post.id}
 			{...containerProps}
 		>
-			<BlogPostHeader post={post} params={params} zoomInToPost={zoomInToPost} />
-			<BlogPostBody
-				params={params}
-				blog={blog}
+			<BlogPostHeader
 				post={post}
-				blogFiles={blogFiles}
-				imageUrlsCache={imageUrlsCache}
-				generatedObjectUrls={generatedObjectUrls}
-				forceUncollapsed={forceUncollapsed}
+				params={params}
+				zoomInToPost={zoomInToPost}
+				isDebugging={isDebugging}
+				setIsDebugging={setIsDebugging}
 			/>
+			{isDebugging ? (
+				<BlogPostDebug post={post} />
+			) : (
+				<BlogPostBody
+					params={params}
+					blog={blog}
+					post={post}
+					blogFiles={blogFiles}
+					imageUrlsCache={imageUrlsCache}
+					generatedObjectUrls={generatedObjectUrls}
+					forceUncollapsed={forceUncollapsed}
+				/>
+			)}
 			<BlogPostFooter post={post} params={params} addTagFilter={addTagFilter} />
 		</div>
 	);

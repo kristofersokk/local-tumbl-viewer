@@ -9,6 +9,7 @@ import PageInfo from '../assets/icons/page-info.svg?react';
 import PanZoom from '../assets/icons/pan-zoom.svg?react';
 import Settings from '../assets/icons/settings.svg?react';
 import VerticalList from '../assets/icons/vertical-list.svg?react';
+import Debug from '../assets/icons/debug.svg?react';
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
 	icon:
@@ -21,7 +22,8 @@ export interface IconProps extends SVGProps<SVGSVGElement> {
 		| 'page-info'
 		| 'pan-zoom'
 		| 'settings'
-		| 'vertical-list';
+		| 'vertical-list'
+		| 'debug';
 }
 
 const mapIconToComponent = {
@@ -35,6 +37,7 @@ const mapIconToComponent = {
 	'pan-zoom': PanZoom,
 	settings: Settings,
 	'vertical-list': VerticalList,
+	debug: Debug,
 };
 
 const Icon = ({ icon, ...props }: IconProps) => {

@@ -86,17 +86,17 @@ const BlogPostBody = ({
 					className,
 					'mb-2',
 					// eslint-disable-next-line no-useless-escape
-					'[&_.photoset\_row]:!h-auto [&_.photoset\_row]:!w-full [&_.photoset\_row_img]:!w-full',
-					'[&_.photoset\\_row]:!h-auto [&_.photoset\\_row]:!w-full [&_.photoset\\_row_img]:!w-full',
-					'[&_.tmblr-full_img]:!w-full',
-					'[&_.image]:!w-full',
-					'[&_figure_img]:!w-full',
-					'[&_video]:!w-full',
+					'[&_.photoset\_row]:h-auto! [&_.photoset\_row]:w-full! [&_.photoset\_row_img]:w-full!',
+					'[&_.photoset\\_row]:h-auto! [&_.photoset\\_row]:w-full! [&_.photoset\\_row_img]:w-full!',
+					'[&_.tmblr-full_img]:w-full!',
+					'[&_.image]:w-full!',
+					'[&_figure_img]:w-full!',
+					'[&_video]:w-full!',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:px-2 [&_.reblog-header]:py-1',
-					'[&_img]:my-4 [&_img]:!h-auto',
+					'[&_img]:my-4 [&_img]:h-auto!',
 					// eslint-disable-next-line no-useless-escape
-					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:!my-0 [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
-					'[&_.npf\\_chat]:font-Tinos [&_.npf\\_chat_*]:font-Tinos [&_.npf\\_chat]:!my-0 [&_.npf\\_chat]:text-lg [&_.npf\\_chat:has(br)]:h-3',
+					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:my-0! [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
+					'[&_.npf\\_chat]:font-Tinos [&_.npf\\_chat_*]:font-Tinos [&_.npf\\_chat]:my-0! [&_.npf\\_chat]:text-lg [&_.npf\\_chat:has(br)]:h-3',
 					// eslint-disable-next-line no-useless-escape
 					'[&_.npf\_quote]:font-Tinos [&_.npf\_quote]:text-2xl',
 					'[&_.npf\\_quote]:font-Tinos [&_.npf\\_quote]:text-2xl',
@@ -110,7 +110,7 @@ const BlogPostBody = ({
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
 					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
 					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',
-					'[&_*]:first:mt-0 [&_*]:last:mb-0',
+					'**:first:mt-0 **:last:mb-0',
 					{
 						'[&_.reblog-header]:hidden': !params.showRebloggedInfo,
 					}
@@ -202,7 +202,7 @@ const BlogPostBody = ({
 	) : undefined;
 
 	const conversationBody = conversation ? (
-		<div className="[&_*]:font-Tinos mx-4">
+		<div className="**:font-Tinos mx-4">
 			{conversation.title && (
 				<h2 className="mb-4 text-2xl font-bold">{conversation.title}</h2>
 			)}
@@ -226,7 +226,7 @@ const BlogPostBody = ({
 
 	const linkBody = link ? (
 		<div className="mx-4">
-			<div className="border-blog-post-link-border rounded-lg border-1 transition-colors [&:hover]:bg-gray-700/50">
+			<div className="border-blog-post-link-border rounded-lg border transition-colors [&:hover]:bg-gray-700/50">
 				<a
 					className="cursor-pointer"
 					href={link.url}

@@ -29,6 +29,7 @@
         "radix-ui": "^1.4.3",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+        "react-json-view-lite": "^2.5.0",
         "react-spinners": "^0.17.0",
         "tailwindcss": "^4.1.17"
     },
