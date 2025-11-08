@@ -31,7 +31,7 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [showTags, setShowTags] = useState<boolean>(true);
 	const [fallbackToOnlineMedia, setFallbackToOnlineMedia] =
 		useState<boolean>(!shouldSaveData());
-	const [debugMode, setDebugMode] = useState<boolean>(false);
+	const [debugMode, setDebugMode] = useState<boolean>(import.meta.env.DEV);
 
 	// Filter
 	const [blogPostTypes, setBlogPostTypes] = useState(

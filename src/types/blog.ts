@@ -264,7 +264,7 @@ export interface BlogPost {
 		body?: string;
 		summary?: string;
 		photo?: {
-			urls: string[];
+			photos: { urls: string[]; layoutSpan?: number; caption?: string }[];
 		};
 		video?: {
 			caption?: string;

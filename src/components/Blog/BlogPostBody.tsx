@@ -163,13 +163,14 @@ const BlogPostBody = ({
 
 	const photoBody = photo
 		? renderDynamic(
-				photo.urls.map(url => (
+				photo.photos.map(photo => (
 					<BlogPostPhoto
-						key={url}
-						url={url}
+						key={photo.urls[0]}
+						photo={photo}
 						transformMediaUrl={transformMediaUrl}
 					/>
-				))
+				)),
+				{ className: 'flex flex-wrap justify-center' }
 			)
 		: undefined;
 

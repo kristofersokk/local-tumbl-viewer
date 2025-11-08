@@ -76,46 +76,82 @@ const calculatedCreatedAt = (post: BlogPost): Date | undefined => {
 	return createdAt ? new Date(createdAt) : undefined;
 };
 
-function getPhotoUrls(post: BlogPost): string[] {
-	const singlePhotoUrl =
-		post['photo-url-1280'] ||
-		post['photo-url-500'] ||
-		post['photo-url-400'] ||
-		post['photo-url-250'] ||
-		post['photo-url-100'] ||
-		post['photo-url-75'];
-	const multiplePhotoUrls = (post.photos || [])
-		.map(
-			photo =>
-				photo['photo-url-1280'] ||
-				photo['photo-url-500'] ||
-				photo['photo-url-400'] ||
-				photo['photo-url-250'] ||
-				photo['photo-url-100'] ||
-				photo['photo-url-75']
-		)
-		.filter(Boolean);
-	return singlePhotoUrl ? [singlePhotoUrl] : multiplePhotoUrls;
+type Photos = NonNullable<
+	NonNullable<BlogPost['calculated']>['photo']
+>['photos'];
+
+function getPhotos(post: BlogPost): Photos {
+	const photos: Photos = [];
+
+	(post.photos || [])
+		.map(photo => ({
+			urls: [
+				photo['photo-url-1280'],
+				photo['photo-url-500'],
+				photo['photo-url-400'],
+				photo['photo-url-250'],
+				photo['photo-url-100'],
+				photo['photo-url-75'],
+			].filter(Boolean),
+			caption: photo.caption,
+		}))
+		.filter(({ urls }) => urls.length > 0)
+		.forEach(photoObj => photos.push(photoObj));
+
+	if (post.photoset_layout && post.photoset_photos) {
+		const expandedLayout: number[] = [];
+		for (const char of post.photoset_layout) {
+			const span = parseInt(char, 10);
+			for (let i = 0; i < span; i++) {
+				expandedLayout.push(span);
+			}
+		}
+		post.photoset_photos.forEach((photo, index) => {
+			photos.push({
+				urls: [photo.high_res, photo.low_res].filter(Boolean),
+				layoutSpan: expandedLayout[index],
+			});
+		});
+	}
+
+	if (!photos.length) {
+		const singlePhotoUrls = [
+			post['photo-url-1280'],
+			post['photo-url-500'],
+			post['photo-url-400'],
+			post['photo-url-250'],
+			post['photo-url-100'],
+			post['photo-url-75'],
+		].filter(Boolean);
+		if (singlePhotoUrls.length > 0) {
+			const caption =
+				post.photo_caption || post['photo-caption'] || post.caption;
+			photos.push({ urls: singlePhotoUrls, caption });
+		}
+	}
+
+	return photos;
 }
 
 export const processBlogPost = (post: BlogPost): BlogPost => {
+	const photos = getPhotos(post);
+	const disableBody = !!photos.length;
+
 	return {
 		...post,
 		calculated: {
 			createdAt: calculatedCreatedAt(post),
 			title: post.regular_title || post['regular-title'] || post.title,
 			url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
-			body:
-				post.post_html ||
-				post['post-html'] ||
-				post.photo_caption ||
-				post['photo-caption'] ||
-				post.caption ||
-				post.regular_body ||
-				post['regular-body'] ||
-				post.body ||
-				'',
-			photo: post.type === 'photo' ? { urls: getPhotoUrls(post) } : undefined,
+			body: disableBody
+				? undefined
+				: post.post_html ||
+					post['post-html'] ||
+					post.regular_body ||
+					post['regular-body'] ||
+					post.body ||
+					'',
+			photo: post.type === 'photo' ? { photos } : undefined,
 			video:
 				post.type === 'video'
 					? {
