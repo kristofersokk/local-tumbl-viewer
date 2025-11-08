@@ -45,6 +45,12 @@ function About() {
 						>
 							GitHub repository
 						</a>
+						<div className="w-min min-w-full">
+							<p>
+								If you have issues or feature requests, please open an issue on
+								the GitHub repository.
+							</p>
+						</div>
 						<div className="mt-4 flex items-center gap-4">
 							<p>Please donate to support development</p>
 							<a href="https://ko-fi.com/R6R2168JSZ" target="_blank">
