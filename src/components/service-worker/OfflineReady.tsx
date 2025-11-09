@@ -1,11 +1,13 @@
-import useTimer from 'Hooks/useTimer';
 import { Toast } from 'radix-ui';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+
+import useTimer from 'Hooks/useTimer';
 
 const OfflineReady = () => {
 	const [open, setOpen] = useState(false);
 
-	useTimer(1000, () => setOpen(true));
+	const openToast = useCallback(() => setOpen(true), []);
+	useTimer(1000, openToast);
 
 	return (
 		<Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
