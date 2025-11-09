@@ -10,6 +10,12 @@ Free and open source webapp to view downloaded data of [TumblThree](https://gith
 
 This project is deployed to [tumblviewer.app](https://tumblviewer.app/) with Vercel analytics. Because this has MIT license, if you want you can deploy it yourself on your own page. A small ask, leave the about page intact.
 
+## Offline use
+
+The app has the ability to load all necessary files and work offline. If there's an update, then the app lets you update the app.
+
+The app supports installing as a standalone app. In desktop, install option is next to star in address bar. In android, either a install popup opens, or in menu choose "Add to Home screen".
+
 ## Issues and feature requests
 
 Feel free to create issues if you find bugs or if you want to request a feature. Or make a fork and make PR yourself.
