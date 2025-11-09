@@ -87,7 +87,7 @@ const BlogFiltering = ({
 						placeholder="Search..."
 						value={fuzzySearchString}
 						onChange={e => setFuzzySearchString(e.target.value)}
-						className="mb-1"
+						className="mb-2"
 					/>
 					<div className="flex items-center gap-2">
 						{!countedRemainingTags.length && (
