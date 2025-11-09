@@ -56,7 +56,10 @@ const useBlogPosts = (
 											} as RawBlogPost;
 											return {
 												raw: rawPostWithPlatform,
-												processed: processBlogPost(rawPostWithPlatform),
+												processed: processBlogPost(
+													rawPostWithPlatform,
+													blogFiles
+												),
 											} satisfies CombinedBlogPost;
 										})
 									)

@@ -150,14 +150,49 @@ function getPhotos(post: RawBlogPost): Photos {
 	return photos;
 }
 
-export const processBlogPost = (post: RawBlogPost): ProcessedBlogPost => {
+const detectBlueSkyImageFileNames = (
+	post: RawBlogPost,
+	blogFiles: FileSystemFileHandle[] | undefined
+): string[] | undefined => {
+	if (post.platform !== 'bluesky') return undefined;
+	if (!blogFiles) return undefined;
+
+	const imageExtensions = getAlternativeExtensions('jpg');
+
+	return blogFiles
+		.map(file => file.name)
+		.filter(fileName => {
+			const fileNameWithoutExtension = fileName.includes('.')
+				? fileName.slice(0, fileName.lastIndexOf('.'))
+				: fileName;
+			const extension = fileName.includes('.')
+				? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
+				: '';
+			return (
+				fileNameWithoutExtension.startsWith(post.id) &&
+				imageExtensions.includes(extension)
+			);
+		});
+};
+
+export const processBlogPost = (
+	post: RawBlogPost,
+	blogFiles: FileSystemFileHandle[] | undefined
+): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
+		const imageFileNames = detectBlueSkyImageFileNames(post, blogFiles);
 		return {
 			platform: 'bluesky',
 			type: 'text',
 			id: post.id,
 			url: post.url,
-			body: `<p>${post.text}</p>`,
+			body:
+				`<p>${post.text}</p>` +
+				(imageFileNames
+					? imageFileNames
+							.map(imageFileName => `<img data-src="${imageFileName}" >`)
+							.join('')
+					: ''),
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
 		};
@@ -382,7 +417,33 @@ export const getBlogPostProcessors = (
 	},
 ];
 
-const alternativeExtensions: string[][] = [['jpeg', 'jpg', 'png', 'webp']];
+const alternativeExtensions: string[][] = [
+	[
+		// images
+		'jpeg',
+		'jpg',
+		'png',
+		'webp',
+		'gif',
+		'bmp',
+		'tiff',
+		'svg',
+		'heic',
+		'avif',
+		'jfif',
+		'apng',
+		'ico',
+	],
+];
+
+export const getAlternativeExtensions = (extension: string): string[] => {
+	for (const group of alternativeExtensions) {
+		if (group.includes(extension.toLowerCase())) {
+			return group;
+		}
+	}
+	return [];
+};
 
 function getAlternativeFileNames(fileName: string | undefined): string[] {
 	if (!fileName || !fileName.includes('.')) return [fileName || ''];
@@ -390,9 +451,9 @@ function getAlternativeFileNames(fileName: string | undefined): string[] {
 	const lastIndexOfDot = fileName.lastIndexOf('.');
 	const fileNameWithoutExtension = fileName.slice(0, lastIndexOfDot);
 	const extension = fileName.slice(lastIndexOfDot + 1).toLowerCase();
-	const alternativeFileNames = (
-		alternativeExtensions.find(group => group.includes(extension)) || []
-	).map(ext => `${fileNameWithoutExtension}.${ext}`);
+	const alternativeFileNames = (getAlternativeExtensions(extension) || []).map(
+		ext => `${fileNameWithoutExtension}.${ext}`
+	);
 
 	return [fileName, ...alternativeFileNames];
 }
@@ -403,7 +464,8 @@ export function getMediaFileHandle(
 	url: string
 ) {
 	const lastSlashIndex = url.lastIndexOf('/');
-	const urlFileName = url.slice(lastSlashIndex + 1);
+	const urlFileName =
+		lastSlashIndex === -1 ? url : url.slice(lastSlashIndex + 1);
 	const differentResolutionEntry = imgMappingEntries?.find(
 		({ O: originalFileName }) => originalFileName === urlFileName
 	);
@@ -417,6 +479,7 @@ export function getMediaFileHandle(
 		originalResolutionEntry?.F,
 		originalResolutionEntry?.L,
 		originalResolutionEntry?.O,
+		urlFileName,
 	];
 	// F types have chance of having same filename, but different extension, so we need to consider them last
 	const newFileNamesForExtendedSearch = [
@@ -426,6 +489,7 @@ export function getMediaFileHandle(
 		originalResolutionEntry?.L,
 		differentResolutionEntry?.F,
 		originalResolutionEntry?.F,
+		urlFileName,
 	];
 	const possibleFileNames = newFileNames;
 	const extendedPossibleFileNames = newFileNamesForExtendedSearch.flatMap(
