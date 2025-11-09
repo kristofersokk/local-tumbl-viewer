@@ -376,10 +376,22 @@ export function getMediaFileHandle(
 		originalResolutionEntry?.L,
 		originalResolutionEntry?.O,
 	];
-	const possibleFileNames = newFileNames.flatMap(getAlternativeFileNames);
-	const mediaFile = blogFiles.find(file =>
-		possibleFileNames.includes(file.name)
+	// F types have chance of having same filename, but different extension, so we need to consider them last
+	const newFileNamesForExtendedSearch = [
+		differentResolutionEntry?.O,
+		differentResolutionEntry?.L,
+		originalResolutionEntry?.O,
+		originalResolutionEntry?.L,
+		differentResolutionEntry?.F,
+		originalResolutionEntry?.F,
+	];
+	const possibleFileNames = newFileNames;
+	const extendedPossibleFileNames = newFileNamesForExtendedSearch.flatMap(
+		getAlternativeFileNames
 	);
+	const mediaFile =
+		blogFiles.find(file => possibleFileNames.includes(file.name)) ??
+		blogFiles.find(file => extendedPossibleFileNames.includes(file.name));
 	return mediaFile;
 }
 

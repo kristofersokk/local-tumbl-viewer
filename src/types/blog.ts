@@ -110,9 +110,9 @@ export interface BlogFileEntries {
 }
 
 export interface BlogFileEntry {
-	F?: string;
-	L?: string;
-	O?: string;
+	F?: string; // File
+	L?: string; // Local URL
+	O?: string; // Online URL
 }
 
 export const blogTypes = {
