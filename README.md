@@ -35,4 +35,4 @@ Only json metadata format is supported (for now).
 
 This app uses some experimental APIs to read the file system directly.
 For now, only Chromium-based browsers eg Chrome, Edge, Brave etc are supported.
-Check this [https://caniuse.com/?search=showDirectoryPicker](CanIUse).
+Check this [CanIUse](https://caniuse.com/?search=showDirectoryPicker).
