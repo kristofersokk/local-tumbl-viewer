@@ -382,3 +382,22 @@ export function getMediaFileHandle(
 	);
 	return mediaFile;
 }
+
+export const filterBlogPostsByFuzzySearch = (
+	posts: BlogPost[],
+	searchString: string | undefined
+): BlogPost[] => {
+	if (!searchString || searchString.trim() === '') return posts;
+
+	const cleanedSearchString = searchString.trim().toLowerCase();
+	const searchStringSegments = cleanedSearchString
+		.split(' ')
+		.filter(s => s.length > 0);
+
+	return posts.filter(post => {
+		const cleanedPostContent = JSON.stringify(post).toLowerCase();
+		return searchStringSegments.every(segment =>
+			cleanedPostContent.includes(segment)
+		);
+	});
+};

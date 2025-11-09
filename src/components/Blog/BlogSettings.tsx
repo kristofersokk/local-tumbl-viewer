@@ -2,15 +2,20 @@ import classNames from 'classnames';
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
-import { BlogParams } from 'Hooks/useBlogViewSettings';
+import {
+	BlogParams,
+	BlogSorting as BlogSortingType,
+} from 'Hooks/useBlogViewSettings';
 import { Popover, Slider, Switch } from 'radix-ui';
 import { useState } from 'react';
+import BlogSorting from './BlogSorting';
 
 interface BlogSettingsProps {
 	params: BlogParams;
+	sorting: BlogSortingType;
 }
 
-const BlogSettings = ({ params }: BlogSettingsProps) => {
+const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 	const {
 		layoutMode,
 		setLayoutMode,
@@ -61,6 +66,7 @@ const BlogSettings = ({ params }: BlogSettingsProps) => {
 				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">
 					<p className="text-lg">Settings</p>
 					<div className="grid grid-cols-[auto_1fr] gap-4">
+						<BlogSorting sorting={sorting} />
 						<div className="flex items-center">
 							<span className="align-middle text-sm">Layout:</span>
 						</div>

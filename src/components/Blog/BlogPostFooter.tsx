@@ -1,11 +1,11 @@
-import { BlogParams } from 'Hooks/useBlogViewSettings';
+import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { memo, useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { countCollapsedTags } from 'Utils/blogUtils';
 
 interface BlogPostFooterProps {
 	post: BlogPost;
-	params: BlogParams;
+	params: BlogDeferredParams;
 	addTagFilter: (tag: string) => void;
 }
 

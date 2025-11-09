@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import Icon from 'Components/Icon';
 import Tooltip from 'Components/Tooltip';
-import { BlogParams } from 'Hooks/useBlogViewSettings';
+import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { Dispatch, memo, SetStateAction, useCallback } from 'react';
 import { BlogPost } from 'Types/blog';
 
 interface BlogPostHeaderProps {
 	post: BlogPost;
-	params: BlogParams;
+	params: BlogDeferredParams;
 	zoomInToPost?: (postId: string) => void;
 	isDebugging: boolean;
 	setIsDebugging: Dispatch<SetStateAction<boolean>>;

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { BlogPost } from 'Types/blog';
 import { shouldSaveData } from 'Utils/networkUtils';
 import useWindowSize from './useWindowSize';
@@ -8,6 +8,7 @@ const sortingDirections = ['asc', 'desc'];
 
 export type BlogViewSettings = ReturnType<typeof useBlogViewSettings>;
 export type BlogParams = BlogViewSettings['params'];
+export type BlogDeferredParams = BlogViewSettings['deferredParams'];
 export type BlogSorting = BlogViewSettings['sorting'];
 export type BlogFiltering = BlogViewSettings['filter'];
 
@@ -33,6 +34,77 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 		useState<boolean>(!shouldSaveData());
 	const [debugMode, setDebugMode] = useState<boolean>(import.meta.env.DEV);
 
+	const params = useMemo(
+		() => ({
+			layoutMode,
+			setLayoutMode,
+			columnWidthRem,
+			setColumnWidthRem,
+			collapsedHeightPercent,
+			setCollapsedHeightPercent,
+			showDate,
+			setShowDate,
+			showPostLink,
+			setShowPostLink,
+			showRebloggedInfo,
+			setShowRebloggedInfo,
+			showTags,
+			setShowTags,
+			fallbackToOnlineMedia,
+			setFallbackToOnlineMedia,
+			debugMode,
+			setDebugMode,
+		}),
+		[
+			layoutMode,
+			columnWidthRem,
+			collapsedHeightPercent,
+			showDate,
+			showPostLink,
+			showRebloggedInfo,
+			showTags,
+			fallbackToOnlineMedia,
+			debugMode,
+		]
+	);
+
+	// Deferred params
+	const deferredLayoutMode = useDeferredValue(layoutMode);
+	const deferredColumnWidthRem = useDeferredValue(columnWidthRem);
+	const deferredCollapsedHeightPercent = useDeferredValue(
+		collapsedHeightPercent
+	);
+	const deferredShowDate = useDeferredValue(showDate);
+	const deferredShowPostLink = useDeferredValue(showPostLink);
+	const deferredShowRebloggedInfo = useDeferredValue(showRebloggedInfo);
+	const deferredShowTags = useDeferredValue(showTags);
+	const deferredFallbackToOnlineMedia = useDeferredValue(fallbackToOnlineMedia);
+	const deferredDebugMode = useDeferredValue(debugMode);
+	const deferredParams = useMemo(
+		() => ({
+			layoutMode: deferredLayoutMode,
+			columnWidthRem: deferredColumnWidthRem,
+			collapsedHeightPercent: deferredCollapsedHeightPercent,
+			showDate: deferredShowDate,
+			showPostLink: deferredShowPostLink,
+			showRebloggedInfo: deferredShowRebloggedInfo,
+			showTags: deferredShowTags,
+			fallbackToOnlineMedia: deferredFallbackToOnlineMedia,
+			debugMode: deferredDebugMode,
+		}),
+		[
+			deferredLayoutMode,
+			deferredColumnWidthRem,
+			deferredCollapsedHeightPercent,
+			deferredShowDate,
+			deferredShowPostLink,
+			deferredShowRebloggedInfo,
+			deferredShowTags,
+			deferredFallbackToOnlineMedia,
+			deferredDebugMode,
+		]
+	);
+
 	// Filter
 	const [blogPostTypes, setBlogPostTypes] = useState(
 		Object.fromEntries(
@@ -54,6 +126,43 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 		setTagsForFilter(prev => prev.filter(t => t !== tag));
 	}, []);
 
+	const [fuzzySearchString, setFuzzySearchString] = useState<
+		string | undefined
+	>();
+
+	const filter = useMemo(
+		() => ({
+			tagsForFilter,
+			addTagFilter,
+			removeTagFilter,
+			blogPostTypes,
+			setBlogPostType,
+			fuzzySearchString,
+			setFuzzySearchString,
+		}),
+		[
+			tagsForFilter,
+			addTagFilter,
+			removeTagFilter,
+			blogPostTypes,
+			fuzzySearchString,
+		]
+	);
+
+	// Deferred filter
+	const deferredBlogPostTypes = useDeferredValue(blogPostTypes);
+	const deferredTagsForFilter = useDeferredValue(tagsForFilter);
+	const deferredFuzzySearchString = useDeferredValue(fuzzySearchString);
+
+	const deferredFilter = useMemo(
+		() => ({
+			tagsForFilter: deferredTagsForFilter,
+			blogPostTypes: deferredBlogPostTypes,
+			fuzzySearchString: deferredFuzzySearchString,
+		}),
+		[deferredTagsForFilter, deferredBlogPostTypes, deferredFuzzySearchString]
+	);
+
 	// Sorting
 	type SortingField = (typeof sortingFields)[number];
 	type SortingDirection = (typeof sortingDirections)[number];
@@ -62,42 +171,36 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [sortingDirection, setSortingDirection] =
 		useState<SortingDirection>('desc');
 
-	return {
-		params: {
-			layoutMode,
-			setLayoutMode,
-			columnWidthRem,
-			setColumnWidthRem,
-			collapsedHeightPercent,
-			setCollapsedHeightPercent,
-			showDate,
-			setShowDate,
-			showPostLink,
-			setShowPostLink,
-			showRebloggedInfo,
-			setShowRebloggedInfo,
-			showTags,
-			setShowTags,
-			fallbackToOnlineMedia,
-			setFallbackToOnlineMedia,
-			debugMode,
-			setDebugMode,
-		},
-		filter: {
-			tagsForFilter,
-			addTagFilter,
-			removeTagFilter,
-			blogPostTypes,
-			setBlogPostType,
-		},
-		sorting: {
+	const sorting = useMemo(
+		() => ({
 			sortingField,
 			sortingDirection,
 			setSortingField,
 			setSortingDirection,
 			sortingFields,
 			sortingDirections,
-		},
+		}),
+		[sortingField, sortingDirection, setSortingField, setSortingDirection]
+	);
+
+	// Deferred sorting
+	const deferredSortingField = useDeferredValue(sortingField);
+	const deferredSortingDirection = useDeferredValue(sortingDirection);
+	const deferredSorting = useMemo(
+		() => ({
+			sortingField: deferredSortingField,
+			sortingDirection: deferredSortingDirection,
+		}),
+		[deferredSortingField, deferredSortingDirection]
+	);
+
+	return {
+		params,
+		deferredParams,
+		filter,
+		deferredFilter,
+		sorting,
+		deferredSorting,
 	};
 };
 

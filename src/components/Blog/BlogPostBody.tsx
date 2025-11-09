@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import UnsafeContent from 'Components/UnsafeContent';
-import { BlogParams } from 'Hooks/useBlogViewSettings';
+import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import useTransformMediaUrl from 'Hooks/useTransformMediaUrl';
 import useWindowSize from 'Hooks/useWindowSize';
 import {
@@ -18,7 +18,7 @@ import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
 
 interface BlogPostBodyProps {
-	params: BlogParams;
+	params: BlogDeferredParams;
 	blog: BlogEntry;
 	post: BlogPost;
 	blogFiles: FileSystemFileHandle[];

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { BlogParams } from 'Hooks/useBlogViewSettings';
+import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { HTMLAttributes, Ref, useState } from 'react';
 import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
 import BlogPostBody from './BlogPostBody';
@@ -14,7 +14,7 @@ interface BlogPostProps {
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
-	params: BlogParams;
+	params: BlogDeferredParams;
 	imageUrlsCache: Record<string, { online?: string; local?: string }>;
 	generatedObjectUrls: string[];
 	zoomInToPost?: (postId: string) => void;

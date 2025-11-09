@@ -1,20 +1,19 @@
 import { Popover, Switch } from 'radix-ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import IconButton from 'Components/IconButton';
+import TextInput from 'Components/TextInput';
+import Tooltip from 'Components/Tooltip';
 import Counter from 'Components/utils/Counter';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
-import { BlogViewSettings } from 'Hooks/useBlogViewSettings';
+import { BlogFiltering as BlogFilteringType } from 'Hooks/useBlogViewSettings';
 import { BlogPost } from 'Types/blog';
 import { countAllTags } from 'Utils/blogUtils';
-import Tooltip from 'Components/Tooltip';
-
-type Filter = BlogViewSettings['filter'];
 
 interface BlogFilteringProps {
 	filteredPosts: BlogPost[];
 	allPostsCount: number;
-	filter: Filter;
+	filter: BlogFilteringType;
 }
 
 const BlogFiltering = ({
@@ -26,16 +25,25 @@ const BlogFiltering = ({
 		addTagFilter,
 		blogPostTypes,
 		setBlogPostType,
+		fuzzySearchString,
+		setFuzzySearchString,
 	},
 }: BlogFilteringProps) => {
 	const filterCount = tagsForFilter.length;
 
-	const countedRemainingTags = countAllTags(filteredPosts);
+	const countedRemainingTags = useMemo(
+		() => countAllTags(filteredPosts),
+		[filteredPosts]
+	);
 	// sort descendingly by count, map to tags
-	const notUsedTags = countedRemainingTags
-		.filter(({ tag }) => !tagsForFilter.includes(tag))
-		.toSorted((a, b) => b.count - a.count)
-		.map(tag => tag.tag);
+	const notUsedTags = useMemo(
+		() =>
+			countedRemainingTags
+				.filter(({ tag }) => !tagsForFilter.includes(tag))
+				.toSorted((a, b) => b.count - a.count)
+				.map(tag => tag.tag),
+		[countedRemainingTags, tagsForFilter]
+	);
 
 	const [open, setOpen] = useState(false);
 
@@ -74,6 +82,13 @@ const BlogFiltering = ({
 							{filteredPosts.length} / {allPostsCount}
 						</p>
 					</div>
+					<TextInput
+						type="text"
+						placeholder="Search..."
+						value={fuzzySearchString}
+						onChange={e => setFuzzySearchString(e.target.value)}
+						className="mb-1"
+					/>
 					<div className="flex items-center gap-2">
 						{!countedRemainingTags.length && (
 							<p className="text-sm text-gray-400">No tags</p>
