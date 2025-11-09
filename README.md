@@ -10,6 +10,10 @@ Free and open source webapp to view downloaded data of [TumblThree](https://gith
 
 This project is deployed to [tumblviewer.app](https://tumblviewer.app/) with Vercel analytics. Because this has MIT license, if you want you can deploy it yourself on your own page. A small ask, leave the about page intact.
 
+## Issues and feature requests
+
+Feel free to create issues if you find bugs or if you want to request a feature. Or make a fork and make PR yourself.
+
 ## Supported platforms
 
 * Tumblr
