@@ -138,8 +138,70 @@ export type Platform =
 	| 'bluesky'
 	| 'unknown';
 
+export type RawBlogPost =
+	| ({ platform: 'tumblr' } & BlogPostTumblr)
+	| ({ platform: 'bluesky' } & BlogPostBlueSky)
+	| {
+			platform: Exclude<Platform, 'tumblr' | 'bluesky'>;
+	  };
+
+export interface ProcessedBlogPost {
+	platform: Platform;
+	id?: string;
+	type:
+		| 'regular'
+		| 'text'
+		| 'photo'
+		| 'video'
+		| 'quote'
+		| 'link'
+		| 'conversation'
+		| 'answer';
+	createdAt?: Date;
+	title?: string;
+	url?: string;
+	tags: string[];
+	body?: string;
+	summary?: string;
+	photo?: {
+		photos: { urls: string[]; layoutSpan?: number; caption?: string }[];
+	};
+	video?: {
+		caption?: string;
+		source?: string;
+	};
+	quote?: {
+		quote: string;
+		source: string;
+	};
+	answer?: {
+		question: string;
+		answer: string;
+	};
+	conversation?: {
+		title: string | undefined;
+		utterances: {
+			label: string;
+			name: string;
+			phrase: string;
+		}[];
+	};
+	link?: {
+		url: string;
+		text: string;
+		description: string;
+	};
+	rebloggedFrom?: string;
+	rebloggedRoot?: string;
+}
+
+export type CombinedBlogPost = {
+	raw: RawBlogPost;
+	processed: ProcessedBlogPost;
+};
+
 // Merged from examples of private blog, likes, and public blog
-export interface BlogPost {
+export interface BlogPostTumblr {
 	type:
 		| 'regular'
 		| 'text'
@@ -255,43 +317,11 @@ export interface BlogPost {
 	'link-text'?: string;
 	link_description?: string;
 	'link-description'?: string;
+}
 
-	// calculated fields
-	calculated?: {
-		createdAt?: Date;
-		title?: string;
-		url?: string;
-		body?: string;
-		summary?: string;
-		photo?: {
-			photos: { urls: string[]; layoutSpan?: number; caption?: string }[];
-		};
-		video?: {
-			caption?: string;
-			source?: string;
-		};
-		quote?: {
-			quote: string;
-			source: string;
-		};
-		answer?: {
-			question: string;
-			answer: string;
-		};
-		conversation?: {
-			title: string | undefined;
-			utterances: {
-				label: string;
-				name: string;
-				phrase: string;
-			}[];
-		};
-		link?: {
-			url: string;
-			text: string;
-			description: string;
-		};
-		rebloggedFrom?: string;
-		rebloggedRoot?: string;
-	};
+export interface BlogPostBlueSky {
+	id: string;
+	date: string; // "2024-06-10 15:20:30Z"
+	text: string;
+	url: string;
 }

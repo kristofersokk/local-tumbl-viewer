@@ -12,7 +12,7 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import { BlogEntry, BlogPost } from 'Types/blog';
+import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogUtils';
 import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
@@ -20,7 +20,7 @@ import Collapsible from './Collapsible';
 interface BlogPostBodyProps {
 	params: BlogDeferredParams;
 	blog: BlogEntry;
-	post: BlogPost;
+	post: ProcessedBlogPost;
 	blogFiles: FileSystemFileHandle[];
 	imageUrlsCache: Record<string, { online?: string; local?: string }>;
 	generatedObjectUrls: string[];
@@ -55,7 +55,7 @@ const BlogPostBody = ({
 		answer,
 		conversation,
 		link,
-	} = post.calculated ?? {};
+	} = post ?? {};
 
 	const {
 		fileEntries: { Entries: imgMappingEntries },

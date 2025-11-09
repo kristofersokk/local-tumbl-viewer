@@ -1,5 +1,5 @@
 import { useCallback, useDeferredValue, useMemo, useState } from 'react';
-import { BlogPost } from 'Types/blog';
+import { ProcessedBlogPost } from 'Types/blog';
 import { shouldSaveData } from 'Utils/networkUtils';
 import useWindowSize from './useWindowSize';
 
@@ -13,7 +13,7 @@ export type BlogSorting = BlogViewSettings['sorting'];
 export type BlogFiltering = BlogViewSettings['filter'];
 
 interface BlogViewSettingsProps {
-	availablePostTypes: BlogPost['type'][];
+	availablePostTypes: ProcessedBlogPost['type'][];
 }
 
 const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
@@ -109,10 +109,11 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const [blogPostTypes, setBlogPostTypes] = useState(
 		Object.fromEntries(
 			availablePostTypes.map(type => [type, true] as const)
-		) as Record<BlogPost['type'], boolean>
+		) as Record<NonNullable<ProcessedBlogPost['type']>, boolean>
 	);
 
-	const setBlogPostType = (type: BlogPost['type'], value: boolean) => {
+	const setBlogPostType = (type: ProcessedBlogPost['type'], value: boolean) => {
+		if (!type) return;
 		setBlogPostTypes(prev => ({ ...prev, [type]: value }));
 	};
 

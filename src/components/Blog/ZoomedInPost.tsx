@@ -1,10 +1,10 @@
 import ClickOutside from 'Components/ClickOutside';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
-import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost } from 'Types/blog';
 import BlogPost from './BlogPost';
 
 interface ZoomedInPostProps {
-	zoomedInPost: BlogPostType | undefined;
+	zoomedInPost: CombinedBlogPost | undefined;
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;

@@ -1,9 +1,11 @@
 import {
 	BlogFileEntry,
 	BlogMetadata,
-	BlogPost,
 	BlogType,
+	CombinedBlogPost,
 	Platform,
+	ProcessedBlogPost,
+	RawBlogPost,
 } from 'Types/blog';
 import { deduplicateArray } from './arrayUtils';
 
@@ -53,7 +55,16 @@ const transformPostUrl = (url: string | undefined) => {
 	return url;
 };
 
-const calculatedCreatedAt = (post: BlogPost): Date | undefined => {
+const calculatedCreatedAt = (post: RawBlogPost): Date | undefined => {
+	if (post.platform === 'bluesky') {
+		return new Date(post.date);
+	}
+
+	if (post.platform !== 'tumblr') {
+		return undefined;
+	}
+
+	// Tumblr
 	const timestampStr =
 		post.date || post['date-gmt'] || post.timestamp || post['unix-timestamp'];
 	if (!timestampStr) return undefined;
@@ -76,11 +87,17 @@ const calculatedCreatedAt = (post: BlogPost): Date | undefined => {
 	return createdAt ? new Date(createdAt) : undefined;
 };
 
-type Photos = NonNullable<
-	NonNullable<BlogPost['calculated']>['photo']
->['photos'];
+type Photos = NonNullable<ProcessedBlogPost['photo']>['photos'];
 
-function getPhotos(post: BlogPost): Photos {
+function getPhotos(post: RawBlogPost): Photos {
+	if (post.platform === 'bluesky') {
+		return [];
+	}
+
+	if (post.platform !== 'tumblr') {
+		return [];
+	}
+
 	const photos: Photos = [];
 
 	(post.photos || [])
@@ -133,78 +150,100 @@ function getPhotos(post: BlogPost): Photos {
 	return photos;
 }
 
-export const processBlogPost = (post: BlogPost): BlogPost => {
+export const processBlogPost = (post: RawBlogPost): ProcessedBlogPost => {
+	if (post.platform === 'bluesky') {
+		return {
+			platform: 'bluesky',
+			type: 'text',
+			id: post.id,
+			url: post.url,
+			body: `<p>${post.text}</p>`,
+			createdAt: calculatedCreatedAt(post),
+			tags: [],
+		};
+	}
+
+	if (post.platform !== 'tumblr') {
+		return {
+			platform: post.platform,
+			type: 'regular',
+			tags: [],
+		};
+	}
+
 	const photos = getPhotos(post);
 	const disableBody = !!photos.length;
 
 	return {
-		...post,
-		calculated: {
-			createdAt: calculatedCreatedAt(post),
-			title: post.regular_title || post['regular-title'] || post.title,
-			url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
-			body: disableBody
-				? undefined
-				: post.post_html ||
-					post['post-html'] ||
-					post.regular_body ||
-					post['regular-body'] ||
-					post.body ||
-					'',
-			photo: post.type === 'photo' ? { photos } : undefined,
-			video:
-				post.type === 'video'
-					? {
-							caption: post['video-caption'] || post.video_caption || '',
-							source: post['video-source'] || post.video_source || '',
-						}
-					: undefined,
-			quote:
-				post.type === 'quote'
-					? {
-							quote: post['quote-text'] || post.quote_text || '',
-							source: post['quote-source'] || post.quote_source || '',
-						}
-					: undefined,
-			answer:
-				post.type === 'answer'
-					? {
-							question: post.question || '',
-							answer: post.answer || '',
-						}
-					: undefined,
-			conversation:
-				post.type === 'conversation'
-					? {
-							title:
-								post.conversation_title ||
-								post['conversation-title'] ||
-								undefined,
-							utterances: post.conversation || [],
-						}
-					: undefined,
-			link:
-				post.type === 'link'
-					? {
-							url: post.link_url || post['link-url'] || '',
-							text: post.link_text || post['link-text'] || '',
-							description:
-								post.link_description || post['link-description'] || '',
-						}
-					: undefined,
-			summary: post.summary,
-			rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
-			rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,
-		},
-	} satisfies BlogPost;
+		platform: 'tumblr',
+		type: post.type || 'regular',
+		createdAt: calculatedCreatedAt(post),
+		title: post.regular_title || post['regular-title'] || post.title,
+		url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
+		tags: post.tags || [],
+		body: disableBody
+			? undefined
+			: post.post_html ||
+				post['post-html'] ||
+				post.regular_body ||
+				post['regular-body'] ||
+				post.body ||
+				'',
+		photo: post.type === 'photo' ? { photos } : undefined,
+		video:
+			post.type === 'video'
+				? {
+						caption: post['video-caption'] || post.video_caption || '',
+						source: post['video-source'] || post.video_source || '',
+					}
+				: undefined,
+		quote:
+			post.type === 'quote'
+				? {
+						quote: post['quote-text'] || post.quote_text || '',
+						source: post['quote-source'] || post.quote_source || '',
+					}
+				: undefined,
+		answer:
+			post.type === 'answer'
+				? {
+						question: post.question || '',
+						answer: post.answer || '',
+					}
+				: undefined,
+		conversation:
+			post.type === 'conversation'
+				? {
+						title:
+							post.conversation_title ||
+							post['conversation-title'] ||
+							undefined,
+						utterances: post.conversation || [],
+					}
+				: undefined,
+		link:
+			post.type === 'link'
+				? {
+						url: post.link_url || post['link-url'] || '',
+						text: post.link_text || post['link-text'] || '',
+						description:
+							post.link_description || post['link-description'] || '',
+					}
+				: undefined,
+		summary: post.summary,
+		rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
+		rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,
+	} satisfies ProcessedBlogPost;
 };
 
 export const countAllTags = (
-	posts: BlogPost[]
+	posts: CombinedBlogPost[]
 ): { tag: string; count: number }[] => {
-	const allTags = deduplicateArray(posts.flatMap(post => post.tags || []));
+	const allTags = deduplicateArray(
+		posts.flatMap(post => post.processed.tags || [])
+	);
 	return allTags.map(tag => {
-		const count = posts.filter(p => p.tags?.includes(tag)).length;
+		const count = posts.filter(p => p.processed.tags.includes(tag)).length;
 		return {
 			tag,
 			count,
@@ -212,7 +251,10 @@ export const countAllTags = (
 	});
 };
 
-export const countCollapsedTags = (post: BlogPost, maxChars: number) => {
+export const countCollapsedTags = (
+	post: ProcessedBlogPost,
+	maxChars: number
+) => {
 	const tags = post.tags || [];
 	let currentChars = 0;
 	let count = 0;
@@ -396,9 +438,9 @@ export function getMediaFileHandle(
 }
 
 export const filterBlogPostsByFuzzySearch = (
-	posts: BlogPost[],
+	posts: CombinedBlogPost[],
 	searchString: string | undefined
-): BlogPost[] => {
+): CombinedBlogPost[] => {
 	if (!searchString || searchString.trim() === '') return posts;
 
 	const cleanedSearchString = searchString.trim().toLowerCase();

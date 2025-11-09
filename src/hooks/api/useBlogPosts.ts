@@ -1,10 +1,12 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
-import { QUERY_KEYS } from 'Constants/queryKeys';
 import { jsonrepair } from 'jsonrepair';
-import { BlogPost } from 'Types/blog';
+
+import { QUERY_KEYS } from 'Constants/queryKeys';
+import { BlogEntry, CombinedBlogPost, RawBlogPost } from 'Types/blog';
 import { processBlogPost } from 'Utils/blogUtils';
 
 const useBlogPosts = (
+	blog: BlogEntry | undefined,
 	blogFolderHandle: FileSystemDirectoryHandle | undefined,
 	blogFiles: FileSystemFileHandle[] | undefined
 ) => {
@@ -40,13 +42,24 @@ const useBlogPosts = (
 									.then(file => file.text())
 									.then(text => {
 										try {
-											return JSON.parse(text) as BlogPost[];
+											return JSON.parse(text) as RawBlogPost[];
 											// eslint-disable-next-line @typescript-eslint/no-unused-vars
 										} catch (ignored) {
-											return JSON.parse(jsonrepair(text)) as BlogPost[];
+											return JSON.parse(jsonrepair(text)) as RawBlogPost[];
 										}
 									})
-									.then(blogs => blogs.map(processBlogPost))
+									.then(blogs =>
+										blogs.map(rawPost => {
+											const rawPostWithPlatform = {
+												...rawPost,
+												platform: blog?.metadata.platform || 'unknown',
+											} as RawBlogPost;
+											return {
+												raw: rawPostWithPlatform,
+												processed: processBlogPost(rawPostWithPlatform),
+											} satisfies CombinedBlogPost;
+										})
+									)
 									.catch(() => console.error(`Error reading ${file.name}`))
 							)
 						);

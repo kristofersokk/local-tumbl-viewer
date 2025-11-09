@@ -16,8 +16,8 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	const sortedBlogs = useMemo(() => {
 		return [...blogs].sort(
 			(a, b) =>
-				a.metadata.Name.localeCompare(b.metadata.Name) ||
-				a.metadata.platform.localeCompare(b.metadata.platform)
+				a.metadata.platform.localeCompare(b.metadata.platform) ||
+				a.metadata.Name.localeCompare(b.metadata.Name)
 		);
 	}, [blogs]);
 
@@ -44,7 +44,9 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 					<div className="flex flex-col gap-0.5">
 						<p className="mb-2 ml-2">Select a blog</p>
 						{sortedBlogs.map(blog => {
-							const isSupported = blog.metadata.platform === 'tumblr';
+							const isSupported = ['tumblr', 'bluesky'].includes(
+								blog.metadata.platform
+							);
 							return (
 								<div
 									className={classNames(

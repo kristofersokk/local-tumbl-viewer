@@ -31,7 +31,7 @@ function BlogRoute() {
 	const {
 		foundBlogPostsFiles,
 		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
-	} = useBlogPosts(blogFolderHandle, blogFiles);
+	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
 
 	const goToBlogSelection = useCallback(() => {
 		document.startViewTransition(() => {

@@ -3,10 +3,10 @@ import Icon from 'Components/Icon';
 import Tooltip from 'Components/Tooltip';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { Dispatch, memo, SetStateAction, useCallback } from 'react';
-import { BlogPost } from 'Types/blog';
+import { ProcessedBlogPost } from 'Types/blog';
 
 interface BlogPostHeaderProps {
-	post: BlogPost;
+	post: ProcessedBlogPost;
 	params: BlogDeferredParams;
 	zoomInToPost?: (postId: string) => void;
 	isDebugging: boolean;
@@ -21,13 +21,14 @@ const BlogPostHeader = ({
 	setIsDebugging,
 }: BlogPostHeaderProps) => {
 	const { showDate, showPostLink, showRebloggedInfo, debugMode } = params;
-	const { createdAt, title, url, rebloggedFrom, rebloggedRoot } =
-		post.calculated ?? {};
+	const { createdAt, title, url, rebloggedFrom, rebloggedRoot } = post ?? {};
 
 	const showOriginalPoster = rebloggedRoot && rebloggedRoot !== rebloggedFrom;
 
 	const zoomIn = useCallback(() => {
-		zoomInToPost?.(post.id);
+		if (post.id) {
+			zoomInToPost?.(post.id);
+		}
 	}, [post.id, zoomInToPost]);
 
 	return (

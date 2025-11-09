@@ -4,14 +4,14 @@ import { memo } from 'react';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
-import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 
 import BlogPost from './BlogPost';
 
 interface BlogContentProps {
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
-	sortedFilteredPosts: BlogPostType[];
+	sortedFilteredPosts: CombinedBlogPost[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	imageUrlsCache: Record<
@@ -59,7 +59,7 @@ const BlogContent = ({
 					items={sortedFilteredPosts}
 					render={({ data: post }) => (
 						<BlogPost
-							key={post.id}
+							key={post.processed.id}
 							blog={blog}
 							post={post}
 							blogFiles={blogFiles}
@@ -80,7 +80,7 @@ const BlogContent = ({
 					rowGutter={1 * remInPixels}
 					columnWidth={columnWidthRem * remInPixels}
 					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
-					itemKey={post => post.id || post.url || ''}
+					itemKey={({ processed: post }) => post.id || post.url || ''}
 					scrollFps={12}
 					overscanBy={3}
 				/>
@@ -89,8 +89,8 @@ const BlogContent = ({
 	);
 };
 
-const calculatePostsArrayId = (posts: BlogPostType[]) => {
-	return posts.map(post => post.id).join(',');
+const calculatePostsArrayId = (posts: { processed: ProcessedBlogPost }[]) => {
+	return posts.map(post => post.processed.id).join(',');
 };
 
 export default memo(BlogContent, (prevProps, nextProps) => {

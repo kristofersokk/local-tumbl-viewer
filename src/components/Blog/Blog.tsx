@@ -4,7 +4,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
-import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { filterBlogPostsByFuzzySearch } from 'Utils/blogUtils';
 
@@ -17,13 +17,13 @@ import ZoomedInPost from './ZoomedInPost';
 interface BlogProps {
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
-	posts: BlogPostType[];
+	posts: CombinedBlogPost[];
 	goToBlogSelection: () => void;
 }
 
 const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 	const availablePostTypes = useMemo(
-		() => deduplicateArray(posts.map(post => post.type)),
+		() => deduplicateArray(posts.map(post => post.processed.type)),
 		[posts]
 	);
 
@@ -41,26 +41,28 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 
 	const sortedFilteredPosts = useMemo(() => {
 		const filteredPosts = filterBlogPostsByFuzzySearch(
-			posts.filter(post =>
+			posts.filter(({ processed: post }) =>
 				tagsForFilter.length
-					? !!post.tags.length &&
-						tagsForFilter.every(tag => post.tags.includes(tag))
-					: blogPostTypes[post.type]
+					? !!post.tags?.length &&
+						tagsForFilter.every(tag => post.tags?.includes(tag))
+					: post.type
+						? blogPostTypes[post.type]
+						: true
 			),
 			fuzzySearchString
 		);
-		const getKey = (post: BlogPostType): Date | number => {
+		const getKey = (post: ProcessedBlogPost): Date | number => {
 			switch (sortingField) {
 				case 'createdBy':
-					return post.calculated!.createdAt || 0;
+					return post.createdAt || 0;
 				default:
 					return 0;
 			}
 		};
 
 		const sortedPosts = filteredPosts.toSorted((a, b) => {
-			const aValue = getKey(a);
-			const bValue = getKey(b);
+			const aValue = getKey(a.processed);
+			const bValue = getKey(b.processed);
 
 			if (aValue < bValue) {
 				return sortingDirection === 'asc' ? -1 : 1;
@@ -103,7 +105,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 
 	const [zoomedInPostId, setZoomedInPostId] = useState<string | null>(null);
 	const zoomedInPost = sortedFilteredPosts.find(
-		post => post.id === zoomedInPostId
+		post => post.processed.id === zoomedInPostId
 	);
 
 	const zoomInToPost = useCallback((postId: string) => {

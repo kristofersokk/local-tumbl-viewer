@@ -1,10 +1,10 @@
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { memo, useState } from 'react';
-import { BlogPost } from 'Types/blog';
+import { ProcessedBlogPost } from 'Types/blog';
 import { countCollapsedTags } from 'Utils/blogUtils';
 
 interface BlogPostFooterProps {
-	post: BlogPost;
+	post: ProcessedBlogPost;
 	params: BlogDeferredParams;
 	addTagFilter: (tag: string) => void;
 }
@@ -26,7 +26,7 @@ const BlogPostFooter = ({
 
 	return (
 		<>
-			{!!post.tags?.length && showTags && (
+			{!!post.tags.length && showTags && (
 				<div className="flex flex-wrap overflow-hidden">
 					{tagsShown.map(tag => (
 						<span

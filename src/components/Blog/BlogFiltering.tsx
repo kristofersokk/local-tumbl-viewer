@@ -7,11 +7,11 @@ import Tooltip from 'Components/Tooltip';
 import Counter from 'Components/utils/Counter';
 import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogFiltering as BlogFilteringType } from 'Hooks/useBlogViewSettings';
-import { BlogPost } from 'Types/blog';
+import { CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 import { countAllTags } from 'Utils/blogUtils';
 
 interface BlogFilteringProps {
-	filteredPosts: BlogPost[];
+	filteredPosts: CombinedBlogPost[];
 	allPostsCount: number;
 	filter: BlogFilteringType;
 }
@@ -141,7 +141,7 @@ const BlogFiltering = ({
 										className="SwitchRoot"
 										checked={isActive}
 										onCheckedChange={value =>
-											setBlogPostType(type as BlogPost['type'], value)
+											setBlogPostType(type as ProcessedBlogPost['type'], value)
 										}
 									>
 										<Switch.Thumb className="SwitchThumb" />

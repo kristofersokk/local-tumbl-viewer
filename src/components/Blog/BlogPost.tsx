@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { HTMLAttributes, Ref, useState } from 'react';
-import { BlogEntry, BlogPost as BlogPostType } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost } from 'Types/blog';
 import BlogPostBody from './BlogPostBody';
 import BlogPostDebug from './BlogPostDebug';
 import BlogPostFooter from './BlogPostFooter';
@@ -10,7 +10,7 @@ import BlogPostHeader from './BlogPostHeader';
 interface BlogPostProps {
 	Ref?: Ref<HTMLElement | null>;
 	containerProps?: HTMLAttributes<HTMLDivElement>;
-	post: BlogPostType;
+	post: CombinedBlogPost;
 	blog: BlogEntry;
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
@@ -43,30 +43,34 @@ const BlogPost = ({
 				'z-blog bg-blog-post-card relative flex w-full flex-col md:rounded-md',
 				containerProps?.className
 			)}
-			key={post.id}
+			key={post.processed.id}
 			{...containerProps}
 		>
 			<BlogPostHeader
-				post={post}
+				post={post.processed}
 				params={params}
 				zoomInToPost={zoomInToPost}
 				isDebugging={isDebugging}
 				setIsDebugging={setIsDebugging}
 			/>
 			{isDebugging ? (
-				<BlogPostDebug post={post} />
+				<BlogPostDebug post={post.processed} rawPost={post.raw} />
 			) : (
 				<BlogPostBody
 					params={params}
 					blog={blog}
-					post={post}
+					post={post.processed}
 					blogFiles={blogFiles}
 					imageUrlsCache={imageUrlsCache}
 					generatedObjectUrls={generatedObjectUrls}
 					forceUncollapsed={forceUncollapsed}
 				/>
 			)}
-			<BlogPostFooter post={post} params={params} addTagFilter={addTagFilter} />
+			<BlogPostFooter
+				post={post.processed}
+				params={params}
+				addTagFilter={addTagFilter}
+			/>
 		</div>
 	);
 };
