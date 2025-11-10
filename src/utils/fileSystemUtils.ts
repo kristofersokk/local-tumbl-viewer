@@ -51,6 +51,8 @@ async function promptForRootDirectoryHandle() {
 	const newDirHandle: FileSystemDirectoryHandle =
 		await window.showDirectoryPicker!({
 			id: ROOT_FOLDER_KEY,
+			mode: 'read',
+			startIn: 'downloads',
 		});
 	await storeValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY, newDirHandle);
 
