@@ -29,7 +29,11 @@ const Initializer = ({ children }: InitializerProps) => {
 					}
 					setInProgress(false);
 				})
-				.catch(() => {
+				.catch((e: unknown) => {
+					console.error(
+						'Error initializing root directory handle:',
+						JSON.stringify(e)
+					);
 					setInProgress(false);
 				});
 		},
