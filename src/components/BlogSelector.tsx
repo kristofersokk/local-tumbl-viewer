@@ -7,10 +7,9 @@ import RootDirResetButton from './RootDirResetButton';
 
 interface BlogSelectorProps {
 	blogs: BlogEntry[];
-	selectBlog: (name: string) => void;
 }
 
-const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
+const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 	const navigate = useNavigate({ from: '/' });
 
 	const sortedBlogs = useMemo(() => {
@@ -24,6 +23,12 @@ const BlogSelector = ({ blogs, selectBlog }: BlogSelectorProps) => {
 	const navigateToAbout = () => {
 		document.startViewTransition(() => {
 			navigate({ to: '/about' });
+		});
+	};
+
+	const selectBlog = (blogName: string) => {
+		document.startViewTransition(() => {
+			navigate({ to: encodeURIComponent(blogName) });
 		});
 	};
 

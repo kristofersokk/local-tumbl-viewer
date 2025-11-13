@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import BlogSelector from 'Components/BlogSelector';
 import Loader from 'Components/Loader';
 import RootDirResetButton from 'Components/RootDirResetButton';
@@ -11,8 +11,6 @@ export const Route = createFileRoute('/_initializer/')({
 });
 
 function Index() {
-	const navigate = useNavigate({ from: '/' });
-
 	const { data: folders, isFetching: isFetchingRootFolders } = useRootFolders();
 	const indexFolder = folders?.find(folder => folder.name === 'Index');
 	const { data: blogs, isFetching: isFetchingBlogs } = useBlogs(indexFolder);
@@ -44,11 +42,5 @@ function Index() {
 		);
 	}
 
-	const selectBlog = (blogName: string) => {
-		document.startViewTransition(() => {
-			navigate({ to: blogName });
-		});
-	};
-
-	return <BlogSelector blogs={blogs!} selectBlog={selectBlog} />;
+	return <BlogSelector blogs={blogs!} />;
 }
