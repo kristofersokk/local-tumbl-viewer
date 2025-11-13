@@ -1,6 +1,6 @@
 import useTimer from 'Hooks/useTimer';
 import { Toast } from 'radix-ui';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface NeedRefreshProps {
 	updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>;
@@ -9,7 +9,10 @@ interface NeedRefreshProps {
 const NeedRefresh = ({ updateServiceWorker }: NeedRefreshProps) => {
 	const [open, setOpen] = useState(false);
 
-	useTimer(2000, () => setOpen(true));
+	const openModal = useCallback(() => {
+		setOpen(true);
+	}, []);
+	useTimer(2000, openModal);
 
 	return (
 		<Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
