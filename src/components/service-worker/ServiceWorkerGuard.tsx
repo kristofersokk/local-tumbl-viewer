@@ -1,9 +1,8 @@
+import { ReactNode } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
-import { ReactNode } from 'react';
 import NeedRefresh from './NeedRefresh';
 import OfflineReady from './OfflineReady';
-import { Toast } from 'radix-ui';
 
 interface ServiceWorkerGuardProps {
 	children: ReactNode;
@@ -18,13 +17,8 @@ const ServiceWorkerGuard = ({ children }: ServiceWorkerGuardProps) => {
 
 	return (
 		<>
-			<Toast.Provider swipeDirection="right">
-				{needRefresh && (
-					<NeedRefresh updateServiceWorker={updateServiceWorker} />
-				)}
-				{offlineReady && <OfflineReady />}
-				<Toast.Viewport className="ToastViewport" />
-			</Toast.Provider>
+			{needRefresh && <NeedRefresh updateServiceWorker={updateServiceWorker} />}
+			{offlineReady && <OfflineReady />}
 			{children}
 		</>
 	);
