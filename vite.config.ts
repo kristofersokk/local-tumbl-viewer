@@ -5,9 +5,10 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 import tsConfigPaths from 'vite-tsconfig-paths';
+import { analyzer } from 'vite-bundle-analyzer';
 
 // https://vite.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
 			// Needs to be before react plugin
@@ -60,6 +61,9 @@ export default defineConfig(() => {
 				devOptions: {
 					enabled: false,
 				},
+			}),
+			analyzer({
+				enabled: mode === 'analyze-bundle',
 			}),
 		],
 		server: {

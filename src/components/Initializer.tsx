@@ -1,8 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
-import RootDirContext from 'Contexts/InitializationContext';
-import { atom, useAtom } from 'jotai';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
+
+import RootDirContext from 'Contexts/InitializationContext';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
+
 import Loader from './Loader';
 import RootDirSelector from './RootDirSelector';
 import Center from './utils/Center';
@@ -11,12 +12,11 @@ interface InitializerProps {
 	children: ReactNode | ReactNode[];
 }
 
-const rootDirHandleAtom = atom<FileSystemDirectoryHandle>();
-
 const Initializer = ({ children }: InitializerProps) => {
 	const queryClient = useQueryClient();
 
-	const [rootDirHandle, setRootDirHandle] = useAtom(rootDirHandleAtom);
+	const [rootDirHandle, setRootDirHandle] =
+		useState<FileSystemDirectoryHandle>();
 	const [inProgress, setInProgress] = useState(false);
 
 	const initializeRootDirHandle = useCallback(
