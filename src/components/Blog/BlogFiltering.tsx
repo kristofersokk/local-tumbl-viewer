@@ -67,7 +67,7 @@ const BlogFiltering = ({
 							},
 						}}
 						render={props => (
-							<IconButton icon="filter" {...props}>
+							<IconButton icon="filter" {...props} className="relative">
 								<Counter count={filterCount || undefined} />
 							</IconButton>
 						)}
