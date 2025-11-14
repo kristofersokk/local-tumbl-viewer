@@ -247,6 +247,7 @@ export const processBlogPost = (
 
 	return {
 		platform: 'tumblr',
+		id: post.id,
 		type: post.type || 'regular',
 		createdAt: calculatedCreatedAt(post),
 		title: post.regular_title || post['regular-title'] || post.title,
