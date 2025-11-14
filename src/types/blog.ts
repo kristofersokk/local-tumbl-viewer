@@ -163,6 +163,10 @@ export interface ProcessedBlogPost {
 		| 'link'
 		| 'conversation'
 		| 'answer';
+	mediaFiles: {
+		images: string[];
+		videos: string[];
+	};
 	createdAt?: Date;
 	title?: string;
 	url?: string;

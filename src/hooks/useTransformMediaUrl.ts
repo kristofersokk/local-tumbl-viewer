@@ -65,6 +65,7 @@ const useTransformMediaUrl = ({
 
 			const { onlineUrl, localUrl } = await constructLocalUrl(urls);
 
+			// eslint-disable-next-line react-hooks/immutability
 			imageUrlsCache[firstUrl] = {
 				online: onlineUrl || firstUrl,
 				local: localUrl,

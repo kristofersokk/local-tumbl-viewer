@@ -30,7 +30,7 @@ function BlogRoute() {
 		useBlogFiles(blogFolderHandle);
 	const {
 		foundBlogPostsFiles,
-		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
+		query: { data: blogPosts, isPending: isFetchingBlogPosts },
 	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
 
 	const goToBlogSelection = useCallback(() => {

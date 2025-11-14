@@ -25,9 +25,9 @@ const BlogPostFooter = ({
 			: post.tags;
 
 	return (
-		<>
+		<div className="flex flex-wrap overflow-hidden py-1.5">
 			{!!post.tags.length && showTags && (
-				<div className="flex flex-wrap overflow-hidden">
+				<>
 					{tagsShown.map(tag => (
 						<span
 							key={tag}
@@ -53,10 +53,9 @@ const BlogPostFooter = ({
 							Show less
 						</button>
 					)}
-				</div>
+				</>
 			)}
-			<div className="mx-4 my-2 flex"></div>
-		</>
+		</div>
 	);
 };
 

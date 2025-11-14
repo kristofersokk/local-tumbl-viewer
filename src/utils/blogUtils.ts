@@ -1,10 +1,8 @@
 import {
-	BlogEntry,
 	BlogFileEntry,
 	BlogMetadata,
 	BlogType,
 	CombinedBlogPost,
-	getBlogTypeIndex,
 	Platform,
 	ProcessedBlogPost,
 	RawBlogPost,
@@ -154,29 +152,32 @@ function getPhotos(post: RawBlogPost): Photos {
 
 const detectBlogMediaFiles = (
 	post: RawBlogPost,
-	blogFiles: FileSystemFileHandle[] | undefined
+	blogFileNames: string[] | undefined
 ) => {
-	if (!('id' in post)) return undefined;
-	if (!blogFiles) return undefined;
+	const emptyMediaFiles = {
+		images: [],
+		videos: [],
+	};
+
+	if (!('id' in post)) return emptyMediaFiles;
+	if (!blogFileNames) return emptyMediaFiles;
 
 	const imageExtensions = getAlternativeExtensions('jpg');
 	const videoExtensions = getAlternativeExtensions('mp4');
 
 	const getMediaFiles = (extensions: string[]) =>
-		blogFiles
-			.map(file => file.name)
-			.filter(fileName => {
-				const fileNameWithoutExtension = fileName.includes('.')
-					? fileName.slice(0, fileName.lastIndexOf('.'))
-					: fileName;
-				const extension = fileName.includes('.')
-					? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
-					: '';
-				return (
-					fileNameWithoutExtension.startsWith(post.id) &&
-					extensions.includes(extension)
-				);
-			});
+		blogFileNames.filter(fileName => {
+			const fileNameWithoutExtension = fileName.includes('.')
+				? fileName.slice(0, fileName.lastIndexOf('.'))
+				: fileName;
+			const extension = fileName.includes('.')
+				? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
+				: '';
+			return (
+				fileNameWithoutExtension.startsWith(post.id) &&
+				extensions.includes(extension)
+			);
+		});
 
 	const imageFileNames = getMediaFiles(imageExtensions);
 	const videoFileNames = getMediaFiles(videoExtensions);
@@ -187,49 +188,21 @@ const detectBlogMediaFiles = (
 	};
 };
 
-export const calculateBlogMediaExtraHtml = (
-	blog: BlogEntry,
-	post: RawBlogPost,
-	blogFiles: FileSystemFileHandle[] | undefined
-): string => {
-	const needsMediaFilesScan =
-		post.platform === 'bluesky' ||
-		(post.platform === 'tumblr' &&
-			blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch'));
-
-	if (!needsMediaFilesScan) return '';
-
-	const { images: imageFileNames = [], videos: videoFileNames = [] } =
-		detectBlogMediaFiles(post, blogFiles) || {};
-
-	return (
-		imageFileNames
-			.map(imageFileName => `<img data-src="${imageFileName}" >`)
-			.join('') +
-		videoFileNames
-			.map(
-				videoFileName =>
-					`<video data-src="${videoFileName}" autoplay muted loop></video>`
-			)
-			.join('')
-	);
-};
-
 export const processBlogPost = (
-	blog: BlogEntry,
 	post: RawBlogPost,
-	blogFiles: FileSystemFileHandle[] | undefined
+	blogFileNames: string[] | undefined
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
-		const extraHtml = calculateBlogMediaExtraHtml(blog, post, blogFiles);
+		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
 		return {
 			platform: 'bluesky',
 			type: 'text',
 			id: post.id,
 			url: post.url,
-			body: `<p>${post.text}</p>` + extraHtml,
+			body: post.text ? `<p>${post.text}</p>` : '',
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
+			mediaFiles,
 		};
 	}
 
@@ -238,10 +211,14 @@ export const processBlogPost = (
 			platform: post.platform,
 			type: 'regular',
 			tags: [],
+			mediaFiles: {
+				images: [],
+				videos: [],
+			},
 		};
 	}
 
-	const extraHtml = calculateBlogMediaExtraHtml(blog, post, blogFiles);
+	const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
 	const photos = getPhotos(post);
 	const disableBody = !!photos.length;
 
@@ -253,14 +230,15 @@ export const processBlogPost = (
 		title: post.regular_title || post['regular-title'] || post.title,
 		url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
 		tags: post.tags || [],
+		mediaFiles,
 		body: disableBody
 			? undefined
-			: (post.post_html ||
-					post['post-html'] ||
-					post.regular_body ||
-					post['regular-body'] ||
-					post.body ||
-					'') + extraHtml,
+			: post.post_html ||
+				post['post-html'] ||
+				post.regular_body ||
+				post['regular-body'] ||
+				post.body ||
+				'',
 		photo: post.type === 'photo' ? { photos } : undefined,
 		video:
 			post.type === 'video'
@@ -437,6 +415,8 @@ export const getBlogPostProcessors = (
 			videoEl.setAttribute('autoplay', 'true');
 			videoEl.setAttribute('muted', 'true');
 			videoEl.setAttribute('loop', 'true');
+			videoEl.setAttribute('controls', 'true');
+			videoEl.setAttribute('controlsList', 'nofullscreen');
 		}
 		if (tag === 'iframe') {
 			const iframeEl = el as HTMLIFrameElement;

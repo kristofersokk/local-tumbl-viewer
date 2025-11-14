@@ -12,7 +12,7 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
+import { BlogEntry, getBlogTypeIndex, ProcessedBlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogUtils';
 import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
@@ -46,16 +46,8 @@ const BlogPostBody = ({
 
 	const { Name: blogName } = blog.metadata;
 
-	const {
-		body: dynamicBody,
-		summary,
-		photo,
-		video,
-		quote,
-		answer,
-		conversation,
-		link,
-	} = post ?? {};
+	const { body, summary, photo, video, quote, answer, conversation, link } =
+		post ?? {};
 
 	const {
 		fileEntries: { Entries: imgMappingEntries },
@@ -120,7 +112,7 @@ const BlogPostBody = ({
 			>
 				{typeof content === 'string' ? (
 					<UnsafeContent
-						content={dynamicBody || ''}
+						content={content || ''}
 						domProcessors={blogPostProcessors}
 					/>
 				) : (
@@ -264,6 +256,26 @@ const BlogPostBody = ({
 		</div>
 	) : undefined;
 
+	const needsMediaFiles =
+		post.platform === 'bluesky' ||
+		(post.platform === 'tumblr' &&
+			blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch'));
+
+	const mediaFilesBody = needsMediaFiles ? (
+		<UnsafeContent
+			domProcessors={blogPostProcessors}
+			className="flex flex-col gap-2"
+			content={
+				post.mediaFiles.images
+					.map(imageUrl => `<img data-src="${imageUrl}" />`)
+					.join('') +
+				post.mediaFiles.videos
+					.map(videoUrl => `<video data-src="${videoUrl}" />`)
+					.join('')
+			}
+		/>
+	) : null;
+
 	const getBody = (
 		ref?: RefObject<HTMLElement | null>,
 		className?: string,
@@ -274,13 +286,14 @@ const BlogPostBody = ({
 			className={className}
 			style={style}
 		>
-			{renderDynamic(dynamicBody)}
+			{renderDynamic(body)}
 			{photoBody ?? null}
 			{videoBody ?? null}
 			{quoteBody ?? null}
 			{answerBody ?? null}
 			{conversationBody ?? null}
 			{linkBody ?? null}
+			{mediaFilesBody ?? null}
 			{summary && (
 				<div className="text-blog-post-summary mt-2 p-2">{summary}</div>
 			)}

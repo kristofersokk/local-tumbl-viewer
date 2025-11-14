@@ -2,8 +2,10 @@ import { skipToken, useQuery } from '@tanstack/react-query';
 import { jsonrepair } from 'jsonrepair';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
+import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, CombinedBlogPost, RawBlogPost } from 'Types/blog';
 import { processBlogPost } from 'Utils/blogUtils';
+import { expensiveMap } from 'Utils/computationUtils';
 
 const useBlogPosts = (
 	blog: BlogEntry | undefined,
@@ -30,9 +32,13 @@ const useBlogPosts = (
 		blogLinksFile,
 	].filter(Boolean);
 
+	const blogFileNames = useExpensiveComputation(
+		expensiveMap(blogFiles, file => file.name, 100)
+	);
+
 	const query = useQuery({
 		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolderHandle?.name],
-		queryFn: blogFiles
+		queryFn: blogFileNames
 			? async () => {
 					const [texts, images, videos, conversations, answers, quotes, links] =
 						await Promise.all(
@@ -57,9 +63,8 @@ const useBlogPosts = (
 											return {
 												raw: rawPostWithPlatform,
 												processed: processBlogPost(
-													blog!,
 													rawPostWithPlatform,
-													blogFiles
+													blogFileNames
 												),
 											} satisfies CombinedBlogPost;
 										})
@@ -80,7 +85,7 @@ const useBlogPosts = (
 				}
 			: skipToken,
 		staleTime: Infinity,
-		enabled: !!blog && !!blogFiles,
+		enabled: !!blog && !!blogFileNames,
 	});
 
 	return { query, foundBlogPostsFiles };
