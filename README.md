@@ -27,6 +27,12 @@ Feel free to create issues if you find bugs or if you want to request a feature.
 
 Others coming later
 
+### Filename template restriction
+
+These blog types need filename template to begin with `%i`
+* Tumblr search
+* Bluesky
+
 ## Supported TumblThree settings
 
 Only json metadata format is supported (for now).
