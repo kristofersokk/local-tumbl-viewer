@@ -174,21 +174,23 @@ const BlogPostBody = ({
 			)
 		: undefined;
 
-	const videoBody = video ? (
-		<div>
-			<UnsafeContent
-				tag="div"
-				content={video.caption ?? ''}
-				domProcessors={blogPostProcessors}
-			/>
-			<UnsafeContent
-				tag="div"
-				content={video.source ?? ''}
-				domProcessors={blogPostProcessors}
-				allowIframes
-			/>
-		</div>
-	) : undefined;
+	const videoBody = video
+		? renderDynamic(
+				<>
+					<UnsafeContent
+						tag="div"
+						content={video.caption ?? ''}
+						domProcessors={blogPostProcessors}
+					/>
+					<UnsafeContent
+						tag="div"
+						content={video.source ?? ''}
+						domProcessors={blogPostProcessors}
+						allowIframes
+					/>
+				</>
+			)
+		: undefined;
 
 	const answerBody = answer ? (
 		<div>

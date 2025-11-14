@@ -1,8 +1,10 @@
 import {
+	BlogEntry,
 	BlogFileEntry,
 	BlogMetadata,
 	BlogType,
 	CombinedBlogPost,
+	getBlogTypeIndex,
 	Platform,
 	ProcessedBlogPost,
 	RawBlogPost,
@@ -150,49 +152,82 @@ function getPhotos(post: RawBlogPost): Photos {
 	return photos;
 }
 
-const detectBlueSkyImageFileNames = (
+const detectBlogMediaFiles = (
 	post: RawBlogPost,
 	blogFiles: FileSystemFileHandle[] | undefined
-): string[] | undefined => {
-	if (post.platform !== 'bluesky') return undefined;
+) => {
+	if (!('id' in post)) return undefined;
 	if (!blogFiles) return undefined;
 
 	const imageExtensions = getAlternativeExtensions('jpg');
+	const videoExtensions = getAlternativeExtensions('mp4');
 
-	return blogFiles
-		.map(file => file.name)
-		.filter(fileName => {
-			const fileNameWithoutExtension = fileName.includes('.')
-				? fileName.slice(0, fileName.lastIndexOf('.'))
-				: fileName;
-			const extension = fileName.includes('.')
-				? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
-				: '';
-			return (
-				fileNameWithoutExtension.startsWith(post.id) &&
-				imageExtensions.includes(extension)
-			);
-		});
+	const getMediaFiles = (extensions: string[]) =>
+		blogFiles
+			.map(file => file.name)
+			.filter(fileName => {
+				const fileNameWithoutExtension = fileName.includes('.')
+					? fileName.slice(0, fileName.lastIndexOf('.'))
+					: fileName;
+				const extension = fileName.includes('.')
+					? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
+					: '';
+				return (
+					fileNameWithoutExtension.startsWith(post.id) &&
+					extensions.includes(extension)
+				);
+			});
+
+	const imageFileNames = getMediaFiles(imageExtensions);
+	const videoFileNames = getMediaFiles(videoExtensions);
+
+	return {
+		images: imageFileNames,
+		videos: videoFileNames,
+	};
+};
+
+export const calculateBlogMediaExtraHtml = (
+	blog: BlogEntry,
+	post: RawBlogPost,
+	blogFiles: FileSystemFileHandle[] | undefined
+): string => {
+	const needsMediaFilesScan =
+		post.platform === 'bluesky' ||
+		(post.platform === 'tumblr' &&
+			blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch'));
+
+	if (!needsMediaFilesScan) return '';
+
+	const { images: imageFileNames = [], videos: videoFileNames = [] } =
+		detectBlogMediaFiles(post, blogFiles) || {};
+
+	return (
+		imageFileNames
+			.map(imageFileName => `<img data-src="${imageFileName}" >`)
+			.join('') +
+		videoFileNames
+			.map(
+				videoFileName =>
+					`<video data-src="${videoFileName}" autoplay muted loop></video>`
+			)
+			.join('')
+	);
 };
 
 export const processBlogPost = (
+	blog: BlogEntry,
 	post: RawBlogPost,
 	blogFiles: FileSystemFileHandle[] | undefined
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
-		const imageFileNames = detectBlueSkyImageFileNames(post, blogFiles);
+		const extraHtml = calculateBlogMediaExtraHtml(blog, post, blogFiles);
 		return {
 			platform: 'bluesky',
 			type: 'text',
 			id: post.id,
 			url: post.url,
-			body:
-				`<p>${post.text}</p>` +
-				(imageFileNames
-					? imageFileNames
-							.map(imageFileName => `<img data-src="${imageFileName}" >`)
-							.join('')
-					: ''),
+			body: `<p>${post.text}</p>` + extraHtml,
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
 		};
@@ -206,6 +241,7 @@ export const processBlogPost = (
 		};
 	}
 
+	const extraHtml = calculateBlogMediaExtraHtml(blog, post, blogFiles);
 	const photos = getPhotos(post);
 	const disableBody = !!photos.length;
 
@@ -218,12 +254,12 @@ export const processBlogPost = (
 		tags: post.tags || [],
 		body: disableBody
 			? undefined
-			: post.post_html ||
-				post['post-html'] ||
-				post.regular_body ||
-				post['regular-body'] ||
-				post.body ||
-				'',
+			: (post.post_html ||
+					post['post-html'] ||
+					post.regular_body ||
+					post['regular-body'] ||
+					post.body ||
+					'') + extraHtml,
 		photo: post.type === 'photo' ? { photos } : undefined,
 		video:
 			post.type === 'video'
@@ -382,8 +418,9 @@ export const getBlogPostProcessors = (
 		}
 		if (tag === 'video') {
 			const videoEl = el as HTMLVideoElement;
-			const src = videoEl.src;
+			const src = videoEl.src || videoEl.getAttribute('data-src') || '';
 			videoEl.removeAttribute('src');
+			videoEl.removeAttribute('data-src');
 			const { original: original1, transformed: transformed1 } =
 				await transformMediaUrl(src);
 			modifyAttribute(videoEl, 'data-src', original1);
@@ -433,6 +470,21 @@ const alternativeExtensions: string[][] = [
 		'jfif',
 		'apng',
 		'ico',
+	],
+	[
+		// videos
+		'mp4',
+		'mov',
+		'avi',
+		'mkv',
+		'flv',
+		'wmv',
+		'webm',
+		'mpeg',
+		'mpg',
+		'3gp',
+		'ogg',
+		'm4v',
 	],
 ];
 

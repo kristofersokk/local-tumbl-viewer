@@ -126,6 +126,12 @@ export const blogTypes = {
 	7: 'newtumbl',
 	8: 'bluesky',
 	9: 'all',
+} as const;
+
+export const getBlogTypeIndex = (type: ValueOf<typeof blogTypes>): number => {
+	return Number(
+		Object.entries(blogTypes).find(([, value]) => value === type)?.[0]
+	);
 };
 
 export type BlogType = keyof typeof blogTypes;

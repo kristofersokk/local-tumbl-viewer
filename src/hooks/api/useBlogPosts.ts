@@ -57,6 +57,7 @@ const useBlogPosts = (
 											return {
 												raw: rawPostWithPlatform,
 												processed: processBlogPost(
+													blog!,
 													rawPostWithPlatform,
 													blogFiles
 												),
@@ -79,6 +80,7 @@ const useBlogPosts = (
 				}
 			: skipToken,
 		staleTime: Infinity,
+		enabled: !!blog && !!blogFiles,
 	});
 
 	return { query, foundBlogPostsFiles };
