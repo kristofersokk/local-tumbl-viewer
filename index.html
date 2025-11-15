@@ -8,8 +8,34 @@
 			name="description"
 			content="Application which shows Tumblr blog archives downloaded by TumblThree application"
 		/>
+
+		<!-- Basic SEO -->
+		<meta name="robots" content="index, follow" />
+		<meta name="keywords" content="tumblr, archive, viewer, tumblthree, local, blog" />
+		<link rel="canonical" href="/" />
 		<meta name="apple-mobile-web-app-title" content="TumblViewer" />
 		<meta name="theme-color" content="#364153" />
+
+		<!-- Open Graph / Social preview -->
+		<meta property="og:title" content="Local Tumbl Viewer" />
+		<meta property="og:description" content="Application which shows Tumblr blog archives downloaded by TumblThree application" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://tumblviewer.app/" />
+		<meta property="og:image" content="https://tumblviewer.app/logo.svg" />
+
+		<!-- Structured data (JSON-LD) -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebApplication",
+			"name": "Local Tumbl Viewer",
+			"url": "https://tumblviewer.app/",
+			"description": "Application which shows Tumblr blog archives downloaded by TumblThree application",
+			"applicationCategory": "Utilities",
+			"operatingSystem": "Web",
+			"image": "https://tumblviewer.app/logo.svg"
+		}
+		</script>
 
 		<link rel="icon" href="/favicon.ico" sizes="48x48" />
 		<link rel="icon" href="/logo.svg" sizes="any" type="image/svg+xml" />

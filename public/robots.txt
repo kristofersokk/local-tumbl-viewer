@@ -1,2 +1,7 @@
 User-agent: *
-Allow: /
+Disallow: /
+Allow: /$
+Allow: /about$
+
+# Sitemap
+Sitemap: https://tumblviewer.app/sitemap.xml
