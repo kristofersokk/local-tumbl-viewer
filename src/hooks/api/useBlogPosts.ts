@@ -69,7 +69,7 @@ const useBlogPosts = (
 											} satisfies CombinedBlogPost;
 										})
 									)
-									.catch(() => console.error(`Error reading ${file.name}`))
+									.catch(e => console.error(`Error reading ${file.name}:`, e))
 							)
 						);
 

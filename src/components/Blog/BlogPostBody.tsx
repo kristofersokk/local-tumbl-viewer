@@ -257,7 +257,7 @@ const BlogPostBody = ({
 	) : undefined;
 
 	const needsMediaFiles =
-		post.platform === 'bluesky' ||
+		post.platform !== 'tumblr' ||
 		(post.platform === 'tumblr' &&
 			blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch'));
 

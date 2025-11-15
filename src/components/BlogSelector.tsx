@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import classNames from 'classnames';
 import { useMemo } from 'react';
-import { BlogEntry } from 'Types/blog';
+import { BlogEntry, Platform } from 'Types/blog';
 import PlatformLogo from './Blog/PlatformLogo';
 import RootDirResetButton from './RootDirResetButton';
 
@@ -49,9 +49,9 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 					<div className="flex flex-col gap-0.5">
 						<p className="mb-2 ml-2">Select a blog</p>
 						{sortedBlogs.map(blog => {
-							const isSupported = ['tumblr', 'bluesky'].includes(
-								blog.metadata.platform
-							);
+							const isSupported = (
+								['tumblr', 'bluesky', 'twitter'] satisfies Platform[]
+							).includes(blog.metadata.platform);
 							return (
 								<div
 									className={classNames(

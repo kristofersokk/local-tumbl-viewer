@@ -60,6 +60,10 @@ const calculatedCreatedAt = (post: RawBlogPost): Date | undefined => {
 		return new Date(post.date);
 	}
 
+	if (post.platform === 'twitter') {
+		return new Date(post.date);
+	}
+
 	if (post.platform !== 'tumblr') {
 		return undefined;
 	}
@@ -90,10 +94,6 @@ const calculatedCreatedAt = (post: RawBlogPost): Date | undefined => {
 type Photos = NonNullable<ProcessedBlogPost['photo']>['photos'];
 
 function getPhotos(post: RawBlogPost): Photos {
-	if (post.platform === 'bluesky') {
-		return [];
-	}
-
 	if (post.platform !== 'tumblr') {
 		return [];
 	}
@@ -188,6 +188,19 @@ const detectBlogMediaFiles = (
 	};
 };
 
+const replaceLinks = (text: string, links?: Record<string, string>): string => {
+	if (!links || Object.keys(links).length === 0) return text;
+
+	let replacedText = text;
+	for (const [key, value] of Object.entries(links)) {
+		replacedText = replacedText.replace(
+			key,
+			`<a href="${value}" target="_blank" rel="noopener noreferrer">${key}</a>`
+		);
+	}
+	return replacedText;
+};
+
 export const processBlogPost = (
 	post: RawBlogPost,
 	blogFileNames: string[] | undefined
@@ -200,6 +213,21 @@ export const processBlogPost = (
 			id: post.id,
 			url: post.url,
 			body: post.text ? `<p>${post.text}</p>` : '',
+			createdAt: calculatedCreatedAt(post),
+			tags: [],
+			mediaFiles,
+		};
+	}
+
+	if (post.platform === 'twitter') {
+		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
+		const text = replaceLinks(post.text, post.links);
+		return {
+			platform: 'twitter',
+			type: 'text',
+			id: post.id,
+			url: post.url,
+			body: post.text ? `<p>${text}</p>` : '',
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
 			mediaFiles,

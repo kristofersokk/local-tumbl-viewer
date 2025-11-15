@@ -147,8 +147,9 @@ export type Platform =
 export type RawBlogPost =
 	| ({ platform: 'tumblr' } & BlogPostTumblr)
 	| ({ platform: 'bluesky' } & BlogPostBlueSky)
+	| ({ platform: 'twitter' } & BlogPostTwitter)
 	| {
-			platform: Exclude<Platform, 'tumblr' | 'bluesky'>;
+			platform: Exclude<Platform, 'tumblr' | 'bluesky' | 'twitter'>;
 	  };
 
 export interface ProcessedBlogPost {
@@ -334,4 +335,12 @@ export interface BlogPostBlueSky {
 	date: string; // "2024-06-10 15:20:30Z"
 	text: string;
 	url: string;
+}
+
+export interface BlogPostTwitter {
+	id: string;
+	date: string; // "2024-06-10 15:20:30Z"
+	text: string;
+	url: string;
+	links?: Record<string, string>;
 }
