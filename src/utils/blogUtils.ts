@@ -209,7 +209,7 @@ export const processBlogPost = (
 		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
 		return {
 			platform: 'bluesky',
-			type: 'text',
+			type: 'regular',
 			id: post.id,
 			url: post.url,
 			body: post.text ? `<p>${post.text}</p>` : '',
@@ -224,7 +224,7 @@ export const processBlogPost = (
 		const text = replaceLinks(post.text, post.links);
 		return {
 			platform: 'twitter',
-			type: 'text',
+			type: 'regular',
 			id: post.id,
 			url: post.url,
 			body: post.text ? `<p>${text}</p>` : '',
