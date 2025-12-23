@@ -255,18 +255,24 @@ export const processBlogPost = (
 		id: post.id,
 		type: post.type || 'regular',
 		createdAt: calculatedCreatedAt(post),
-		title: post.regular_title || post['regular-title'] || post.title,
+		title: removeUnneededPatterns(
+			undoubleText(post.regular_title || post['regular-title'] || post.title)
+		),
 		url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
 		tags: post.tags || [],
 		mediaFiles,
 		body: disableBody
 			? undefined
-			: post.post_html ||
-				post['post-html'] ||
-				post.regular_body ||
-				post['regular-body'] ||
-				post.body ||
-				'',
+			: removeUnneededPatterns(
+					undoubleText(
+						post.post_html ||
+							post['post-html'] ||
+							post.regular_body ||
+							post['regular-body'] ||
+							post.body ||
+							''
+					)
+				).trim(),
 		photo: post.type === 'photo' ? { photos } : undefined,
 		video:
 			post.type === 'video'
@@ -579,4 +585,33 @@ export const filterBlogPostsByFuzzySearch = (
 			cleanedPostContent.includes(segment)
 		);
 	});
+};
+
+export const undoubleText = <T extends string | undefined>(
+	text: T | string
+): T | string => {
+	if (!text) return text;
+	const firstPart = text.slice(0, Math.floor(text.length / 2));
+	const replacedText = text.replace(/[\s\r\n]/g, '');
+	const replacedFirstPart = firstPart.replace(/[\s\r\n]/g, '');
+	if (replacedText === replacedFirstPart + replacedFirstPart) {
+		return firstPart;
+	}
+	return text;
+};
+
+const unNeededPatterns = [
+	/[^\s]+\/\d{16,}:/g,
+	/[^\s]+ reblogged[\s\r\n]+[^\s]+/g,
+];
+
+export const removeUnneededPatterns = <T extends string | undefined>(
+	text: T | string
+): T | string => {
+	if (!text) return text;
+	let modifiedText = text;
+	for (const pattern of unNeededPatterns) {
+		modifiedText = modifiedText.replaceAll(pattern, '');
+	}
+	return modifiedText;
 };

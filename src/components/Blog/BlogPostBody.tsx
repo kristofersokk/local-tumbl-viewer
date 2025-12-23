@@ -256,10 +256,12 @@ const BlogPostBody = ({
 		</div>
 	) : undefined;
 
+	const bodyIncludesImageTags = /<img[\s\S]*?>/i.test(body || '');
 	const needsMediaFiles =
 		post.platform !== 'tumblr' ||
 		(post.platform === 'tumblr' &&
-			blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch'));
+			(blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch') ||
+				!bodyIncludesImageTags));
 
 	const mediaFilesBody = needsMediaFiles ? (
 		<UnsafeContent
