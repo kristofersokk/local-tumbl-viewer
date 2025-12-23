@@ -39,12 +39,12 @@ const BlogPost = ({
 	return (
 		<div
 			ref={Ref as Ref<HTMLDivElement>}
+			{...containerProps}
 			className={classNames(
 				'z-blog bg-blog-post-card relative flex w-full flex-col md:rounded-md',
 				containerProps?.className
 			)}
 			key={post.processed.id}
-			{...containerProps}
 		>
 			<BlogPostHeader
 				post={post.processed}

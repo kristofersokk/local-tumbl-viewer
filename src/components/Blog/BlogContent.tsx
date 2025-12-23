@@ -1,5 +1,5 @@
-import { Masonry } from 'masonic';
-import { memo } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { memo, useRef } from 'react';
 
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import useRemToPixels from 'Hooks/useRemToPixels';
@@ -36,16 +36,36 @@ const BlogContent = ({
 	zoomInToPost,
 }: BlogContentProps) => {
 	const remInPixels = useRemToPixels();
-	const { height: viewportHeightInPixels } = useWindowSize();
+	const { width: viewportWidthInPixels, height: viewportHeightInPixels } =
+		useWindowSize();
 	const { collapsedHeightPercent, columnWidthRem } = params;
 
 	const collapsedHeightRem = Math.floor(
 		((collapsedHeightPercent / 100) * viewportHeightInPixels) / remInPixels
 	);
 
+	const lanes =
+		params.layoutMode === 'list'
+			? 1
+			: Math.max(
+					1,
+					Math.floor(viewportWidthInPixels / remInPixels / columnWidthRem)
+				);
+	const lanePercentage = 100 / lanes;
+
+	const parentRef = useRef<HTMLDivElement>(null);
+	const rowVirtualizer = useVirtualizer({
+		count: sortedFilteredPosts.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => (collapsedHeightRem + 5) * remInPixels,
+		overscan: 3,
+		lanes,
+	});
+
 	return (
 		<div className="flex w-full justify-center px-0 py-8 md:px-8 lg:px-12">
 			<div
+				ref={parentRef}
 				style={{
 					width:
 						params.layoutMode === 'list'
@@ -54,36 +74,44 @@ const BlogContent = ({
 					maxWidth: '100%',
 				}}
 			>
-				<Masonry
-					key={blog.metadata.Name + sortedFilteredPosts.length}
-					items={sortedFilteredPosts}
-					render={({ data: post }) => (
-						<BlogPost
-							key={post.processed.id}
-							blog={blog}
-							post={post}
-							blogFiles={blogFiles}
-							addTagFilter={addTagFilter}
-							params={params}
-							imageUrlsCache={imageUrlsCache}
-							generatedObjectUrls={generatedObjectUrls}
-							zoomInToPost={zoomInToPost}
-						/>
-					)}
-					maxColumnWidth={
-						params.layoutMode === 'list'
-							? columnWidthRem * remInPixels
-							: undefined
-					}
-					columnCount={params.layoutMode === 'list' ? 1 : undefined}
-					columnGutter={1 * remInPixels}
-					rowGutter={1 * remInPixels}
-					columnWidth={columnWidthRem * remInPixels}
-					itemHeightEstimate={(collapsedHeightRem + 5) * remInPixels}
-					itemKey={({ processed: post }) => post.id || post.url || ''}
-					scrollFps={12}
-					overscanBy={3}
-				/>
+				<div
+					style={{
+						height: `${rowVirtualizer.getTotalSize()}px`,
+						width: '100%',
+						position: 'relative',
+					}}
+				>
+					{rowVirtualizer.getVirtualItems().map(virtualRow => {
+						const post = sortedFilteredPosts[virtualRow.index];
+						return (
+							<div
+								key={virtualRow.index}
+								ref={rowVirtualizer.measureElement}
+								data-index={virtualRow.index}
+								className="absolute top-0 will-change-transform"
+								style={{
+									left: `${virtualRow.lane * lanePercentage}%`,
+									width: `calc(${lanePercentage}% - 1rem)`,
+									transform: `translateY(${virtualRow.start}px)`,
+								}}
+							>
+								<div className="pb-4">
+									<BlogPost
+										key={post.processed.id}
+										blog={blog}
+										post={post}
+										blogFiles={blogFiles}
+										addTagFilter={addTagFilter}
+										params={params}
+										imageUrlsCache={imageUrlsCache}
+										generatedObjectUrls={generatedObjectUrls}
+										zoomInToPost={zoomInToPost}
+									/>
+								</div>
+							</div>
+						);
+					})}
+				</div>
 			</div>
 		</div>
 	);
