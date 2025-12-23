@@ -413,6 +413,8 @@ export const modifyAttribute = (
 	}
 };
 
+const ALLOW_FULLSCREEN = true;
+
 export const getBlogPostProcessors = (
 	transformMediaUrl: (imageUrl: string | string[]) => Promise<{
 		original: string;
@@ -475,7 +477,10 @@ export const getBlogPostProcessors = (
 			videoEl.setAttribute('muted', 'true');
 			videoEl.setAttribute('loop', 'true');
 			videoEl.setAttribute('controls', 'true');
-			videoEl.setAttribute('controlsList', 'nofullscreen');
+			videoEl.setAttribute(
+				'controlsList',
+				'' + (ALLOW_FULLSCREEN ? '' : 'nofullscreen')
+			);
 		}
 		if (tag === 'iframe') {
 			const iframeEl = el as HTMLIFrameElement;
@@ -487,7 +492,11 @@ export const getBlogPostProcessors = (
 				'allow',
 				'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 			);
-			iframeEl.removeAttribute('allowfullscreen');
+			if (ALLOW_FULLSCREEN) {
+				iframeEl.setAttribute('allowfullscreen', 'true');
+			} else {
+				iframeEl.removeAttribute('allowfullscreen');
+			}
 			iframeEl.setAttribute('frameborder', '0');
 			iframeEl.setAttribute('scrolling', 'no');
 		}
