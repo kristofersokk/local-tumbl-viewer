@@ -91,7 +91,7 @@ const BlogContent = ({
 								className="absolute top-0 will-change-transform"
 								style={{
 									left: `${virtualRow.lane * lanePercentage}%`,
-									width: `calc(${lanePercentage}% - 1rem)`,
+									width: `calc(${lanePercentage}% - ${virtualRow.lane === lanes - 1 ? 0 : 1}rem)`,
 									transform: `translateY(${virtualRow.start}px)`,
 								}}
 							>
