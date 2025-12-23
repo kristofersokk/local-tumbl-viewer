@@ -172,7 +172,11 @@ export interface ProcessedBlogPost {
 	title?: string;
 	url?: string;
 	tags: string[];
-	body?: string;
+	body?: {
+		content: string;
+		isDisabled: boolean;
+		showMediaFiles: boolean;
+	};
 	summary?: string;
 	photo?: {
 		photos: { urls: string[]; layoutSpan?: number; caption?: string }[];

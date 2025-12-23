@@ -3,6 +3,7 @@ import {
 	BlogMetadata,
 	BlogType,
 	CombinedBlogPost,
+	getBlogTypeIndex,
 	Platform,
 	ProcessedBlogPost,
 	RawBlogPost,
@@ -203,6 +204,7 @@ const replaceLinks = (text: string, links?: Record<string, string>): string => {
 
 export const processBlogPost = (
 	post: RawBlogPost,
+	blogMetadata: BlogMetadata | undefined,
 	blogFileNames: string[] | undefined
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
@@ -212,7 +214,11 @@ export const processBlogPost = (
 			type: 'regular',
 			id: post.id,
 			url: post.url,
-			body: post.text ? `<p>${post.text}</p>` : '',
+			body: {
+				content: htmlifyText(post.text),
+				isDisabled: false,
+				showMediaFiles: false,
+			},
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
 			mediaFiles,
@@ -227,7 +233,11 @@ export const processBlogPost = (
 			type: 'regular',
 			id: post.id,
 			url: post.url,
-			body: post.text ? `<p>${text}</p>` : '',
+			body: {
+				content: htmlifyText(text),
+				isDisabled: false,
+				showMediaFiles: false,
+			},
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
 			mediaFiles,
@@ -248,7 +258,29 @@ export const processBlogPost = (
 
 	const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
 	const photos = getPhotos(post);
-	const disableBody = !!photos.length;
+	const isBodyDisabled = !!photos.length;
+
+	const rawBody = removeUnneededPatterns(
+		undoubleText(
+			post.post_html ||
+				post['post-html'] ||
+				post.regular_body ||
+				post['regular-body'] ||
+				post.body ||
+				''
+		)
+	).trim();
+	const bodyIncludesMediaExtensions = alternativeExtensions
+		.flatMap(it => it)
+		.some(ext => (rawBody || '').includes('.' + ext));
+	const answerIncludesMediaExtensions = alternativeExtensions
+		.flatMap(it => it)
+		.some(ext => (post.answer || '').includes('.' + ext));
+	const showMediaFiles =
+		post.platform !== 'tumblr' ||
+		(post.platform === 'tumblr' &&
+			(blogMetadata?.BlogType === getBlogTypeIndex('tumblrsearch') ||
+				(!bodyIncludesMediaExtensions && !answerIncludesMediaExtensions)));
 
 	return {
 		platform: 'tumblr',
@@ -261,18 +293,11 @@ export const processBlogPost = (
 		url: transformPostUrl(post['url-with-slug'] || post.url || post.post_url),
 		tags: post.tags || [],
 		mediaFiles,
-		body: disableBody
-			? undefined
-			: removeUnneededPatterns(
-					undoubleText(
-						post.post_html ||
-							post['post-html'] ||
-							post.regular_body ||
-							post['regular-body'] ||
-							post.body ||
-							''
-					)
-				).trim(),
+		body: {
+			content: htmlifyText(rawBody),
+			isDisabled: isBodyDisabled,
+			showMediaFiles,
+		},
 		photo: post.type === 'photo' ? { photos } : undefined,
 		video:
 			post.type === 'video'
@@ -601,7 +626,7 @@ export const undoubleText = <T extends string | undefined>(
 };
 
 const unNeededPatterns = [
-	/[^\s]+\/\d{16,}:/g,
+	/[^\s]+\/\d{12,}[\s\n\r]*:/g,
 	/[^\s]+ reblogged[\s\r\n]+[^\s]+/g,
 ];
 
@@ -614,4 +639,16 @@ export const removeUnneededPatterns = <T extends string | undefined>(
 		modifiedText = modifiedText.replaceAll(pattern, '');
 	}
 	return modifiedText;
+};
+
+export const isHtmlText = (text: string | undefined): boolean => {
+	if (!text) return false;
+	const htmlPattern = /<\/?[a-z][\s\S]*>/i;
+	return htmlPattern.test(text);
+};
+
+export const htmlifyText = (text: string): string => {
+	if (isHtmlText(text)) return text;
+	const htmlifiedText = '<p>' + text.replace(/\n/g, '<br>') + '</p>';
+	return htmlifiedText;
 };

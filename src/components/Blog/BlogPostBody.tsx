@@ -12,7 +12,7 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import { BlogEntry, getBlogTypeIndex, ProcessedBlogPost } from 'Types/blog';
+import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogUtils';
 import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
@@ -256,14 +256,7 @@ const BlogPostBody = ({
 		</div>
 	) : undefined;
 
-	const bodyIncludesImageTags = /<img[\s\S]*?>/i.test(body || '');
-	const needsMediaFiles =
-		post.platform !== 'tumblr' ||
-		(post.platform === 'tumblr' &&
-			(blog.metadata.BlogType === getBlogTypeIndex('tumblrsearch') ||
-				!bodyIncludesImageTags));
-
-	const mediaFilesBody = needsMediaFiles ? (
+	const mediaFilesBody = body?.showMediaFiles ? (
 		<UnsafeContent
 			domProcessors={blogPostProcessors}
 			className="flex flex-col gap-2"
@@ -288,7 +281,7 @@ const BlogPostBody = ({
 			className={className}
 			style={style}
 		>
-			{renderDynamic(body)}
+			{renderDynamic(body?.content)}
 			{photoBody ?? null}
 			{videoBody ?? null}
 			{quoteBody ?? null}
