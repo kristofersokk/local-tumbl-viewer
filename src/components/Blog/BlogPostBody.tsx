@@ -22,8 +22,6 @@ interface BlogPostBodyProps {
 	blog: BlogEntry;
 	post: ProcessedBlogPost;
 	blogFiles: FileSystemFileHandle[];
-	imageUrlsCache: Record<string, { online?: string; local?: string }>;
-	generatedObjectUrls: string[];
 	forceUncollapsed?: boolean;
 }
 
@@ -32,8 +30,6 @@ const BlogPostBody = ({
 	blog,
 	post,
 	blogFiles,
-	imageUrlsCache,
-	generatedObjectUrls,
 	forceUncollapsed,
 }: BlogPostBodyProps) => {
 	const { collapsedHeightPercent, fallbackToOnlineMedia } = params;
@@ -54,9 +50,7 @@ const BlogPostBody = ({
 	} = blog;
 
 	const transformMediaUrl = useTransformMediaUrl({
-		imageUrlsCache,
 		fallbackToOnlineMedia,
-		generatedObjectUrls,
 		imgMappingEntries,
 		blogFiles,
 		blogName,

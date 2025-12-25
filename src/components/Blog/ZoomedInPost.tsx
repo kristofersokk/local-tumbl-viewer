@@ -9,14 +9,6 @@ interface ZoomedInPostProps {
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
-	imageUrlsCache: Record<
-		string,
-		{
-			online?: string;
-			local?: string;
-		}
-	>;
-	generatedObjectUrls: string[];
 	zoomOut: () => void;
 }
 
@@ -26,8 +18,6 @@ const ZoomedInPost = ({
 	blogFiles,
 	addTagFilter,
 	params,
-	imageUrlsCache,
-	generatedObjectUrls,
 	zoomOut,
 }: ZoomedInPostProps) => {
 	return (
@@ -47,8 +37,6 @@ const ZoomedInPost = ({
 												blogFiles={blogFiles}
 												addTagFilter={addTagFilter}
 												params={params}
-												imageUrlsCache={imageUrlsCache}
-												generatedObjectUrls={generatedObjectUrls}
 												forceUncollapsed
 											/>
 										)}

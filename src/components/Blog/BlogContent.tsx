@@ -14,14 +14,6 @@ interface BlogContentProps {
 	sortedFilteredPosts: CombinedBlogPost[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
-	imageUrlsCache: Record<
-		string,
-		{
-			online?: string;
-			local?: string;
-		}
-	>;
-	generatedObjectUrls: string[];
 	zoomInToPost: (postId: string) => void;
 }
 
@@ -31,8 +23,6 @@ const BlogContent = ({
 	sortedFilteredPosts,
 	addTagFilter,
 	params,
-	imageUrlsCache,
-	generatedObjectUrls,
 	zoomInToPost,
 }: BlogContentProps) => {
 	const remInPixels = useRemToPixels();
@@ -58,7 +48,7 @@ const BlogContent = ({
 		count: sortedFilteredPosts.length,
 		getScrollElement: () => parentRef.current,
 		estimateSize: () => (collapsedHeightRem + 5) * remInPixels,
-		overscan: 3,
+		overscan: 1,
 		lanes,
 	});
 
@@ -103,8 +93,6 @@ const BlogContent = ({
 										blogFiles={blogFiles}
 										addTagFilter={addTagFilter}
 										params={params}
-										imageUrlsCache={imageUrlsCache}
-										generatedObjectUrls={generatedObjectUrls}
 										zoomInToPost={zoomInToPost}
 									/>
 								</div>

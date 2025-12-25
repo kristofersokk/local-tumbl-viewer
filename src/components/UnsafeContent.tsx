@@ -43,9 +43,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 		}) as HTMLBodyElement;
 
 		Promise.all(
-			(domProcessors || []).map(processor => {
-				iterateDomTree(body, processor);
-			})
+			(domProcessors || []).map(processor => iterateDomTree(body, processor))
 		).then(() => {
 			setBody(body);
 		});

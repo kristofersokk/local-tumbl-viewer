@@ -15,8 +15,6 @@ interface BlogPostProps {
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
-	imageUrlsCache: Record<string, { online?: string; local?: string }>;
-	generatedObjectUrls: string[];
 	zoomInToPost?: (postId: string) => void;
 	forceUncollapsed?: boolean;
 }
@@ -29,8 +27,6 @@ const BlogPost = ({
 	blogFiles,
 	addTagFilter,
 	params,
-	imageUrlsCache,
-	generatedObjectUrls,
 	zoomInToPost,
 	forceUncollapsed,
 }: BlogPostProps) => {
@@ -61,8 +57,6 @@ const BlogPost = ({
 					blog={blog}
 					post={post.processed}
 					blogFiles={blogFiles}
-					imageUrlsCache={imageUrlsCache}
-					generatedObjectUrls={generatedObjectUrls}
 					forceUncollapsed={forceUncollapsed}
 				/>
 			)}

@@ -91,17 +91,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		goToBlogSelection();
 	};
 
-	const [imageUrlsCache, setImageUrlsCache] = useState<
-		Record<string, { online?: string; local?: string }>
-	>({});
-	const [generatedObjectUrls, setGeneratedObjectUrls] = useState<string[]>([]);
-
-	const revokeObjectUrls = useCallback(() => {
-		generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
-	}, [generatedObjectUrls]);
-
 	const reloadBlog = () => {
-		revokeObjectUrls();
 		queryClient.invalidateQueries({
 			predicate: query =>
 				[QUERY_KEYS.BLOG_FILES, QUERY_KEYS.BLOG_POSTS].some(
@@ -109,15 +99,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 				),
 		});
 	};
-
-	useEffect(() => {
-		return () => {
-			setImageUrlsCache({});
-			setGeneratedObjectUrls([]);
-			setTimeout(revokeObjectUrls, 100);
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	const [zoomedInPostId, setZoomedInPostId] = useState<string | null>(null);
 	const zoomedInPost = sortedFilteredPosts.find(
@@ -202,8 +183,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 				sortedFilteredPosts={sortedFilteredPosts}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
-				imageUrlsCache={imageUrlsCache}
-				generatedObjectUrls={generatedObjectUrls}
 				zoomInToPost={zoomInToPost}
 			/>
 			<ZoomedInPost
@@ -212,8 +191,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 				blogFiles={blogFiles}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
-				imageUrlsCache={imageUrlsCache}
-				generatedObjectUrls={generatedObjectUrls}
 				zoomOut={zoomOut}
 			/>
 		</div>

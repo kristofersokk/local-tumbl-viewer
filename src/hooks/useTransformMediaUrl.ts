@@ -1,81 +1,79 @@
 import { useCallback } from 'react';
 import { BlogFileEntry } from 'Types/blog';
 import { getMediaFileHandle } from 'Utils/blogUtils';
-import { cacheValueAsync } from 'Utils/cacheUtils';
+import { cacheValueAsync, dedupeTask } from 'Utils/cacheUtils';
 
 const useTransformMediaUrl = ({
-	imageUrlsCache,
 	fallbackToOnlineMedia,
-	generatedObjectUrls,
 	imgMappingEntries,
 	blogFiles,
 	blogName,
 }: {
-	imageUrlsCache: Record<string, { online?: string; local?: string }>;
 	fallbackToOnlineMedia: boolean;
-	generatedObjectUrls: string[];
 	imgMappingEntries: BlogFileEntry[];
 	blogFiles: FileSystemFileHandle[];
 	blogName: string;
 }) => {
 	const constructLocalUrl = useCallback(
-		async (urls: string[]) => {
-			const { url: onlineUrl, fileHandle: mediaFileHandle } = urls
-				.map(url => ({
-					url,
-					fileHandle: getMediaFileHandle(imgMappingEntries, blogFiles, url),
-				}))
-				.find(file => !!file.fileHandle) ?? {
-				url: undefined,
-				fileHandle: undefined,
-			};
-			let localUrl: string | undefined = undefined;
-			if (mediaFileHandle) {
-				const cacheKey = `mediaFile-${blogName}-${mediaFileHandle.name}`;
-				const mediaFile = await cacheValueAsync(cacheKey, () =>
-					mediaFileHandle.getFile()
-				);
-				localUrl = URL.createObjectURL(mediaFile);
-				generatedObjectUrls.push(localUrl);
-			}
+		async (urls: string[]) =>
+			cacheValueAsync(
+				`constructLocalUrl-${urls.join(',')}-${fallbackToOnlineMedia}`,
+				async () => {
+					if (urls.length === 0) {
+						throw new Error('No URLs provided to constructLocalUrl');
+					}
+					const { url: onlineUrl, fileHandle: mediaFileHandle } = urls
+						.map(url => ({
+							url,
+							fileHandle: getMediaFileHandle(imgMappingEntries, blogFiles, url),
+						}))
+						.find(file => !!file.fileHandle) ?? {
+						url: urls[0],
+						fileHandle: undefined,
+					};
+					if (mediaFileHandle) {
+						const cacheKey = `constructLocalUrl-localUrl-${blogName}-${mediaFileHandle.name}`;
+						const { value: localUrl } = await cacheValueAsync(
+							cacheKey,
+							async () => {
+								const mediaFile = await mediaFileHandle.getFile();
+								return URL.createObjectURL(mediaFile);
+							}
+						);
+						return { onlineUrl, localUrl };
+					}
 
-			return { onlineUrl, localUrl };
-		},
-		[blogFiles, blogName, generatedObjectUrls, imgMappingEntries]
+					return { onlineUrl, localUrl: undefined };
+				}
+			),
+		[fallbackToOnlineMedia, blogFiles, blogName, imgMappingEntries]
 	);
 
 	return useCallback(
-		async (inputUrls: string | string[]) => {
-			const urls = Array.isArray(inputUrls)
-				? inputUrls.filter(Boolean)
-				: [inputUrls];
-			const firstUrl = urls[0];
-			if (!firstUrl) return { original: '', transformed: '' };
+		async (inputUrls: string | string[]) =>
+			dedupeTask(
+				`transformMediaUrl-${Array.isArray(inputUrls) ? inputUrls.join(',') : inputUrls}-${fallbackToOnlineMedia}`,
+				async () => {
+					const urls = Array.isArray(inputUrls)
+						? inputUrls.filter(Boolean)
+						: [inputUrls];
+					const firstUrl = urls[0];
+					if (!firstUrl) return { original: '', transformed: '' };
 
-			const cachedValue = imageUrlsCache[firstUrl];
-			if (cachedValue)
-				return {
-					original: cachedValue.online!,
-					transformed:
-						cachedValue.local ||
-						(fallbackToOnlineMedia
-							? cachedValue.online || 'unknown'
-							: 'unknown'),
-				};
+					const { value, error } = await constructLocalUrl(urls);
+					if (!value) {
+						throw error;
+					}
+					const { onlineUrl, localUrl } = value;
 
-			const { onlineUrl, localUrl } = await constructLocalUrl(urls);
-
-			// eslint-disable-next-line react-hooks/immutability
-			imageUrlsCache[firstUrl] = {
-				online: onlineUrl || firstUrl,
-				local: localUrl,
-			};
-			return {
-				original: onlineUrl || firstUrl,
-				transformed: localUrl || (fallbackToOnlineMedia ? firstUrl : 'unknown'),
-			};
-		},
-		[imageUrlsCache, fallbackToOnlineMedia, constructLocalUrl]
+					return {
+						original: onlineUrl,
+						transformed:
+							localUrl || (fallbackToOnlineMedia ? firstUrl : 'unknown'),
+					};
+				}
+			),
+		[fallbackToOnlineMedia, constructLocalUrl]
 	);
 };
 

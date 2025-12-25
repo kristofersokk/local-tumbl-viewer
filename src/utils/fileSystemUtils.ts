@@ -33,8 +33,10 @@ export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
 }
 
 async function getRootDirectoryHandle(allowPrompt?: boolean) {
-	const dirHandle = await cacheValueAsync(CACHES.ROOT_FOLDER, () =>
-		retrieveValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY)
+	const { value: dirHandle } = await cacheValueAsync(CACHES.ROOT_FOLDER, () =>
+		retrieveValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY).then(
+			handle => handle ?? null
+		)
 	);
 	if (dirHandle) {
 		return dirHandle;
