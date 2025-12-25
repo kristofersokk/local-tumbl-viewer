@@ -106,15 +106,11 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 	);
 
 	const zoomInToPost = useCallback((postId: string) => {
-		document.startViewTransition(() => {
-			setZoomedInPostId(postId);
-		});
+		setZoomedInPostId(postId);
 	}, []);
 
 	const zoomOut = useCallback(() => {
-		document.startViewTransition(() => {
-			setZoomedInPostId(null);
-		});
+		setZoomedInPostId(null);
 	}, []);
 
 	const {

@@ -5,7 +5,6 @@ import IconButton from 'Components/IconButton';
 import TextInput from 'Components/TextInput';
 import Tooltip from 'Components/Tooltip';
 import Counter from 'Components/utils/Counter';
-import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import { BlogFiltering as BlogFilteringType } from 'Hooks/useBlogViewSettings';
 import { CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 import { countAllTags } from 'Utils/blogUtils';
@@ -48,30 +47,12 @@ const BlogFiltering = ({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Popover.Root
-			open={open}
-			onOpenChange={newOpen => {
-				document.startViewTransition(() => {
-					setOpen(newOpen);
-				});
-			}}
-		>
+		<Popover.Root open={open} onOpenChange={setOpen}>
 			<Tooltip content={<p>Filtering</p>}>
 				<Popover.Trigger asChild>
-					<InterceptCallbacks
-						intercept={{
-							onClick: (prevCb, args) => {
-								document.startViewTransition(() => {
-									prevCb(...args);
-								});
-							},
-						}}
-						render={props => (
-							<IconButton icon="filter" {...props} className="relative">
-								<Counter count={filterCount || undefined} />
-							</IconButton>
-						)}
-					/>
+					<IconButton icon="filter" className="relative">
+						<Counter count={filterCount || undefined} />
+					</IconButton>
 				</Popover.Trigger>
 			</Tooltip>
 			<Popover.Content align="end" sideOffset={5} className="w-80 max-w-[90vw]">

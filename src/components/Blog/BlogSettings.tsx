@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
-import InterceptCallbacks from 'Components/utils/InterceptCallbacks';
 import {
 	BlogParams,
 	BlogSorting as BlogSortingType,
@@ -40,26 +39,10 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Popover.Root
-			open={open}
-			onOpenChange={newOpen => {
-				document.startViewTransition(() => {
-					setOpen(newOpen);
-				});
-			}}
-		>
+		<Popover.Root open={open} onOpenChange={setOpen}>
 			<Tooltip content={<p>Settings</p>}>
 				<Popover.Trigger asChild>
-					<InterceptCallbacks
-						intercept={{
-							onClick: (prevCb, args) => {
-								document.startViewTransition(() => {
-									prevCb(...args);
-								});
-							},
-						}}
-						render={props => <IconButton icon="page-info" {...props} />}
-					/>
+					<IconButton icon="page-info" />
 				</Popover.Trigger>
 			</Tooltip>
 			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
