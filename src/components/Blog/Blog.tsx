@@ -8,6 +8,8 @@ import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import { filterBlogPostsByFuzzySearch } from 'Utils/blogUtils';
 
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from 'Constants/queryKeys';
 import BlogContent from './BlogContent';
 import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
@@ -22,6 +24,8 @@ interface BlogProps {
 }
 
 const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
+	const queryClient = useQueryClient();
+
 	const availablePostTypes = useMemo(
 		() => deduplicateArray(posts.map(post => post.processed.type)),
 		[posts]
@@ -92,13 +96,25 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 	>({});
 	const [generatedObjectUrls, setGeneratedObjectUrls] = useState<string[]>([]);
 
+	const revokeObjectUrls = useCallback(() => {
+		generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
+	}, [generatedObjectUrls]);
+
+	const reloadBlog = () => {
+		revokeObjectUrls();
+		queryClient.invalidateQueries({
+			predicate: query =>
+				[QUERY_KEYS.BLOG_FILES, QUERY_KEYS.BLOG_POSTS].some(
+					key => query.queryKey[0] === key
+				),
+		});
+	};
+
 	useEffect(() => {
 		return () => {
 			setImageUrlsCache({});
 			setGeneratedObjectUrls([]);
-			setTimeout(() => {
-				generatedObjectUrls.forEach(url => URL.revokeObjectURL(url));
-			}, 100);
+			setTimeout(revokeObjectUrls, 100);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -121,7 +137,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 	}, []);
 
 	const {
-		needRefresh: [needRefresh],
+		needRefresh: [appHasUpdate],
 		updateServiceWorker,
 	} = useRegisterSW();
 
@@ -160,13 +176,18 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					</a>
 				</div>
 				<div className="xs:gap-1 flex items-center md:gap-2">
-					{needRefresh && (
+					{appHasUpdate && (
 						<IconButton
 							icon="download"
 							className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
 							onClick={() => updateServiceWorker(true)}
 						/>
 					)}
+					<IconButton
+						icon="refresh"
+						className="cursor-pointer"
+						onClick={reloadBlog}
+					/>
 					<BlogFiltering
 						filteredPosts={sortedFilteredPosts}
 						allPostsCount={posts.length}
