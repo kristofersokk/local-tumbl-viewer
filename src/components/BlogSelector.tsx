@@ -34,15 +34,19 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 
 	return (
 		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
-			<div className="bg-navbar flex items-center justify-between px-4 py-2.5">
-				<button
-					className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors"
-					onClick={navigateToAbout}
-				>
-					About
-				</button>
+			<div className="bg-navbar grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
+				<div className="flex">
+					<button
+						className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors"
+						onClick={navigateToAbout}
+					>
+						About
+					</button>
+				</div>
 				<h3 className="text-2xl">TumblViewer</h3>
-				<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
+				<div className="flex justify-end">
+					<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
+				</div>
 			</div>
 			<div className="overflow-y-auto">
 				<div className="flex flex-col items-center gap-4 px-2 py-8">
