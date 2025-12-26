@@ -213,6 +213,7 @@ export interface ProcessedBlogPost {
 export type CombinedBlogPost = {
 	raw: RawBlogPost;
 	processed: ProcessedBlogPost;
+	stringified: string;
 };
 
 // Merged from examples of private blog, likes, and public blog

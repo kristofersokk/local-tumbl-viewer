@@ -61,13 +61,18 @@ const useBlogPosts = (
 												...rawPost,
 												platform: blog?.metadata.platform || 'unknown',
 											} as RawBlogPost;
-											return {
+											const combined = {
 												raw: rawPostWithPlatform,
 												processed: processBlogPost(
 													rawPostWithPlatform,
 													blog?.metadata,
 													blogFileNames
 												),
+											};
+											const stringified = JSON.stringify(combined);
+											return {
+												...combined,
+												stringified,
 											} satisfies CombinedBlogPost;
 										})
 									)

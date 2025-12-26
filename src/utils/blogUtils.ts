@@ -619,9 +619,8 @@ export const filterBlogPostsByFuzzySearch = (
 		.split(' ')
 		.filter(s => s.length > 0);
 
-	// TODO: calculate stringified post earlier to improve performance
 	return posts.filter(post => {
-		const cleanedPostContent = JSON.stringify(post).toLowerCase();
+		const cleanedPostContent = post.stringified.toLowerCase();
 		return searchStringSegments.every(segment =>
 			cleanedPostContent.includes(segment)
 		);
@@ -659,7 +658,7 @@ export const removeUnneededPatterns = <T extends string | undefined>(
 
 export const isHtmlText = (text: string | undefined): boolean => {
 	if (!text) return false;
-	const htmlPattern = /<\/?[a-z][\s\S]*>/i;
+	const htmlPattern = /<\/?[a-z][\s\S]*>/;
 	return htmlPattern.test(text);
 };
 
