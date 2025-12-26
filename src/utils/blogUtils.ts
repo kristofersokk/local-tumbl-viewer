@@ -271,16 +271,28 @@ export const processBlogPost = (
 				''
 		)
 	).trim();
+
+	const photo = post.type === 'photo' ? { photos } : undefined;
+	const video =
+		post.type === 'video'
+			? {
+					caption: post['video-caption'] || post.video_caption || '',
+					source: post['video-source'] || post.video_source || '',
+				}
+			: undefined;
+
 	const bodyIncludesMediaExtensions = alternativeExtensions
 		.flatMap(it => it)
 		.some(ext => (rawBody || '').includes('.' + ext));
 	const answerIncludesMediaExtensions = alternativeExtensions
 		.flatMap(it => it)
 		.some(ext => (post.answer || '').includes('.' + ext));
-	// TODO: not show when there's photos or videos to be shown
 	const showMediaFiles =
 		blogMetadata?.BlogType === getBlogTypeIndex('tumblrsearch') ||
-		(!bodyIncludesMediaExtensions && !answerIncludesMediaExtensions);
+		(!bodyIncludesMediaExtensions &&
+			!answerIncludesMediaExtensions &&
+			!photo &&
+			!video);
 
 	return {
 		platform: 'tumblr',
@@ -298,14 +310,8 @@ export const processBlogPost = (
 			isDisabled: isBodyDisabled,
 			showMediaFiles,
 		},
-		photo: post.type === 'photo' ? { photos } : undefined,
-		video:
-			post.type === 'video'
-				? {
-						caption: post['video-caption'] || post.video_caption || '',
-						source: post['video-source'] || post.video_source || '',
-					}
-				: undefined,
+		photo,
+		video,
 		quote:
 			post.type === 'quote'
 				? {
