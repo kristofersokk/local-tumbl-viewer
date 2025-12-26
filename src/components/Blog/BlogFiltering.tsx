@@ -11,7 +11,7 @@ import { countAllTags } from 'Utils/blogUtils';
 
 interface BlogFilteringProps {
 	filteredPosts: CombinedBlogPost[];
-	allPostsCount: number;
+	allPostsCount: number | undefined;
 	filter: BlogFilteringType;
 }
 
@@ -55,12 +55,16 @@ const BlogFiltering = ({
 					</IconButton>
 				</Popover.Trigger>
 			</Tooltip>
-			<Popover.Content align="end" sideOffset={5} className="w-80 max-w-[90vw]">
+			<Popover.Content
+				align="end"
+				sideOffset={5}
+				className="z-popover w-80 max-w-[90vw] shadow-2xl shadow-slate-950/70"
+			>
 				<div className="bg-popover-background rounded-lg px-3 py-4">
 					<div className="flex justify-between">
 						<p className="mb-4 text-lg">Filtering</p>
 						<p className="text-sm">
-							{filteredPosts.length} / {allPostsCount}
+							{filteredPosts.length} / {allPostsCount ?? 'unknown'}
 						</p>
 					</div>
 					<TextInput

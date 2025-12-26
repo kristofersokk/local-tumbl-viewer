@@ -613,6 +613,7 @@ export const filterBlogPostsByFuzzySearch = (
 		.split(' ')
 		.filter(s => s.length > 0);
 
+	// TODO: calculate stringified post earlier to improve performance
 	return posts.filter(post => {
 		const cleanedPostContent = JSON.stringify(post).toLowerCase();
 		return searchStringSegments.every(segment =>

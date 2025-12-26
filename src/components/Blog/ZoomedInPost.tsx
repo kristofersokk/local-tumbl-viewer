@@ -1,12 +1,14 @@
 import ClickOutside from 'Components/ClickOutside';
+import useBlogFiles from 'Hooks/api/useBlogFiles';
+import useRootFolders from 'Hooks/api/useRootFolders';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { BlogEntry, CombinedBlogPost } from 'Types/blog';
+import { getBlogFolderName } from 'Utils/blogUtils';
 import BlogPost from './BlogPost';
 
 interface ZoomedInPostProps {
 	zoomedInPost: CombinedBlogPost | undefined;
 	blog: BlogEntry;
-	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomOut: () => void;
@@ -15,11 +17,22 @@ interface ZoomedInPostProps {
 const ZoomedInPost = ({
 	zoomedInPost,
 	blog,
-	blogFiles,
 	addTagFilter,
 	params,
 	zoomOut,
 }: ZoomedInPostProps) => {
+	const { data: folders, isPending: isPendingRootFolders } = useRootFolders();
+	const blogFolderName = getBlogFolderName(blog?.metadata);
+	const blogFolderHandle = folders?.find(
+		folder => folder.name === blogFolderName
+	);
+	const { data: blogFiles, isPending: isPendingBlogFiles } =
+		useBlogFiles(blogFolderHandle);
+
+	if (isPendingRootFolders || isPendingBlogFiles) {
+		return null;
+	}
+
 	return (
 		<>
 			{zoomedInPost && (
@@ -34,7 +47,7 @@ const ZoomedInPost = ({
 												Ref={ref}
 												blog={blog}
 												post={zoomedInPost}
-												blogFiles={blogFiles}
+												blogFiles={blogFiles!}
 												addTagFilter={addTagFilter}
 												params={params}
 												forceUncollapsed

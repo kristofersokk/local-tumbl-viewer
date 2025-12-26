@@ -1,15 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
-import useBlogViewSettings from 'Hooks/useBlogViewSettings';
-import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
-import { deduplicateArray } from 'Utils/arrayUtils';
-import { filterBlogPostsByFuzzySearch } from 'Utils/blogUtils';
-
-import { useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEYS } from 'Constants/queryKeys';
+import useBlogFiles from 'Hooks/api/useBlogFiles';
+import useBlogPosts from 'Hooks/api/useBlogPosts';
+import useRootFolders from 'Hooks/api/useRootFolders';
+import useBlogViewSettings from 'Hooks/useBlogViewSettings';
+import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
+import { deduplicateArray } from 'Utils/arrayUtils';
+import {
+	filterBlogPostsByFuzzySearch,
+	getBlogFolderName,
+} from 'Utils/blogUtils';
+
 import BlogContent from './BlogContent';
 import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
@@ -18,16 +24,25 @@ import ZoomedInPost from './ZoomedInPost';
 
 interface BlogProps {
 	blog: BlogEntry;
-	blogFiles: FileSystemFileHandle[];
-	posts: CombinedBlogPost[];
 	goToBlogSelection: () => void;
 }
 
-const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
+const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	const queryClient = useQueryClient();
 
+	const { data: folders } = useRootFolders();
+	const blogFolderName = getBlogFolderName(blog?.metadata);
+	const blogFolderHandle = folders?.find(
+		folder => folder.name === blogFolderName
+	);
+
+	const { data: blogFiles } = useBlogFiles(blogFolderHandle);
+	const {
+		query: { data: posts },
+	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
+
 	const availablePostTypes = useMemo(
-		() => deduplicateArray(posts.map(post => post.processed.type)),
+		() => deduplicateArray((posts ?? []).map(post => post.processed.type)),
 		[posts]
 	);
 
@@ -45,7 +60,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 
 	const sortedFilteredPosts = useMemo(() => {
 		const filteredPosts = filterBlogPostsByFuzzySearch(
-			posts.filter(({ processed: post }) =>
+			(posts ?? []).filter(({ processed: post }) =>
 				tagsForFilter.length
 					? !!post.tags?.length &&
 						tagsForFilter.every(tag => post.tags?.includes(tag))
@@ -118,39 +133,29 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 		updateServiceWorker,
 	} = useRegisterSW();
 
-	const [, refreshRaw] = useState({});
-	const refresh = useCallback(() => {
-		refreshRaw({});
-	}, []);
-
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			refresh();
-		}, 1000);
-		return () => clearTimeout(timeout);
-	}, [refresh]);
-
 	return (
-		<div className="min-h-full w-full">
-			<div className="z-sticky bg-navbar sticky top-0 bottom-0 flex h-16 w-full items-center justify-between px-2 sm:px-6">
-				<div className="flex min-w-0 items-center gap-4">
+		<div className="h-full w-full">
+			<div className="bg-navbar flex h-16 items-center justify-between px-2 shadow-2xl shadow-slate-950/70 sm:px-6">
+				<div className="flex min-w-0 items-center gap-1 sm:gap-4">
 					<Tooltip content={<p>Back to blog selection</p>}>
 						<IconButton icon="home" onClick={() => goHome()} />
 					</Tooltip>
-					<PlatformLogo platform={blog.metadata.platform} />
-					<a
-						className="flex min-w-0 flex-col items-start justify-between text-sm *:max-w-full [&:hover]:underline"
-						href={`https://tumblr.com/${blog.metadata.Name}`}
-						target="_blank"
-						rel="noreferrer noopener"
-					>
-						<p className="overflow-hidden text-nowrap text-ellipsis text-white">
-							{blog.metadata.Name}
-						</p>
-						<p className="overflow-hidden text-nowrap text-ellipsis">
-							{blog.metadata.Title}
-						</p>
-					</a>
+					<div className="flex items-center gap-2 sm:gap-3">
+						<PlatformLogo platform={blog.metadata.platform} />
+						<a
+							className="flex min-w-0 flex-col items-start justify-between text-sm *:max-w-full [&:hover]:underline"
+							href={`https://tumblr.com/${blog.metadata.Name}`}
+							target="_blank"
+							rel="noreferrer noopener"
+						>
+							<p className="overflow-hidden text-nowrap text-ellipsis text-white">
+								{blog.metadata.Name}
+							</p>
+							<p className="overflow-hidden text-nowrap text-ellipsis">
+								{blog.metadata.Title}
+							</p>
+						</a>
+					</div>
 				</div>
 				<div className="xs:gap-1 flex items-center md:gap-2">
 					{appHasUpdate && (
@@ -167,7 +172,7 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 					/>
 					<BlogFiltering
 						filteredPosts={sortedFilteredPosts}
-						allPostsCount={posts.length}
+						allPostsCount={posts?.length}
 						filter={filter}
 					/>
 					<BlogSettings params={params} sorting={sorting} />
@@ -175,7 +180,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 			</div>
 			<BlogContent
 				blog={blog}
-				blogFiles={blogFiles}
 				sortedFilteredPosts={sortedFilteredPosts}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
@@ -184,7 +188,6 @@ const Blog = ({ blog, blogFiles, posts, goToBlogSelection }: BlogProps) => {
 			<ZoomedInPost
 				zoomedInPost={zoomedInPost}
 				blog={blog}
-				blogFiles={blogFiles}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomOut={zoomOut}

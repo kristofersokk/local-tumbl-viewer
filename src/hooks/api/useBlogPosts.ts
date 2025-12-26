@@ -10,7 +10,8 @@ import { expensiveMap } from 'Utils/computationUtils';
 const useBlogPosts = (
 	blog: BlogEntry | undefined,
 	blogFolderHandle: FileSystemDirectoryHandle | undefined,
-	blogFiles: FileSystemFileHandle[] | undefined
+	blogFiles: FileSystemFileHandle[] | undefined,
+	enabled: boolean = true
 ) => {
 	const blogTextsFile = blogFiles?.find(file => file.name === 'texts.txt');
 	const blogImagesFile = blogFiles?.find(file => file.name === 'images.txt');
@@ -86,7 +87,7 @@ const useBlogPosts = (
 				}
 			: skipToken,
 		staleTime: Infinity,
-		enabled: !!blog && !!blogFileNames,
+		enabled: enabled && !!blog && !!blogFileNames,
 	});
 
 	return { query, foundBlogPostsFiles };

@@ -45,7 +45,11 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 					<IconButton icon="page-info" />
 				</Popover.Trigger>
 			</Tooltip>
-			<Popover.Content align="end" sideOffset={5} className="max-w-[90vw]">
+			<Popover.Content
+				align="end"
+				sideOffset={5}
+				className="z-popover max-w-[90vw] shadow-2xl shadow-slate-950/70"
+			>
 				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">
 					<p className="text-lg">Settings</p>
 					<div className="grid grid-cols-[auto_1fr] gap-4">

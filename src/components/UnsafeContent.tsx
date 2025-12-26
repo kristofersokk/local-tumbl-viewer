@@ -42,11 +42,13 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 				: [],
 		}) as HTMLBodyElement;
 
-		Promise.all(
-			(domProcessors || []).map(processor => iterateDomTree(body, processor))
-		).then(() => {
-			setBody(body);
-		});
+		setTimeout(() => {
+			Promise.all(
+				(domProcessors || []).map(processor => iterateDomTree(body, processor))
+			).then(() => {
+				setBody(body);
+			});
+		}, 0);
 	}, [allowIframes, content, domProcessors]);
 
 	if (!body) {
@@ -70,6 +72,7 @@ export default memo(UnsafeContent, (prevProps, nextProps) => {
 		prevProps.content === nextProps.content &&
 		prevProps.tag === nextProps.tag &&
 		prevProps.Ref === nextProps.Ref &&
+		prevProps.domProcessors?.length === nextProps.domProcessors?.length &&
 		JSON.stringify(prevProps) === JSON.stringify(nextProps)
 	);
 });

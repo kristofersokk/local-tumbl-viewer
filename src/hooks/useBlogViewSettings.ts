@@ -1,4 +1,10 @@
-import { useCallback, useDeferredValue, useMemo, useState } from 'react';
+import {
+	useCallback,
+	useDeferredValue,
+	useEffect,
+	useMemo,
+	useState,
+} from 'react';
 import { ProcessedBlogPost } from 'Types/blog';
 import { shouldSaveData } from 'Utils/networkUtils';
 import useWindowSize from './useWindowSize';
@@ -111,6 +117,16 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 			availablePostTypes.map(type => [type, true] as const)
 		) as Record<NonNullable<ProcessedBlogPost['type']>, boolean>
 	);
+
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setBlogPostTypes(
+			() =>
+				Object.fromEntries(
+					availablePostTypes.map(type => [type, true] as const)
+				) as Record<NonNullable<ProcessedBlogPost['type']>, boolean>
+		);
+	}, [availablePostTypes]);
 
 	const setBlogPostType = (type: ProcessedBlogPost['type'], value: boolean) => {
 		if (!type) return;
