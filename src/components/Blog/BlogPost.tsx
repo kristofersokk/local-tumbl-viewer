@@ -15,6 +15,7 @@ interface BlogPostProps {
 	blogFiles: FileSystemFileHandle[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
+	blogKey: number;
 	zoomInToPost?: (postId: string) => void;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
@@ -28,6 +29,7 @@ const BlogPost = ({
 	blogFiles,
 	addTagFilter,
 	params,
+	blogKey,
 	zoomInToPost,
 	forceUncollapsed,
 	zoomedIn = false,
@@ -59,6 +61,7 @@ const BlogPost = ({
 					blog={blog}
 					post={post.processed}
 					blogFiles={blogFiles}
+					blogKey={blogKey}
 					forceUncollapsed={forceUncollapsed}
 					zoomedIn={zoomedIn}
 				/>

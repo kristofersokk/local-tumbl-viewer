@@ -1,4 +1,4 @@
-import { CACHES, cacheValueAsync, clearCacheValue } from './cacheUtils';
+import { cacheValueAsync, clearCacheValue } from './cacheUtils';
 import {
 	deleteValue,
 	OBJECT_STORES,
@@ -33,10 +33,13 @@ export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
 }
 
 async function getRootDirectoryHandle(allowPrompt?: boolean) {
-	const { value: dirHandle } = await cacheValueAsync(CACHES.ROOT_FOLDER, () =>
-		retrieveValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY).then(
-			handle => handle ?? null
-		)
+	const { value: dirHandle } = await cacheValueAsync(
+		'GLOBAL',
+		'root-folder',
+		() =>
+			retrieveValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY).then(
+				handle => handle ?? null
+			)
 	);
 	if (dirHandle) {
 		return dirHandle;
@@ -60,7 +63,7 @@ async function promptForRootDirectoryHandle() {
 }
 
 export async function resetRootDirectoryHandle() {
-	clearCacheValue(CACHES.ROOT_FOLDER);
+	clearCacheValue('GLOBAL', 'root-folder');
 	return deleteValue(OBJECT_STORES.FILE_HANDLES, ROOT_FOLDER_KEY)
 		.then(() => true)
 		.catch(() => false);

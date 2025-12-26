@@ -209,6 +209,7 @@ export const processBlogPost = (
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
 		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
+		// TODO: improve links
 		return {
 			platform: 'bluesky',
 			type: 'regular',
@@ -217,7 +218,7 @@ export const processBlogPost = (
 			body: {
 				content: htmlifyText(post.text),
 				isDisabled: false,
-				showMediaFiles: false,
+				showMediaFiles: true,
 			},
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
@@ -236,7 +237,7 @@ export const processBlogPost = (
 			body: {
 				content: htmlifyText(text),
 				isDisabled: false,
-				showMediaFiles: false,
+				showMediaFiles: true,
 			},
 			createdAt: calculatedCreatedAt(post),
 			tags: [],
@@ -276,11 +277,10 @@ export const processBlogPost = (
 	const answerIncludesMediaExtensions = alternativeExtensions
 		.flatMap(it => it)
 		.some(ext => (post.answer || '').includes('.' + ext));
+	// TODO: not show when there's photos or videos to be shown
 	const showMediaFiles =
-		post.platform !== 'tumblr' ||
-		(post.platform === 'tumblr' &&
-			(blogMetadata?.BlogType === getBlogTypeIndex('tumblrsearch') ||
-				(!bodyIncludesMediaExtensions && !answerIncludesMediaExtensions)));
+		blogMetadata?.BlogType === getBlogTypeIndex('tumblrsearch') ||
+		(!bodyIncludesMediaExtensions && !answerIncludesMediaExtensions);
 
 	return {
 		platform: 'tumblr',

@@ -17,6 +17,7 @@ const useTransformMediaUrl = ({
 	const constructLocalUrl = useCallback(
 		async (urls: string[]) =>
 			cacheValueAsync(
+				'BLOG_PROCESSING',
 				`constructLocalUrl-${urls.join(',')}-${fallbackToOnlineMedia}`,
 				async () => {
 					if (urls.length === 0) {
@@ -34,6 +35,7 @@ const useTransformMediaUrl = ({
 					if (mediaFileHandle) {
 						const cacheKey = `constructLocalUrl-localUrl-${blogName}-${mediaFileHandle.name}`;
 						const { value: localUrl } = await cacheValueAsync(
+							'BLOG_PROCESSING',
 							cacheKey,
 							async () => {
 								const mediaFile = await mediaFileHandle.getFile();

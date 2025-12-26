@@ -16,6 +16,7 @@ import {
 	getBlogFolderName,
 } from 'Utils/blogUtils';
 
+import { clearCache } from 'Utils/cacheUtils';
 import BlogContent from './BlogContent';
 import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
@@ -106,13 +107,20 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 		goToBlogSelection();
 	};
 
+	const [blogKey, setBlogKey] = useState(0);
+
 	const reloadBlog = () => {
-		queryClient.invalidateQueries({
-			predicate: query =>
-				[QUERY_KEYS.BLOG_FILES, QUERY_KEYS.BLOG_POSTS].some(
-					key => query.queryKey[0] === key
-				),
-		});
+		clearCache('BLOG_PROCESSING');
+		queryClient
+			.invalidateQueries({
+				predicate: query =>
+					[QUERY_KEYS.BLOG_FILES, QUERY_KEYS.BLOG_POSTS].some(
+						key => query.queryKey[0] === key
+					),
+			})
+			.then(() => {
+				setBlogKey(prev => prev + 1);
+			});
 	};
 
 	const [zoomedInPostId, setZoomedInPostId] = useState<string | null>(null);
@@ -184,6 +192,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomInToPost={zoomInToPost}
+				blogKey={blogKey}
 			/>
 			<ZoomedInPost
 				zoomedInPost={zoomedInPost}

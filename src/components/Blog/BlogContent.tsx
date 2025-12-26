@@ -20,6 +20,7 @@ interface BlogContentProps {
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomInToPost: (postId: string) => void;
+	blogKey: number;
 }
 
 const BlogContent = ({
@@ -28,6 +29,7 @@ const BlogContent = ({
 	addTagFilter,
 	params,
 	zoomInToPost,
+	blogKey,
 }: BlogContentProps) => {
 	const remInPixels = useRemToPixels();
 	const { width: viewportWidthInPixels, height: viewportHeightInPixels } =
@@ -147,6 +149,7 @@ const BlogContent = ({
 									addTagFilter={addTagFilter}
 									params={params}
 									zoomInToPost={zoomInToPost}
+									blogKey={blogKey}
 								/>
 							</div>
 						);
@@ -164,6 +167,7 @@ const calculatePostsArrayId = (posts: { processed: ProcessedBlogPost }[]) => {
 export default memo(BlogContent, (prevProps, nextProps) => {
 	return (
 		prevProps.params === nextProps.params &&
+		prevProps.blogKey === nextProps.blogKey &&
 		calculatePostsArrayId(prevProps.sortedFilteredPosts) ===
 			calculatePostsArrayId(nextProps.sortedFilteredPosts)
 	);

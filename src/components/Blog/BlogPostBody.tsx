@@ -22,6 +22,7 @@ interface BlogPostBodyProps {
 	blog: BlogEntry;
 	post: ProcessedBlogPost;
 	blogFiles: FileSystemFileHandle[];
+	blogKey: number;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
 }
@@ -338,6 +339,7 @@ const BlogPostBody = ({
 export default memo(BlogPostBody, (prevProps, nextProps) => {
 	return (
 		prevProps.post.id === nextProps.post.id &&
+		prevProps.blogKey === nextProps.blogKey &&
 		prevProps.params === nextProps.params
 	);
 });
