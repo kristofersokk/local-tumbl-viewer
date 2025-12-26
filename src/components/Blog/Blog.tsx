@@ -200,6 +200,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomOut={zoomOut}
+				blogKey={blogKey}
 			/>
 		</div>
 	);

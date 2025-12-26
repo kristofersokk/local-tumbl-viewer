@@ -12,6 +12,7 @@ interface ZoomedInPostProps {
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomOut: () => void;
+	blogKey: number;
 }
 
 const ZoomedInPost = ({
@@ -20,6 +21,7 @@ const ZoomedInPost = ({
 	addTagFilter,
 	params,
 	zoomOut,
+	blogKey,
 }: ZoomedInPostProps) => {
 	const { data: folders, isPending: isPendingRootFolders } = useRootFolders();
 	const blogFolderName = getBlogFolderName(blog?.metadata);
@@ -50,6 +52,7 @@ const ZoomedInPost = ({
 												blogFiles={blogFiles!}
 												addTagFilter={addTagFilter}
 												params={params}
+												blogKey={blogKey}
 												forceUncollapsed
 												zoomedIn
 											/>
