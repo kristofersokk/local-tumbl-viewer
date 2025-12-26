@@ -2,15 +2,13 @@ import { skipToken, useQuery } from '@tanstack/react-query';
 import { jsonrepair } from 'jsonrepair';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
-import useExpensiveComputation from 'Hooks/useExpensiveComputation';
-import { BlogEntry, CombinedBlogPost, RawBlogPost } from 'Types/blog';
-import { processBlogPost } from 'Utils/blogUtils';
-import { expensiveMap } from 'Utils/computationUtils';
+import { BlogEntry, RawBlogPost } from 'Types/blog';
 
 const useBlogPosts = (
 	blog: BlogEntry | undefined,
 	blogFolderHandle: FileSystemDirectoryHandle | undefined,
 	blogFiles: FileSystemFileHandle[] | undefined,
+	blogFileNames: string[] | undefined,
 	enabled: boolean = true
 ) => {
 	const blogTextsFile = blogFiles?.find(file => file.name === 'texts.txt');
@@ -33,10 +31,6 @@ const useBlogPosts = (
 		blogLinksFile,
 	].filter(Boolean);
 
-	const blogFileNames = useExpensiveComputation(
-		expensiveMap(blogFiles, file => file.name, 100)
-	);
-
 	const query = useQuery({
 		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolderHandle?.name],
 		queryFn: blogFileNames
@@ -55,27 +49,6 @@ const useBlogPosts = (
 											return JSON.parse(jsonrepair(text)) as RawBlogPost[];
 										}
 									})
-									.then(blogs =>
-										blogs.map(rawPost => {
-											const rawPostWithPlatform = {
-												...rawPost,
-												platform: blog?.metadata.platform || 'unknown',
-											} as RawBlogPost;
-											const combined = {
-												raw: rawPostWithPlatform,
-												processed: processBlogPost(
-													rawPostWithPlatform,
-													blog?.metadata,
-													blogFileNames
-												),
-											};
-											const stringified = JSON.stringify(combined);
-											return {
-												...combined,
-												stringified,
-											} satisfies CombinedBlogPost;
-										})
-									)
 									.catch(e => console.error(`Error reading ${file.name}:`, e))
 							)
 						);

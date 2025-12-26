@@ -9,14 +9,17 @@ import useBlogFiles from 'Hooks/api/useBlogFiles';
 import useBlogPosts from 'Hooks/api/useBlogPosts';
 import useRootFolders from 'Hooks/api/useRootFolders';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
+import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import {
 	filterBlogPostsByFuzzySearch,
 	getBlogFolderName,
+	getCachedProcessedBlogPost,
 } from 'Utils/blogUtils';
-
 import { clearCache } from 'Utils/cacheUtils';
+import { expensiveMap } from 'Utils/computationUtils';
+
 import BlogContent from './BlogContent';
 import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
@@ -36,15 +39,52 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	const blogFolderHandle = folders?.find(
 		folder => folder.name === blogFolderName
 	);
-
 	const { data: blogFiles } = useBlogFiles(blogFolderHandle);
+
+	const [managedType, setManagedType] = useState<'managed' | 'unmanaged'>(
+		'managed'
+	);
+
+	const blogFilesNamesComputation = useExpensiveComputation(
+		expensiveMap(blogFiles, file => file.name, 1000),
+		{
+			enabled: managedType === 'managed' && !!blogFiles,
+		}
+	);
+	const { data: blogFileNames } = blogFilesNamesComputation;
+
 	const {
 		query: { data: posts },
-	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
+	} = useBlogPosts(
+		blog,
+		blogFolderHandle,
+		blogFiles,
+		blogFileNames,
+		managedType === 'managed'
+	);
+
+	const managedPostsComputation = useExpensiveComputation(
+		expensiveMap(
+			posts,
+			post =>
+				getCachedProcessedBlogPost({
+					blog,
+					rawPost: post,
+					blogFileNames: blogFileNames!,
+				}).value,
+			1000
+		),
+		{
+			enabled: managedType === 'managed' && !!blogFileNames,
+			transform: posts => posts?.filter(post => !!post),
+		}
+	);
+	const { data: managedPosts } = managedPostsComputation;
 
 	const availablePostTypes = useMemo(
-		() => deduplicateArray((posts ?? []).map(post => post.processed.type)),
-		[posts]
+		() =>
+			deduplicateArray((managedPosts ?? []).map(post => post.processed.type)),
+		[managedPosts]
 	);
 
 	const {
@@ -60,8 +100,10 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	const { addTagFilter } = filter;
 
 	const sortedFilteredPosts = useMemo(() => {
+		if (!managedPosts) return [];
+
 		const filteredPosts = filterBlogPostsByFuzzySearch(
-			(posts ?? []).filter(({ processed: post }) =>
+			(managedPosts ?? []).filter(({ processed: post }) =>
 				tagsForFilter.length
 					? !!post.tags?.length &&
 						tagsForFilter.every(tag => post.tags?.includes(tag))
@@ -97,7 +139,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	}, [
 		sortingField,
 		sortingDirection,
-		posts,
+		managedPosts,
 		fuzzySearchString,
 		tagsForFilter,
 		blogPostTypes,
@@ -182,6 +224,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 						filteredPosts={sortedFilteredPosts}
 						allPostsCount={posts?.length}
 						filter={filter}
+						managedType={managedType}
 					/>
 					<BlogSettings params={params} sorting={sorting} />
 				</div>
@@ -189,6 +232,8 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 			<BlogContent
 				blog={blog}
 				sortedFilteredPosts={sortedFilteredPosts}
+				managedPostsComputation={managedPostsComputation}
+				blogFilesNamesComputation={blogFilesNamesComputation}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomInToPost={zoomInToPost}

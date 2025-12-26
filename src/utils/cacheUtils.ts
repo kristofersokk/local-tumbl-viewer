@@ -10,9 +10,45 @@ export type CacheNameAndKey = {
 	BLOG_PROCESSING: string;
 };
 
-type CacheName = keyof CacheNameAndKey;
+export type CacheName = keyof CacheNameAndKey;
 
 type NotUndefined<T> = T extends undefined ? never : T;
+
+export const getCacheValue = <T, CN extends CacheName = CacheName>(
+	cacheName: CN,
+	key: CacheNameAndKey[CN]
+): T | undefined => {
+	const cache = caches[cacheName];
+	return cache.get(key) as T | undefined;
+};
+
+export const storeCacheValue = <T, CN extends CacheName>(
+	cacheName: CN,
+	key: CacheNameAndKey[CN],
+	value: NotUndefined<T>
+) => {
+	const cache = caches[cacheName];
+	cache.set(key, value);
+};
+
+export const cacheValue = <CN extends CacheName, T>(
+	cacheName: CN,
+	key: CacheNameAndKey[CN],
+	valueSupplier: () => NotUndefined<T>
+) => {
+	const cache = caches[cacheName];
+	const value = (cache as Map<string, T | undefined>).get(key);
+	if (value !== undefined) {
+		return { value: value as T, fromCache: true, error: undefined };
+	}
+	try {
+		const newValue = valueSupplier();
+		cache.set(key, newValue);
+		return { value: newValue, fromCache: false, error: undefined };
+	} catch (error) {
+		return { value: undefined, fromCache: false, error };
+	}
+};
 
 export const cacheValueAsync = async <CN extends CacheName, T>(
 	cacheName: CN,

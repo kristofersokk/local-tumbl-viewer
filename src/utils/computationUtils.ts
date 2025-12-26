@@ -21,6 +21,7 @@ export const expensiveMap = <D, R>(
 		computationsDone: 0,
 		isValid: !!data,
 	}),
+	getStepCount: state => state.data?.length ?? 0,
 	executeSingleComputation: (state, setState) => {
 		const { data, result, computationsDone } = state;
 		if (computationsDone < data.length) {

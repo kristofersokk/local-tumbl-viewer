@@ -1,4 +1,5 @@
 import {
+	BlogEntry,
 	BlogFileEntry,
 	BlogMetadata,
 	BlogType,
@@ -9,6 +10,7 @@ import {
 	RawBlogPost,
 } from 'Types/blog';
 import { deduplicateArray } from './arrayUtils';
+import { cacheValue } from './cacheUtils';
 
 export function getBlogFolderName(blog: BlogMetadata | undefined) {
 	if (!blog) return undefined;
@@ -209,7 +211,6 @@ export const processBlogPost = (
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
 		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
-		// TODO: improve links
 		return {
 			platform: 'bluesky',
 			type: 'regular',
@@ -349,6 +350,41 @@ export const processBlogPost = (
 		rebloggedFrom: post['reblogged-from-name'] || post.reblogged_from_name,
 		rebloggedRoot: post['reblogged-root-name'] || post.reblogged_root_name,
 	} satisfies ProcessedBlogPost;
+};
+
+export const getCachedProcessedBlogPost = ({
+	blog,
+	rawPost,
+	blogFileNames,
+}: {
+	blog: BlogEntry | undefined;
+	rawPost: RawBlogPost;
+	blogFileNames: string[];
+}) => {
+	const id = 'id' in rawPost ? rawPost.id : 'unknown-id';
+	return cacheValue(
+		'BLOG_PROCESSING',
+		`processed-blog-post-${blog?.metadata.Name}-${id}`,
+		() => {
+			const rawPostWithPlatform = {
+				...rawPost,
+				platform: blog?.metadata.platform || 'unknown',
+			} as RawBlogPost;
+			const combined = {
+				raw: rawPostWithPlatform,
+				processed: processBlogPost(
+					rawPostWithPlatform,
+					blog?.metadata,
+					blogFileNames
+				),
+			};
+			const stringified = JSON.stringify(combined);
+			return {
+				...combined,
+				stringified,
+			} satisfies CombinedBlogPost;
+		}
+	);
 };
 
 export const countAllTags = (

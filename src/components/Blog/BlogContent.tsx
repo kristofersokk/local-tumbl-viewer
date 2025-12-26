@@ -1,5 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { memo, useRef } from 'react';
+import { memo, useRef, useState } from 'react';
+import { useTimeout } from 'usehooks-ts';
 
 import Loader from 'Components/Loader';
 import Center from 'Components/utils/Center';
@@ -7,9 +8,15 @@ import useBlogFiles from 'Hooks/api/useBlogFiles';
 import useBlogPosts from 'Hooks/api/useBlogPosts';
 import useRootFolders from 'Hooks/api/useRootFolders';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
+import { ExpensiveComputationResult } from 'Hooks/useExpensiveComputation';
 import useRemToPixels from 'Hooks/useRemToPixels';
 import useWindowSize from 'Hooks/useWindowSize';
-import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
+import {
+	BlogEntry,
+	CombinedBlogPost,
+	ProcessedBlogPost,
+	RawBlogPost,
+} from 'Types/blog';
 import { getBlogFolderName } from 'Utils/blogUtils';
 
 import BlogPost from './BlogPost';
@@ -17,6 +24,14 @@ import BlogPost from './BlogPost';
 interface BlogContentProps {
 	blog: BlogEntry;
 	sortedFilteredPosts: CombinedBlogPost[];
+	managedPostsComputation: ExpensiveComputationResult<
+		{
+			stringified: string;
+			raw: RawBlogPost;
+			processed: ProcessedBlogPost;
+		}[]
+	>;
+	blogFilesNamesComputation: ExpensiveComputationResult<string[]>;
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomInToPost: (postId: string) => void;
@@ -26,6 +41,8 @@ interface BlogContentProps {
 const BlogContent = ({
 	blog,
 	sortedFilteredPosts,
+	managedPostsComputation,
+	blogFilesNamesComputation,
 	addTagFilter,
 	params,
 	zoomInToPost,
@@ -74,18 +91,51 @@ const BlogContent = ({
 	);
 	const { data: blogFiles, isFetching: isFetchingBlogFiles } =
 		useBlogFiles(blogFolderHandle);
+
+	const {
+		data: blogFileNames,
+		isLoading: isLoadingBlogFileNames,
+		progress: blogFileNamesProgress,
+	} = blogFilesNamesComputation;
+
 	const {
 		foundBlogPostsFiles,
 		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
-	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
+	} = useBlogPosts(blog, blogFolderHandle, blogFiles, blogFileNames);
+
+	const { isLoading: isLoadingManagedPosts, progress: managedPostsProgress } =
+		managedPostsComputation;
 
 	const isFetching =
-		isFetchingRootFolders || isFetchingBlogFiles || isFetchingBlogPosts;
+		isFetchingRootFolders ||
+		isFetchingBlogFiles ||
+		isFetchingBlogPosts ||
+		isLoadingBlogFileNames ||
+		isLoadingManagedPosts;
 
-	if (isFetching || !blogPosts || !blogFiles) {
+	const [showLoadingDescription, setShowLoadingDescription] = useState(false);
+
+	useTimeout(() => {
+		setShowLoadingDescription(true);
+	}, 3000);
+
+	if (isFetching || !blogFiles || !blogPosts) {
 		return (
-			<Center className="my-auto">
+			<Center className="flex flex-col gap-4">
 				<Loader type="pacman" size={60} />
+				{showLoadingDescription && (
+					<p>
+						{isFetchingRootFolders
+							? 'Loading root folders...'
+							: isFetchingBlogFiles
+								? 'Loading blog files...'
+								: isLoadingBlogFileNames
+									? `Processing blog file names... (${blogFileNamesProgress?.current ?? 0} / ${blogFileNamesProgress?.total ?? 0})`
+									: isLoadingManagedPosts
+										? `Processing managed posts... (${managedPostsProgress?.current ?? 0} / ${managedPostsProgress?.total ?? 0})`
+										: 'Loading blog posts...'}
+					</p>
+				)}
 			</Center>
 		);
 	}
@@ -168,6 +218,9 @@ export default memo(BlogContent, (prevProps, nextProps) => {
 	return (
 		prevProps.params === nextProps.params &&
 		prevProps.blogKey === nextProps.blogKey &&
+		prevProps.managedPostsComputation === nextProps.managedPostsComputation &&
+		prevProps.blogFilesNamesComputation ===
+			nextProps.blogFilesNamesComputation &&
 		calculatePostsArrayId(prevProps.sortedFilteredPosts) ===
 			calculatePostsArrayId(nextProps.sortedFilteredPosts)
 	);
