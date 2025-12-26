@@ -51,6 +51,7 @@ const ZoomedInPost = ({
 												addTagFilter={addTagFilter}
 												params={params}
 												forceUncollapsed
+												zoomedIn
 											/>
 										)}
 									</ClickOutside>

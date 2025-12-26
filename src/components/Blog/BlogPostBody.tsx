@@ -23,6 +23,7 @@ interface BlogPostBodyProps {
 	post: ProcessedBlogPost;
 	blogFiles: FileSystemFileHandle[];
 	forceUncollapsed?: boolean;
+	zoomedIn?: boolean;
 }
 
 const BlogPostBody = ({
@@ -31,6 +32,7 @@ const BlogPostBody = ({
 	post,
 	blogFiles,
 	forceUncollapsed,
+	zoomedIn = false,
 }: BlogPostBodyProps) => {
 	const { collapsedHeightPercent, fallbackToOnlineMedia } = params;
 
@@ -100,6 +102,7 @@ const BlogPostBody = ({
 					'**:first:mt-0 **:last:mb-0',
 					{
 						'[&_.reblog-header]:hidden': !params.showRebloggedInfo,
+						'[&_p]:text-lg': zoomedIn,
 					}
 				)}
 				{...rest}

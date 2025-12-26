@@ -36,5 +36,6 @@
 	--z-index-popover: 60;
 	--z-index-zoomed-post-backdrop: 70;
 	--z-index-zoomed-post: 80;
+	--z-index-tooltip: 85;
 	--z-index-toast: 90;
 }

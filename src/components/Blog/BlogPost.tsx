@@ -17,6 +17,7 @@ interface BlogPostProps {
 	params: BlogDeferredParams;
 	zoomInToPost?: (postId: string) => void;
 	forceUncollapsed?: boolean;
+	zoomedIn?: boolean;
 }
 
 const BlogPost = ({
@@ -29,6 +30,7 @@ const BlogPost = ({
 	params,
 	zoomInToPost,
 	forceUncollapsed,
+	zoomedIn = false,
 }: BlogPostProps) => {
 	const [isDebugging, setIsDebugging] = useState(false);
 
@@ -58,6 +60,7 @@ const BlogPost = ({
 					post={post.processed}
 					blogFiles={blogFiles}
 					forceUncollapsed={forceUncollapsed}
+					zoomedIn={zoomedIn}
 				/>
 			)}
 			<BlogPostFooter

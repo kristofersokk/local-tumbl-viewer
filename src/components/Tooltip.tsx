@@ -16,7 +16,10 @@ const Tooltip = ({
 		<RadixTooltip.Provider>
 			<RadixTooltip.Root delayDuration={delayDuration}>
 				<RadixTooltip.Portal>
-					<RadixTooltip.Content className="TooltipContent" sideOffset={5}>
+					<RadixTooltip.Content
+						className="TooltipContent z-tooltip"
+						sideOffset={5}
+					>
 						{content}
 						<RadixTooltip.Arrow className="TooltipArrow" />
 					</RadixTooltip.Content>
