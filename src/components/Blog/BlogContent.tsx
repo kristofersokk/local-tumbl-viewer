@@ -117,7 +117,7 @@ const BlogContent = ({
 
 	useTimeout(() => {
 		setShowLoadingDescription(true);
-	}, 3000);
+	}, 1000);
 
 	if (isFetching || !blogFiles || !blogPosts) {
 		return (
