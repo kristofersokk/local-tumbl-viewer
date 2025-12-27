@@ -603,7 +603,7 @@ function getAlternativeFileNames(fileName: string | undefined): string[] {
 
 export function getMediaFileHandle(
 	imgMappingEntries: BlogFileEntry[],
-	blogFiles: FileSystemFileHandle[],
+	blogFiles: { handle: FileSystemFileHandle; name: string }[],
 	url: string
 ) {
 	const lastSlashIndex = url.lastIndexOf('/');

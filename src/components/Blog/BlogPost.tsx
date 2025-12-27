@@ -12,7 +12,7 @@ interface BlogPostProps {
 	containerProps?: HTMLAttributes<HTMLDivElement>;
 	post: CombinedBlogPost;
 	blog: BlogEntry;
-	blogFiles: FileSystemFileHandle[];
+	blogFiles: { handle: FileSystemFileHandle; name: string }[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	blogKey: number;

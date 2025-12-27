@@ -21,7 +21,7 @@ interface BlogPostBodyProps {
 	params: BlogDeferredParams;
 	blog: BlogEntry;
 	post: ProcessedBlogPost;
-	blogFiles: FileSystemFileHandle[];
+	blogFiles: { handle: FileSystemFileHandle; name: string }[];
 	blogKey: number;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;

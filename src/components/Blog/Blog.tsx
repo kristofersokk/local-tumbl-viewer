@@ -45,21 +45,12 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 		'managed'
 	);
 
-	const blogFilesNamesComputation = useExpensiveComputation(
-		expensiveMap(blogFiles, file => file.name, 1000),
-		{
-			enabled: managedType === 'managed' && !!blogFiles,
-		}
-	);
-	const { data: blogFileNames } = blogFilesNamesComputation;
-
 	const {
 		query: { data: posts },
 	} = useBlogPosts(
 		blog,
 		blogFolderHandle,
 		blogFiles,
-		blogFileNames,
 		managedType === 'managed'
 	);
 
@@ -70,12 +61,12 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				getCachedProcessedBlogPost({
 					blog,
 					rawPost: post,
-					blogFileNames: blogFileNames!,
+					blogFileNames: blogFiles!.map(file => file.name),
 				}).value,
 			1000
 		),
 		{
-			enabled: managedType === 'managed' && !!blogFileNames,
+			enabled: managedType === 'managed' && !!blogFiles,
 			transform: posts => posts?.filter(post => !!post),
 		}
 	);
@@ -184,7 +175,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	} = useRegisterSW();
 
 	return (
-		<div className="h-full w-full">
+		<div className="grid h-dvh grid-rows-[auto_1fr]">
 			<div className="bg-navbar flex h-16 items-center justify-between px-2 shadow-2xl shadow-slate-950/70 sm:px-6">
 				<div className="flex min-w-0 items-center gap-1 sm:gap-4">
 					<Tooltip content={<p>Back to blog selection</p>}>
@@ -233,7 +224,6 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				blog={blog}
 				sortedFilteredPosts={sortedFilteredPosts}
 				managedPostsComputation={managedPostsComputation}
-				blogFilesNamesComputation={blogFilesNamesComputation}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomInToPost={zoomInToPost}

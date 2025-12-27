@@ -11,7 +11,7 @@ const useTransformMediaUrl = ({
 }: {
 	fallbackToOnlineMedia: boolean;
 	imgMappingEntries: BlogFileEntry[];
-	blogFiles: FileSystemFileHandle[];
+	blogFiles: { handle: FileSystemFileHandle; name: string }[];
 	blogName: string;
 }) => {
 	const constructLocalUrl = useCallback(
@@ -38,7 +38,7 @@ const useTransformMediaUrl = ({
 							'BLOG_PROCESSING',
 							cacheKey,
 							async () => {
-								const mediaFile = await mediaFileHandle.getFile();
+								const mediaFile = await mediaFileHandle.handle.getFile();
 								return URL.createObjectURL(mediaFile);
 							}
 						);

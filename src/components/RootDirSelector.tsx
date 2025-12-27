@@ -1,12 +1,11 @@
 import { useNavigate } from '@tanstack/react-router';
-import InitializationContext from 'Contexts/InitializationContext';
 import { useContext } from 'react';
+
+import InitializationContext from 'Contexts/InitializationContext';
 
 const RootDirSelector = () => {
 	const navigate = useNavigate({ from: '/' });
 	const { initializeRootDirHandle } = useContext(InitializationContext);
-
-	const fileSystemAPIIsSupported = !!window.showDirectoryPicker;
 
 	const navigateToAbout = () => {
 		document.startViewTransition(() => {
@@ -29,26 +28,17 @@ const RootDirSelector = () => {
 				<div />
 			</div>
 			<div className="flex flex-col items-center gap-4 p-8 sm:p-16">
-				{fileSystemAPIIsSupported ? (
-					<>
-						<p>Choose TumblThree root directory (TumblrBlogs)</p>
-						<button
-							className="cursor-pointer rounded-4xl bg-slate-900 px-6 py-3 text-2xl transition-colors [&:hover]:bg-slate-950"
-							onClick={() => {
-								document.startViewTransition(() => {
-									initializeRootDirHandle?.(true);
-								});
-							}}
-						>
-							Initialize
-						</button>
-					</>
-				) : (
-					<p>
-						This browser does not support the File System Access API. Try
-						Chrome, Edge, Brave, Opera, or other Chromium browsers.
-					</p>
-				)}
+				<p>Choose TumblThree root directory (TumblrBlogs)</p>
+				<button
+					className="cursor-pointer rounded-4xl bg-slate-900 px-6 py-3 text-2xl transition-colors [&:hover]:bg-slate-950"
+					onClick={() => {
+						document.startViewTransition(() => {
+							initializeRootDirHandle?.({ allowPrompt: true });
+						});
+					}}
+				>
+					Initialize
+				</button>
 			</div>
 		</div>
 	);

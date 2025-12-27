@@ -1,7 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import Blog from 'Components/Blog/Blog';
-import Loader from 'Components/Loader';
-import Center from 'Components/utils/Center';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
 import { useCallback, useEffect } from 'react';
@@ -34,11 +32,7 @@ function BlogRoute() {
 	const isFetching = isFetchingRootFolders || isFetchingBlogs;
 
 	if (isFetching) {
-		return (
-			<Center>
-				<Loader type="pacman" size={60} />
-			</Center>
-		);
+		return null;
 	}
 
 	if (!blog) {

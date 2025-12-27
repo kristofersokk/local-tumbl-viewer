@@ -10,7 +10,7 @@ const Center = ({ children, className }: CenterProps) => {
 	return (
 		<div
 			className={classNames(
-				'flex h-full items-center justify-center',
+				'flex w-full items-center justify-center',
 				className
 			)}
 		>

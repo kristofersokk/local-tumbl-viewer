@@ -30,7 +30,9 @@
 	--color-toast-bg: #0b111c;
 	--color-download-icon-fill: #40a834;
 	--color-download-icon-hover: #1a2842;
-
+	--color-progress-bar-bg: #1a2842;
+	--color-progress-bar-fill: #2a3f69;
+ 
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
 	--z-index-popover: 60;

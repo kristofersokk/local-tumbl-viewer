@@ -7,8 +7,7 @@ import { BlogEntry, RawBlogPost } from 'Types/blog';
 const useBlogPosts = (
 	blog: BlogEntry | undefined,
 	blogFolderHandle: FileSystemDirectoryHandle | undefined,
-	blogFiles: FileSystemFileHandle[] | undefined,
-	blogFileNames: string[] | undefined,
+	blogFiles: { handle: FileSystemFileHandle; name: string }[] | undefined,
 	enabled: boolean = true
 ) => {
 	const blogTextsFile = blogFiles?.find(file => file.name === 'texts.txt');
@@ -33,12 +32,12 @@ const useBlogPosts = (
 
 	const query = useQuery({
 		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolderHandle?.name],
-		queryFn: blogFileNames
+		queryFn: blogFiles
 			? async () => {
 					const [texts, images, videos, conversations, answers, quotes, links] =
 						await Promise.all(
 							foundBlogPostsFiles.map(file =>
-								file
+								file.handle
 									.getFile()
 									.then(file => file.text())
 									.then(text => {
@@ -65,7 +64,7 @@ const useBlogPosts = (
 				}
 			: skipToken,
 		staleTime: Infinity,
-		enabled: enabled && !!blog && !!blogFileNames,
+		enabled: enabled && !!blog && !!blogFiles,
 	});
 
 	return { query, foundBlogPostsFiles };

@@ -31,7 +31,6 @@ interface BlogContentProps {
 			processed: ProcessedBlogPost;
 		}[]
 	>;
-	blogFilesNamesComputation: ExpensiveComputationResult<string[]>;
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomInToPost: (postId: string) => void;
@@ -42,7 +41,6 @@ const BlogContent = ({
 	blog,
 	sortedFilteredPosts,
 	managedPostsComputation,
-	blogFilesNamesComputation,
 	addTagFilter,
 	params,
 	zoomInToPost,
@@ -93,15 +91,9 @@ const BlogContent = ({
 		useBlogFiles(blogFolderHandle);
 
 	const {
-		data: blogFileNames,
-		isLoading: isLoadingBlogFileNames,
-		progress: blogFileNamesProgress,
-	} = blogFilesNamesComputation;
-
-	const {
 		foundBlogPostsFiles,
 		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
-	} = useBlogPosts(blog, blogFolderHandle, blogFiles, blogFileNames);
+	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
 
 	const { isLoading: isLoadingManagedPosts, progress: managedPostsProgress } =
 		managedPostsComputation;
@@ -110,7 +102,6 @@ const BlogContent = ({
 		isFetchingRootFolders ||
 		isFetchingBlogFiles ||
 		isFetchingBlogPosts ||
-		isLoadingBlogFileNames ||
 		isLoadingManagedPosts;
 
 	const [showLoadingDescription, setShowLoadingDescription] = useState(false);
@@ -121,21 +112,23 @@ const BlogContent = ({
 
 	if (isFetching || !blogFiles || !blogPosts) {
 		return (
-			<Center className="flex flex-col gap-4">
-				<Loader type="pacman" size={60} />
-				{showLoadingDescription && (
-					<p>
-						{isFetchingRootFolders
-							? 'Loading root folders...'
+			<Center className="relative flex flex-col gap-4">
+				<Loader
+					type="pacman"
+					size={60}
+					{...(showLoadingDescription
+						? isFetchingRootFolders
+							? { text: 'Loading root folders' }
 							: isFetchingBlogFiles
-								? 'Loading blog files...'
-								: isLoadingBlogFileNames
-									? `Processing blog file names... (${blogFileNamesProgress?.current ?? 0} / ${blogFileNamesProgress?.total ?? 0})`
-									: isLoadingManagedPosts
-										? `Processing managed posts... (${managedPostsProgress?.current ?? 0} / ${managedPostsProgress?.total ?? 0})`
-										: 'Loading blog posts...'}
-					</p>
-				)}
+								? { text: 'Loading blog files' }
+								: isLoadingManagedPosts
+									? {
+											text: `Processing managed posts`,
+											progress: managedPostsProgress,
+										}
+									: { text: 'Loading blog posts' }
+						: undefined)}
+				/>
 			</Center>
 		);
 	}
@@ -219,8 +212,6 @@ export default memo(BlogContent, (prevProps, nextProps) => {
 		prevProps.params === nextProps.params &&
 		prevProps.blogKey === nextProps.blogKey &&
 		prevProps.managedPostsComputation === nextProps.managedPostsComputation &&
-		prevProps.blogFilesNamesComputation ===
-			nextProps.blogFilesNamesComputation &&
 		calculatePostsArrayId(prevProps.sortedFilteredPosts) ===
 			calculatePostsArrayId(nextProps.sortedFilteredPosts)
 	);

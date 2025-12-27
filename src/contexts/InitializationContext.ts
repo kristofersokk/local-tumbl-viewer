@@ -2,7 +2,7 @@ import { createContext } from 'react';
 
 export interface InitializationContextType {
 	rootDirHandle?: FileSystemDirectoryHandle;
-	initializeRootDirHandle?: (allowPrompt?: boolean) => void;
+	initializeRootDirHandle?: (args: { allowPrompt: boolean }) => void;
 	clearRootDirectoryHandle?: () => void;
 	initialized: boolean;
 }

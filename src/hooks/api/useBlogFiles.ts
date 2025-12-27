@@ -7,9 +7,15 @@ const useBlogFiles = (blogFolder: FileSystemDirectoryHandle | undefined) => {
 		queryFn: blogFolder
 			? async () =>
 					Array.fromAsync(blogFolder.values()).then(handles =>
-						handles.filter(
-							(handle): handle is FileSystemFileHandle => handle.kind === 'file'
-						)
+						handles
+							.filter(
+								(handle): handle is FileSystemFileHandle =>
+									handle.kind === 'file'
+							)
+							.map(handle => ({
+								handle,
+								name: handle.name,
+							}))
 					)
 			: skipToken,
 		staleTime: Infinity,

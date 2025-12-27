@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
 import BlogSelector from 'Components/BlogSelector';
-import Loader from 'Components/Loader';
 import RootDirResetButton from 'Components/RootDirResetButton';
 import Center from 'Components/utils/Center';
 import useBlogs from 'Hooks/api/useBlogs';
@@ -18,11 +17,7 @@ function Index() {
 	const isFetching = isFetchingRootFolders || isFetchingBlogs;
 
 	if (isFetching) {
-		return (
-			<Center>
-				<Loader type="pacman" size={60} />
-			</Center>
-		);
+		return null;
 	}
 
 	const error = !folders?.length

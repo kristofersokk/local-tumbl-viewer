@@ -8,8 +8,16 @@ import {
 
 const ROOT_FOLDER_KEY = 'rootFolder';
 
-export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
-	const dirHandle = await getRootDirectoryHandle(allowPrompt);
+export async function getPermittedRootDirectoryHandle({
+	allowPrompt,
+	onPrompt,
+	onError,
+}: {
+	allowPrompt: boolean;
+	onPrompt: () => void;
+	onError: (error: unknown) => void;
+}) {
+	const dirHandle = await getRootDirectoryHandle({ allowPrompt, onPrompt });
 	if (!dirHandle) {
 		console.info('No root directory handle found');
 		return undefined;
@@ -25,14 +33,21 @@ export async function getPermittedRootDirectoryHandle(allowPrompt?: boolean) {
 		return dirHandle;
 	}
 	if (allowPrompt && permission === 'prompt') {
+		onPrompt();
 		return promptForRootDirectoryHandle();
 	}
 
-	console.error('No read permission granted for root directory');
+	onError('No read permission granted for root directory');
 	return undefined;
 }
 
-async function getRootDirectoryHandle(allowPrompt?: boolean) {
+async function getRootDirectoryHandle({
+	allowPrompt,
+	onPrompt,
+}: {
+	allowPrompt: boolean;
+	onPrompt: () => void;
+}) {
 	const { value: dirHandle } = await cacheValueAsync(
 		'GLOBAL',
 		'root-folder',
@@ -46,6 +61,7 @@ async function getRootDirectoryHandle(allowPrompt?: boolean) {
 	}
 
 	if (allowPrompt) {
+		onPrompt();
 		return promptForRootDirectoryHandle();
 	}
 	return undefined;

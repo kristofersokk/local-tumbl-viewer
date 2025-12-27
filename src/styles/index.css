@@ -29,4 +29,14 @@
 	::-webkit-scrollbar-thumb:hover {
 		@apply bg-scrollbar-thumb-hover;
 	}
+
+	progress[value]::-webkit-progress-bar {
+		background-color: var(--color-progress-bar-bg);
+		border-radius: 40px;
+	}
+
+	progress[value]::-webkit-progress-value {
+		border-radius: 40px;
+		background-color: var(--color-progress-bar-fill);
+	}
 }
