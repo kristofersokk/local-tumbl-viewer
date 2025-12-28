@@ -102,6 +102,8 @@ const BlogPostBody = ({
 					'[&_h5]:mx-4 [&_h5]:my-2',
 					'[&_h6]:mx-4 [&_h6]:my-2',
 					'[&_blockquote]:my-2',
+					'[&_figure]:my-2',
+					'px-2 [&_audio]:my-2',
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
 					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
 					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',

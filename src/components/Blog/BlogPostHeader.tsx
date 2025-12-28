@@ -33,7 +33,7 @@ const BlogPostHeader = ({
 
 	return (
 		<div className="flex items-start justify-between">
-			<div className="flex flex-col gap-1 px-4 py-3">
+			<div className="flex w-max shrink flex-col gap-1 px-4 py-3">
 				{showRebloggedInfo && rebloggedRoot && (
 					<>
 						<a
@@ -64,7 +64,7 @@ const BlogPostHeader = ({
 					</div>
 				)}
 			</div>
-			<div className="m-1 mx-2 flex flex-row-reverse flex-wrap items-center gap-x-2">
+			<div className="m-1 mx-2 flex w-min grow flex-row-reverse flex-wrap items-center gap-x-2">
 				<div className="flex items-center gap-1">
 					{debugMode ? (
 						<button
