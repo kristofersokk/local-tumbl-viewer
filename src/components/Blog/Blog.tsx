@@ -42,18 +42,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	);
 	const { data: blogFiles } = useBlogFiles(blogFolderHandle);
 
-	const [managedType, setManagedType] = useState<'managed' | 'unmanaged'>(
-		'managed'
-	);
-
 	const {
 		query: { data: posts },
-	} = useBlogPosts(
-		blog,
-		blogFolderHandle,
-		blogFiles,
-		managedType === 'managed'
-	);
+	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
 
 	const blogMediaFiles = useMemo(() => {
 		if (!blogFiles || !posts) return undefined;
@@ -76,7 +67,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				}).value
 		),
 		{
-			enabled: managedType === 'managed' && !!blogMediaFiles,
+			enabled: !!blogMediaFiles,
 			transform: posts => posts?.filter(post => !!post),
 			batchTimeMs: 14,
 		}
@@ -226,7 +217,6 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 						filteredPosts={sortedFilteredPosts}
 						allPostsCount={posts?.length}
 						filter={filter}
-						managedType={managedType}
 					/>
 					<BlogSettings params={params} sorting={sorting} />
 				</div>

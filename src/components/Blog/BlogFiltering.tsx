@@ -13,7 +13,6 @@ interface BlogFilteringProps {
 	filteredPosts: CombinedBlogPost[] | undefined;
 	allPostsCount: number | undefined;
 	filter: BlogFilteringType;
-	managedType: 'managed' | 'unmanaged';
 }
 
 const BlogFiltering = ({
@@ -28,7 +27,6 @@ const BlogFiltering = ({
 		fuzzySearchString,
 		setFuzzySearchString,
 	},
-	managedType,
 }: BlogFilteringProps) => {
 	const filterCount = tagsForFilter.length;
 
@@ -63,88 +61,80 @@ const BlogFiltering = ({
 				className="z-popover w-80 max-w-[90vw] shadow-2xl shadow-slate-950/70"
 			>
 				<div className="bg-popover-background rounded-lg px-3 py-4">
-					{managedType === 'managed' && (
-						<>
-							<div className="flex justify-between">
-								<p className="mb-4 text-lg">Filtering</p>
-								<p className="text-sm">
-									{filteredPosts.length} / {allPostsCount ?? 'unknown'}
-								</p>
-							</div>
-							<TextInput
-								type="text"
-								placeholder="Search..."
-								value={fuzzySearchString}
-								onChange={e => setFuzzySearchString(e.target.value)}
-								className="mb-2"
-							/>
-							<div className="flex items-center gap-2">
-								{!countedRemainingTags.length && (
-									<p className="text-sm text-gray-400">No tags</p>
-								)}
-								{!!countedRemainingTags.length && (
-									<div className="flex flex-col items-start gap-4">
-										<div className="flex items-start gap-2">
-											<span className="mt-1 text-sm text-gray-400">Tags: </span>
-											<div className="flex flex-wrap gap-2">
-												{tagsForFilter.map(tag => (
-													<span
-														key={tag}
-														className="flex items-center gap-0.5 rounded-full bg-gray-800 px-2 py-1"
-													>
-														<p className="text-sm">#{tag}</p>
-														{
-															<button
-																// On hover, change background drop-shadow instead of text color
-																className="size-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
-																onClick={() => removeTagFilter(tag)}
-															>
-																x
-															</button>
-														}
-													</span>
-												))}
-											</div>
-										</div>
-										<div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
-											{notUsedTags.map(tag => (
-												<button
-													key={tag}
-													className="cursor-pointer rounded-full bg-gray-900 px-2 py-1 transition-colors [&:hover]:bg-gray-800"
-													onClick={() => addTagFilter(tag)}
-												>
-													<p className="text-sm">#{tag}</p>
-												</button>
-											))}
-										</div>
-									</div>
-								)}
-							</div>
-							{/* TODO: figure out if we can get type filtering in unmanaged flow */}
-							<p className="my-2">Filter by type:</p>
-							<div className="grid grid-cols-[auto_auto_auto_auto] gap-4">
-								{Object.entries(blogPostTypes).map(([type, isActive]) => (
-									<>
-										<span className="text-sm">{type}:</span>
-										<div className="flex items-center gap-2">
-											<Switch.Root
-												className="SwitchRoot"
-												checked={isActive}
-												onCheckedChange={value =>
-													setBlogPostType(
-														type as ProcessedBlogPost['type'],
-														value
-													)
-												}
+					<div className="flex justify-between">
+						<p className="mb-4 text-lg">Filtering</p>
+						<p className="text-sm">
+							{filteredPosts.length} / {allPostsCount ?? 'unknown'}
+						</p>
+					</div>
+					<TextInput
+						type="text"
+						placeholder="Search..."
+						value={fuzzySearchString}
+						onChange={e => setFuzzySearchString(e.target.value)}
+						className="mb-2"
+					/>
+					<div className="flex items-center gap-2">
+						{!countedRemainingTags.length && (
+							<p className="text-sm text-gray-400">No tags</p>
+						)}
+						{!!countedRemainingTags.length && (
+							<div className="flex flex-col items-start gap-4">
+								<div className="flex items-start gap-2">
+									<span className="mt-1 text-sm text-gray-400">Tags: </span>
+									<div className="flex flex-wrap gap-2">
+										{tagsForFilter.map(tag => (
+											<span
+												key={tag}
+												className="flex items-center gap-0.5 rounded-full bg-gray-800 px-2 py-1"
 											>
-												<Switch.Thumb className="SwitchThumb" />
-											</Switch.Root>
-										</div>
-									</>
-								))}
+												<p className="text-sm">#{tag}</p>
+												{
+													<button
+														// On hover, change background drop-shadow instead of text color
+														className="size-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
+														onClick={() => removeTagFilter(tag)}
+													>
+														x
+													</button>
+												}
+											</span>
+										))}
+									</div>
+								</div>
+								<div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
+									{notUsedTags.map(tag => (
+										<button
+											key={tag}
+											className="cursor-pointer rounded-full bg-gray-900 px-2 py-1 transition-colors [&:hover]:bg-gray-800"
+											onClick={() => addTagFilter(tag)}
+										>
+											<p className="text-sm">#{tag}</p>
+										</button>
+									))}
+								</div>
 							</div>
-						</>
-					)}
+						)}
+					</div>
+					<p className="my-2">Filter by type:</p>
+					<div className="grid grid-cols-[auto_auto_auto_auto] gap-4">
+						{Object.entries(blogPostTypes).map(([type, isActive]) => (
+							<>
+								<span className="text-sm">{type}:</span>
+								<div className="flex items-center gap-2">
+									<Switch.Root
+										className="SwitchRoot"
+										checked={isActive}
+										onCheckedChange={value =>
+											setBlogPostType(type as ProcessedBlogPost['type'], value)
+										}
+									>
+										<Switch.Thumb className="SwitchThumb" />
+									</Switch.Root>
+								</div>
+							</>
+						))}
+					</div>
 				</div>
 			</Popover.Content>
 		</Popover.Root>
