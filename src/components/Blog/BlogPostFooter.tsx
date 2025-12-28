@@ -1,7 +1,8 @@
-import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { memo, useState } from 'react';
+
+import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import { ProcessedBlogPost } from 'Types/blog';
-import { countCollapsedTags } from 'Utils/blogUtils';
+import { countCollapsedTags } from 'Utils/blogPostUtils';
 
 interface BlogPostFooterProps {
 	post: ProcessedBlogPost;

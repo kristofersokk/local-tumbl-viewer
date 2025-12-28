@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
+
 import { BlogFileEntry } from 'Types/blog';
-import { getMediaFileHandle } from 'Utils/blogUtils';
+import { getMediaFileHandle } from 'Utils/blogPostUtils';
 import { cacheValueAsync, dedupeTask } from 'Utils/cacheUtils';
 
 const useTransformMediaUrl = ({

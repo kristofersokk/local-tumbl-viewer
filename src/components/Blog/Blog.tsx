@@ -12,11 +12,11 @@ import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
+import { getCachedProcessedBlogPost } from 'Utils/blogPostUtils';
 import {
 	detectBlogMediaFiles,
 	filterBlogPostsByFuzzySearch,
 	getBlogFolderName,
-	getCachedProcessedBlogPost,
 } from 'Utils/blogUtils';
 import { clearCache } from 'Utils/cacheUtils';
 import { expensiveMap } from 'Utils/computationUtils';

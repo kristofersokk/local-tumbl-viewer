@@ -13,7 +13,8 @@ import {
 	useRef,
 } from 'react';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
-import { getBlogPostProcessors } from 'Utils/blogUtils';
+import { getBlogPostProcessors } from 'Utils/blogPostUtils';
+
 import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
 

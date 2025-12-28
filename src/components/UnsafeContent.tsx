@@ -7,7 +7,9 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { DomProcessor, iterateDomTree } from 'Utils/blogUtils';
+
+import { DomProcessor, iterateDomTree } from 'Utils/blogPostUtils';
+
 import Loader from './Loader';
 
 type Props<E extends keyof JSX.IntrinsicElements = 'div'> = {

@@ -10,7 +10,7 @@
         "test-watch": "vitest",
         "test-coverage": "vitest run --coverage",
         "lint": "eslint .",
-        "typecheck": "tsc",
+        "typecheck": "tsc -p ./tsconfig.app.json",
         "preview": "vite preview",
         "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg",
         "analyze-bundle": "vite build -m analyze-bundle"
