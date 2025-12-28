@@ -69,7 +69,7 @@ const BlogContent = ({
 		count: sortedFilteredPosts.length,
 		getScrollElement: () => parentRef.current,
 		estimateSize: () => (collapsedHeightRem + 5) * remInPixels,
-		overscan: 10,
+		overscan: 20,
 		lanes,
 		gap: 16,
 	});
