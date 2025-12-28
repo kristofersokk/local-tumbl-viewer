@@ -91,6 +91,9 @@ const BlogPostBody = ({
 					// eslint-disable-next-line no-useless-escape
 					'[&_.npf\_quote]:font-Tinos [&_.npf\_quote]:text-2xl',
 					'[&_.npf\\_quote]:font-Tinos [&_.npf\\_quote]:text-2xl',
+					// eslint-disable-next-line no-useless-escape
+					'[&_.npf\_row]:my-2',
+					'[&_.npf\\_row]:my-2',
 					'[&_p]:mx-4 [&_p]:my-2',
 					'[&_h1]:mx-4 [&_h1]:my-2 [&_h1]:text-3xl',
 					'[&_h2]:mx-4 [&_h2]:my-2 [&_h2]:text-2xl',
@@ -98,6 +101,7 @@ const BlogPostBody = ({
 					'[&_h4]:mx-4 [&_h4]:my-2 [&_h4]:text-lg',
 					'[&_h5]:mx-4 [&_h5]:my-2',
 					'[&_h6]:mx-4 [&_h6]:my-2',
+					'[&_blockquote]:my-2',
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
 					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
 					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',

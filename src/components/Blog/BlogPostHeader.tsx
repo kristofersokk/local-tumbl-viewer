@@ -33,7 +33,7 @@ const BlogPostHeader = ({
 
 	return (
 		<div className="flex items-start justify-between">
-			<div className="flex flex-col gap-1 px-3 py-2">
+			<div className="flex flex-col gap-1 px-4 py-3">
 				{showRebloggedInfo && rebloggedRoot && (
 					<>
 						<a
@@ -57,7 +57,7 @@ const BlogPostHeader = ({
 					</>
 				)}
 				{title && (
-					<div className="mx-3 my-2 grid grid-cols-[auto_max-content] gap-2">
+					<div className="mx-4 my-2 grid grid-cols-[auto_max-content] gap-2">
 						<span className="min-w-0 overflow-clip text-sm overflow-ellipsis whitespace-nowrap">
 							{title}
 						</span>

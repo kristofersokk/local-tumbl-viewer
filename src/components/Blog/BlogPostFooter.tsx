@@ -26,7 +26,7 @@ const BlogPostFooter = ({
 			: post.tags;
 
 	return (
-		<div className="flex flex-wrap overflow-hidden py-1.5">
+		<div className="flex flex-wrap overflow-hidden px-2 pt-1 pb-3">
 			{!!post.tags.length && showTags && (
 				<>
 					{tagsShown.map(tag => (
