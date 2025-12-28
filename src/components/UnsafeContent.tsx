@@ -8,7 +8,7 @@ import {
 	useState,
 } from 'react';
 
-import { DomProcessor, iterateDomTree } from 'Utils/blogPostUtils';
+import { DomProcessor, iterateDomTree } from 'Utils/htmlUtils';
 
 import Loader from './Loader';
 

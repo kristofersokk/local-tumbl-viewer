@@ -12,7 +12,7 @@ import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
-import { getCachedProcessedBlogPost } from 'Utils/blogPostUtils';
+import { getCachedProcessedBlogPost } from 'Utils/blogPostProcessingUtils';
 import {
 	detectBlogMediaFiles,
 	filterBlogPostsByFuzzySearch,
