@@ -174,7 +174,7 @@ const BlogContent = ({
 						const post = sortedFilteredPosts[virtualRow.index];
 						return (
 							<div
-								key={virtualRow.index}
+								key={post.processed.id}
 								ref={measureElement}
 								data-index={virtualRow.index}
 								className="absolute top-0 will-change-transform"
@@ -203,16 +203,11 @@ const BlogContent = ({
 	);
 };
 
-const calculatePostsArrayId = (posts: { processed: ProcessedBlogPost }[]) => {
-	return posts.map(post => post.processed.id).join(',');
-};
-
 export default memo(BlogContent, (prevProps, nextProps) => {
 	return (
 		prevProps.params === nextProps.params &&
 		prevProps.blogKey === nextProps.blogKey &&
-		prevProps.managedPostsComputation === nextProps.managedPostsComputation &&
-		calculatePostsArrayId(prevProps.sortedFilteredPosts) ===
-			calculatePostsArrayId(nextProps.sortedFilteredPosts)
+		prevProps.sortedFilteredPosts === nextProps.sortedFilteredPosts &&
+		prevProps.managedPostsComputation === nextProps.managedPostsComputation
 	);
 });

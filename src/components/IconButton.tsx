@@ -5,6 +5,7 @@ import Icon, { IconProps } from './Icon';
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	icon: IconProps['icon'];
 	iconProps?: Omit<IconProps, 'icon'>;
+	isLoading?: boolean;
 }
 
 const IconButton = ({
@@ -12,10 +13,16 @@ const IconButton = ({
 	icon,
 	iconProps,
 	className,
+	isLoading,
 	...props
 }: IconButtonProps) => {
 	return (
-		<button className={classNames('IconButton', className)} {...props}>
+		<button
+			className={classNames('IconButton', className, {
+				'animate-pulse': isLoading,
+			})}
+			{...props}
+		>
 			<Icon icon={icon} {...iconProps} />
 			{children}
 		</button>

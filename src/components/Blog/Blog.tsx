@@ -11,7 +11,7 @@ import useRootFolders from 'Hooks/api/useRootFolders';
 import useBlogViewSettings from 'Hooks/useBlogViewSettings';
 import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
-import { deduplicateArray } from 'Utils/arrayUtils';
+import { deduplicateArray, shuffleArray } from 'Utils/arrayUtils';
 import { getCachedProcessedBlogPost } from 'Utils/blogPostProcessingUtils';
 import {
 	detectBlogMediaFiles,
@@ -92,10 +92,10 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	const { tagsForFilter, blogPostTypes, fuzzySearchString } = deferredFilter;
 	const { addTagFilter } = filter;
 
-	const sortedFilteredPosts = useMemo(() => {
+	const filteredPosts = useMemo(() => {
 		if (!managedPosts) return [];
 
-		const filteredPosts = filterBlogPostsByFuzzySearch(
+		return filterBlogPostsByFuzzySearch(
 			(managedPosts ?? []).filter(({ processed: post }) =>
 				tagsForFilter.length
 					? !!post.tags?.length &&
@@ -106,6 +106,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 			),
 			fuzzySearchString
 		);
+	}, [managedPosts, fuzzySearchString, tagsForFilter, blogPostTypes]);
+
+	const sortedFilteredPosts = useMemo(() => {
 		const getKey = (post: ProcessedBlogPost): Date | number => {
 			switch (sortingField) {
 				case 'createdBy':
@@ -115,28 +118,24 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 			}
 		};
 
-		const sortedPosts = filteredPosts.toSorted((a, b) => {
-			const aValue = getKey(a.processed);
-			const bValue = getKey(b.processed);
+		const sortedPosts =
+			sortingField === 'shuffle'
+				? shuffleArray(filteredPosts)
+				: filteredPosts.toSorted((a, b) => {
+						const aValue = getKey(a.processed);
+						const bValue = getKey(b.processed);
 
-			if (aValue < bValue) {
-				return sortingDirection === 'asc' ? -1 : 1;
-			}
-			if (aValue > bValue) {
-				return sortingDirection === 'asc' ? 1 : -1;
-			}
-			return 0;
-		});
+						if (aValue < bValue) {
+							return sortingDirection === 'asc' ? -1 : 1;
+						}
+						if (aValue > bValue) {
+							return sortingDirection === 'asc' ? 1 : -1;
+						}
+						return 0;
+					});
 
 		return sortedPosts;
-	}, [
-		sortingField,
-		sortingDirection,
-		managedPosts,
-		fuzzySearchString,
-		tagsForFilter,
-		blogPostTypes,
-	]);
+	}, [filteredPosts, sortingField, sortingDirection]);
 
 	const goHome = () => {
 		goToBlogSelection();
@@ -208,11 +207,13 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 							onClick={() => updateServiceWorker(true)}
 						/>
 					)}
-					<IconButton
-						icon="refresh"
-						className="cursor-pointer"
-						onClick={reloadBlog}
-					/>
+					<Tooltip content={<p>Refresh</p>}>
+						<IconButton
+							icon="refresh"
+							className="cursor-pointer"
+							onClick={reloadBlog}
+						/>
+					</Tooltip>
 					<BlogFiltering
 						filteredPosts={sortedFilteredPosts}
 						allPostsCount={posts?.length}

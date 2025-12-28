@@ -9,8 +9,8 @@ import { ProcessedBlogPost } from 'Types/blog';
 import { shouldSaveData } from 'Utils/networkUtils';
 import useWindowSize from './useWindowSize';
 
-const sortingFields = ['createdBy'];
-const sortingDirections = ['asc', 'desc'];
+const sortingFields = ['createdBy', 'shuffle'] as const;
+const sortingDirections = ['asc', 'desc'] as const;
 
 export type BlogViewSettings = ReturnType<typeof useBlogViewSettings>;
 export type BlogParams = BlogViewSettings['params'];

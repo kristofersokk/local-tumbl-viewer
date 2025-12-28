@@ -11,6 +11,10 @@ import Settings from '../assets/icons/settings.svg?react';
 import VerticalList from '../assets/icons/vertical-list.svg?react';
 import Debug from '../assets/icons/debug.svg?react';
 import Refresh from '../assets/icons/refresh.svg?react';
+import Sort from '../assets/icons/sort.svg?react';
+import Shuffle from '../assets/icons/shuffle.svg?react';
+import ClockArrowDown from '../assets/icons/clock-arrow-down.svg?react';
+import ClockArrowUp from '../assets/icons/clock-arrow-up.svg?react';
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
 	icon: keyof typeof mapIconToComponent;
@@ -29,6 +33,10 @@ const mapIconToComponent = {
 	'vertical-list': VerticalList,
 	debug: Debug,
 	refresh: Refresh,
+	sort: Sort,
+	shuffle: Shuffle,
+	'clock-arrow-down': ClockArrowDown,
+	'clock-arrow-up': ClockArrowUp,
 };
 
 const Icon = ({ icon, ...props }: IconProps) => {
