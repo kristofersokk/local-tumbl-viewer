@@ -1,7 +1,9 @@
 import classNames from 'classnames';
+import { useEffect, useState } from 'react';
+
 import Loader from 'Components/Loader';
 import UnsafeContent from 'Components/UnsafeContent';
-import { useEffect, useState } from 'react';
+import { DomProcessor } from 'Utils/htmlUtils';
 
 interface BlogPostPhotoProps {
 	photo: {
@@ -12,9 +14,14 @@ interface BlogPostPhotoProps {
 	transformMediaUrl: (
 		urls: string[]
 	) => Promise<{ original: string; transformed: string }>;
+	blogPostProcessors: DomProcessor[];
 }
 
-const BlogPostPhoto = ({ photo, transformMediaUrl }: BlogPostPhotoProps) => {
+const BlogPostPhoto = ({
+	photo,
+	transformMediaUrl,
+	blogPostProcessors,
+}: BlogPostPhotoProps) => {
 	const [mediaInfo, setMediaInfo] = useState<{
 		original: string;
 		transformed: string;
@@ -43,7 +50,12 @@ const BlogPostPhoto = ({ photo, transformMediaUrl }: BlogPostPhotoProps) => {
 				data-src={mediaInfo?.original}
 				src={mediaInfo?.transformed || mediaInfo?.original}
 			/>
-			{photo.caption && <UnsafeContent content={photo.caption} />}
+			{photo.caption && (
+				<UnsafeContent
+					content={photo.caption}
+					domProcessors={blogPostProcessors}
+				/>
+			)}
 		</div>
 	) : (
 		<div className="flex h-20 w-full items-center justify-center">

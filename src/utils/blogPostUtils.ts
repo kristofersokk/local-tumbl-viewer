@@ -110,6 +110,35 @@ export const getBlogPostProcessors = (
 			iframeEl.setAttribute('frameborder', '0');
 			iframeEl.setAttribute('scrolling', 'no');
 		}
+		if (tag === 'blockquote') {
+			const blockQuoteEl = el as HTMLQuoteElement;
+			const parentEl = blockQuoteEl.parentElement;
+			const firstSibling = parentEl?.firstElementChild;
+			if (parentEl && firstSibling) {
+				const hasSecondChildBlockQuote =
+					blockQuoteEl.children.length >= 2 &&
+					blockQuoteEl.children[1].tagName.toLowerCase() === 'blockquote';
+				if (hasSecondChildBlockQuote) {
+					if (blockQuoteEl.children.length >= 3) {
+						const children = Array.from(blockQuoteEl.children);
+						for (let i = 2; i < children.length; i++) {
+							parentEl.insertBefore(children[i], blockQuoteEl);
+						}
+					}
+					if (parentEl.tagName.toLowerCase() === 'blockquote') {
+						parentEl.parentNode?.insertBefore(blockQuoteEl, parentEl);
+					} else {
+						parentEl?.insertBefore(blockQuoteEl, firstSibling);
+					}
+				} else {
+					const children = Array.from(blockQuoteEl.children);
+					for (let i = 0; i < children.length; i++) {
+						parentEl.insertBefore(children[i], blockQuoteEl);
+					}
+					blockQuoteEl.remove();
+				}
+			}
+		}
 	},
 ];
 

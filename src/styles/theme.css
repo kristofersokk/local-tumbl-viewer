@@ -25,6 +25,7 @@
 	--color-blog-post-question-bg: theme(colors.gray.800);
 	--color-blog-post-summary: #888;
 	--color-blog-post-link-border: theme(colors.gray.500);
+	--color-blog-post-separator: theme(colors.gray.700);
 	--color-action-button-bg: #162238;
 	--color-action-button-hover-bg: #1a2842;
 	--color-toast-bg: #0b111c;
