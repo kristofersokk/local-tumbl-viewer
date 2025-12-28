@@ -13,6 +13,7 @@ import useExpensiveComputation from 'Hooks/useExpensiveComputation';
 import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
 import { deduplicateArray } from 'Utils/arrayUtils';
 import {
+	detectBlogMediaFiles,
 	filterBlogPostsByFuzzySearch,
 	getBlogFolderName,
 	getCachedProcessedBlogPost,
@@ -54,6 +55,16 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 		managedType === 'managed'
 	);
 
+	const blogMediaFiles = useMemo(() => {
+		if (!blogFiles || !posts) return undefined;
+		return detectBlogMediaFiles(
+			blogFiles.map(file => file.name),
+			posts
+				.map(post => ('id' in post ? post.id : undefined))
+				.filter(id => id !== undefined)
+		);
+	}, [blogFiles, posts]);
+
 	const managedPostsComputation = useExpensiveComputation(
 		expensiveMap(
 			posts,
@@ -61,13 +72,13 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				getCachedProcessedBlogPost({
 					blog,
 					rawPost: post,
-					blogFileNames: blogFiles!.map(file => file.name),
-				}).value,
-			1000
+					blogMediaFiles,
+				}).value
 		),
 		{
-			enabled: managedType === 'managed' && !!blogFiles,
+			enabled: managedType === 'managed' && !!blogMediaFiles,
 			transform: posts => posts?.filter(post => !!post),
+			batchTimeMs: 14,
 		}
 	);
 	const { data: managedPosts } = managedPostsComputation;

@@ -45,6 +45,8 @@ const useBlogPosts = (
 											return JSON.parse(text) as RawBlogPost[];
 											// eslint-disable-next-line @typescript-eslint/no-unused-vars
 										} catch (ignored) {
+											// TODO: add global toast system
+											console.log(`Repairing JSON for ${file.name}`);
 											return JSON.parse(jsonrepair(text)) as RawBlogPost[];
 										}
 									})

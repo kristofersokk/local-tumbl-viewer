@@ -1,5 +1,7 @@
+import throttle from 'lodash/throttle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIsMounted } from 'usehooks-ts';
+
 import { CacheName, getCacheValue, storeCacheValue } from 'Utils/cacheUtils';
 
 export interface ExpensiveComputation<D, R, S> {
@@ -23,7 +25,7 @@ export interface ExpensiveComputationResult<TR> {
 	data: TR | undefined;
 }
 
-const DEBUG = true;
+const DEFAULT_BATCH_TIME_MS = 14; // Aim for ~60fps, so ~16ms per frame minus some overhead
 
 const useExpensiveComputation = <I, R, S, TR = R>(
 	{
@@ -34,14 +36,15 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 		isReady,
 		getResult,
 		isValid,
-		batchSize = 1,
 	}: ExpensiveComputation<I, R, S>,
 	{
 		enabled = true,
+		batchTimeMs = DEFAULT_BATCH_TIME_MS,
 		transform = result => result as unknown as TR,
 		useCache,
 	}: {
 		enabled?: boolean;
+		batchTimeMs?: number;
 		transform?: (result: R) => TR;
 		useCache?: {
 			cacheName: CacheName;
@@ -64,30 +67,82 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 		rawRerender({});
 	}, []);
 
+	const throttledRerender = useMemo(() => throttle(rerender, 100), [rerender]);
+	const incrementStepCount = useCallback(() => {
+		stepCountRef.current++;
+		throttledRerender();
+	}, [throttledRerender]);
+
+	const calculatedBatchSizeRef = useRef<number>(undefined);
+	const startTimeRef = useRef<number>(0);
+	const endTimeRef = useRef<number>(0);
+
 	const executeRef = useRef<() => void>(() => {});
 	const execute = useCallback(() => {
-		for (let i = 0; i < batchSize; i++) {
-			if (!isMounted()) {
-				return;
+		if (calculatedBatchSizeRef.current) {
+			const start = performance.now();
+			for (let i = 0; i < calculatedBatchSizeRef.current; i++) {
+				if (!isMounted()) {
+					return;
+				}
+				if (isReady(state.current)) {
+					break;
+				}
+				executeSingleComputation(state.current, newState => {
+					state.current = newState;
+				});
+				incrementStepCount();
 			}
-			if (isReady(state.current)) {
-				break;
-			}
-			executeSingleComputation(state.current, newState => {
-				state.current = newState;
-			});
-			stepCountRef.current++;
-		}
-		if (DEBUG) {
-			console.log(
-				`Progress: ${stepCountRef.current} / ${totalStepsRef.current}`
+			const end = performance.now();
+			const elapsed = end - start;
+			const newBatchSize = Math.max(
+				1,
+				Math.floor((calculatedBatchSizeRef.current * batchTimeMs) / elapsed)
 			);
+			calculatedBatchSizeRef.current = newBatchSize;
+		} else {
+			const start = performance.now();
+			while (!isReady(state.current)) {
+				if (!isMounted()) {
+					return;
+				}
+				const now = performance.now();
+				const elapsed = now - start;
+				if (elapsed >= batchTimeMs) {
+					const stepsDone = stepCountRef.current;
+					const newBatchSize = Math.max(
+						1,
+						Math.floor((stepsDone * batchTimeMs) / elapsed)
+					);
+					calculatedBatchSizeRef.current = newBatchSize;
+					break;
+				}
+				executeSingleComputation(state.current, newState => {
+					state.current = newState;
+				});
+				incrementStepCount();
+			}
 		}
-		if (!isReady(state.current)) {
+
+		if (isReady(state.current)) {
+			endTimeRef.current = performance.now();
+			console.log(
+				`Computation finished in ${Math.round(
+					endTimeRef.current - startTimeRef.current
+				)} ms`
+			);
+		} else {
 			setTimeout(() => executeRef.current(), 0);
 		}
 		rerender();
-	}, [batchSize, isMounted, executeSingleComputation, isReady, rerender]);
+	}, [
+		isReady,
+		rerender,
+		batchTimeMs,
+		isMounted,
+		executeSingleComputation,
+		incrementStepCount,
+	]);
 
 	useEffect(() => {
 		executeRef.current = execute;
@@ -115,6 +170,8 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 		if (data !== undefined && enabled && !cachedValue) {
 			stepCountRef.current = 0;
 			totalStepsRef.current = getStepCountRef.current?.(state.current) ?? 0;
+			startTimeRef.current = performance.now();
+			calculatedBatchSizeRef.current = undefined;
 			executeRef.current();
 		}
 	}, [data, enabled, cachedValue]);

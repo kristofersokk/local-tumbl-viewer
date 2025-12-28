@@ -153,9 +153,112 @@ function getPhotos(post: RawBlogPost): Photos {
 	return photos;
 }
 
-const detectBlogMediaFiles = (
+const fileExtensions = {
+	image: [
+		// images
+		'jpeg',
+		'jpg',
+		'png',
+		'webp',
+		'gif',
+		'bmp',
+		'tiff',
+		'svg',
+		'heic',
+		'avif',
+		'jfif',
+		'apng',
+		'ico',
+	],
+	video: [
+		// videos
+		'mp4',
+		'mov',
+		'avi',
+		'mkv',
+		'flv',
+		'wmv',
+		'webm',
+		'mpeg',
+		'mpg',
+		'3gp',
+		'ogg',
+		'm4v',
+	],
+};
+
+const allMediaExtensions = Object.values(fileExtensions).flatMap(it => it);
+
+export const detectBlogMediaFiles = (
+	blogFileNames: string[] | undefined,
+	blogIds: string[] | undefined
+) => {
+	const imagesByPostId = new Map<string, string[]>();
+	const videosByPostId = new Map<string, string[]>();
+
+	if (!blogFileNames) {
+		return {
+			imagesByPostId,
+			videosByPostId,
+		};
+	}
+
+	const blogIdLengths: number[] = [];
+	if (blogIds) {
+		for (const blogId of blogIds) {
+			if (!blogIdLengths.includes(blogId.length)) {
+				blogIdLengths.push(blogId.length);
+			}
+		}
+	}
+
+	const blogIdsSet = new Set(blogIds || []);
+
+	blogFileNames.forEach(fileName => {
+		const lastPoint = fileName.lastIndexOf('.');
+		const fileNameWithoutExtension =
+			lastPoint !== -1 ? fileName.slice(0, lastPoint) : fileName;
+		const extension =
+			lastPoint !== -1 ? fileName.slice(lastPoint + 1).toLowerCase() : '';
+		const appropriateSet = fileExtensions.image.includes(extension)
+			? imagesByPostId
+			: fileExtensions.video.includes(extension)
+				? videosByPostId
+				: null;
+		if (appropriateSet) {
+			for (const blogIdLength of blogIdLengths) {
+				const possibleBlogId = fileNameWithoutExtension.slice(0, blogIdLength);
+				if (blogIdsSet.has(possibleBlogId)) {
+					if (appropriateSet.has(possibleBlogId)) {
+						appropriateSet.get(possibleBlogId)!.push(fileName);
+					} else {
+						appropriateSet.set(possibleBlogId, [fileName]);
+					}
+					break;
+				}
+			}
+		}
+	});
+
+	console.log({
+		blogIds,
+		blogIdLengths,
+	});
+
+	return {
+		imagesByPostId,
+		videosByPostId,
+	};
+};
+
+const getBlogPostMediaFiles = (
 	post: RawBlogPost,
-	blogFileNames: string[] | undefined
+	blogMediaFiles:
+		| {
+				imagesByPostId: Map<string, string[]>;
+				videosByPostId: Map<string, string[]>;
+		  }
+		| undefined
 ) => {
 	const emptyMediaFiles = {
 		images: [],
@@ -163,31 +266,11 @@ const detectBlogMediaFiles = (
 	};
 
 	if (!('id' in post)) return emptyMediaFiles;
-	if (!blogFileNames) return emptyMediaFiles;
-
-	const imageExtensions = getAlternativeExtensions('jpg');
-	const videoExtensions = getAlternativeExtensions('mp4');
-
-	const getMediaFiles = (extensions: string[]) =>
-		blogFileNames.filter(fileName => {
-			const fileNameWithoutExtension = fileName.includes('.')
-				? fileName.slice(0, fileName.lastIndexOf('.'))
-				: fileName;
-			const extension = fileName.includes('.')
-				? fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase()
-				: '';
-			return (
-				fileNameWithoutExtension.startsWith(post.id) &&
-				extensions.includes(extension)
-			);
-		});
-
-	const imageFileNames = getMediaFiles(imageExtensions);
-	const videoFileNames = getMediaFiles(videoExtensions);
+	if (!blogMediaFiles) return emptyMediaFiles;
 
 	return {
-		images: imageFileNames,
-		videos: videoFileNames,
+		images: blogMediaFiles.imagesByPostId.get(post.id) || [],
+		videos: blogMediaFiles.videosByPostId.get(post.id) || [],
 	};
 };
 
@@ -207,10 +290,15 @@ const replaceLinks = (text: string, links?: Record<string, string>): string => {
 export const processBlogPost = (
 	post: RawBlogPost,
 	blogMetadata: BlogMetadata | undefined,
-	blogFileNames: string[] | undefined
+	blogMediaFiles:
+		| {
+				imagesByPostId: Map<string, string[]>;
+				videosByPostId: Map<string, string[]>;
+		  }
+		| undefined
 ): ProcessedBlogPost => {
 	if (post.platform === 'bluesky') {
-		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
+		const mediaFiles = getBlogPostMediaFiles(post, blogMediaFiles) || {};
 		return {
 			platform: 'bluesky',
 			type: 'regular',
@@ -228,7 +316,7 @@ export const processBlogPost = (
 	}
 
 	if (post.platform === 'twitter') {
-		const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
+		const mediaFiles = getBlogPostMediaFiles(post, blogMediaFiles) || {};
 		const text = replaceLinks(post.text, post.links);
 		return {
 			platform: 'twitter',
@@ -258,7 +346,7 @@ export const processBlogPost = (
 		};
 	}
 
-	const mediaFiles = detectBlogMediaFiles(post, blogFileNames) || {};
+	const mediaFiles = getBlogPostMediaFiles(post, blogMediaFiles) || {};
 	const photos = getPhotos(post);
 	const isBodyDisabled = !!photos.length;
 
@@ -282,12 +370,12 @@ export const processBlogPost = (
 				}
 			: undefined;
 
-	const bodyIncludesMediaExtensions = alternativeExtensions
-		.flatMap(it => it)
-		.some(ext => (rawBody || '').includes('.' + ext));
-	const answerIncludesMediaExtensions = alternativeExtensions
-		.flatMap(it => it)
-		.some(ext => (post.answer || '').includes('.' + ext));
+	const bodyIncludesMediaExtensions = allMediaExtensions.some(ext =>
+		(rawBody || '').includes('.' + ext)
+	);
+	const answerIncludesMediaExtensions = allMediaExtensions.some(ext =>
+		(post.answer || '').includes('.' + ext)
+	);
 	const showMediaFiles =
 		blogMetadata?.BlogType === getBlogTypeIndex('tumblrsearch') ||
 		(!bodyIncludesMediaExtensions &&
@@ -355,11 +443,16 @@ export const processBlogPost = (
 export const getCachedProcessedBlogPost = ({
 	blog,
 	rawPost,
-	blogFileNames,
+	blogMediaFiles,
 }: {
 	blog: BlogEntry | undefined;
 	rawPost: RawBlogPost;
-	blogFileNames: string[];
+	blogMediaFiles:
+		| {
+				imagesByPostId: Map<string, string[]>;
+				videosByPostId: Map<string, string[]>;
+		  }
+		| undefined;
 }) => {
 	const id = 'id' in rawPost ? rawPost.id : 'unknown-id';
 	return cacheValue(
@@ -375,7 +468,7 @@ export const getCachedProcessedBlogPost = ({
 				processed: processBlogPost(
 					rawPostWithPlatform,
 					blog?.metadata,
-					blogFileNames
+					blogMediaFiles
 				),
 			};
 			const stringified = JSON.stringify(combined);
@@ -545,42 +638,8 @@ export const getBlogPostProcessors = (
 	},
 ];
 
-const alternativeExtensions: string[][] = [
-	[
-		// images
-		'jpeg',
-		'jpg',
-		'png',
-		'webp',
-		'gif',
-		'bmp',
-		'tiff',
-		'svg',
-		'heic',
-		'avif',
-		'jfif',
-		'apng',
-		'ico',
-	],
-	[
-		// videos
-		'mp4',
-		'mov',
-		'avi',
-		'mkv',
-		'flv',
-		'wmv',
-		'webm',
-		'mpeg',
-		'mpg',
-		'3gp',
-		'ogg',
-		'm4v',
-	],
-];
-
 export const getAlternativeExtensions = (extension: string): string[] => {
-	for (const group of alternativeExtensions) {
+	for (const group of Object.values(fileExtensions)) {
 		if (group.includes(extension.toLowerCase())) {
 			return group;
 		}

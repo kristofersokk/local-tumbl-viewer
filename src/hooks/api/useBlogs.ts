@@ -34,6 +34,7 @@ const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 													return JSON.parse(text) as BlogMetadata;
 													// eslint-disable-next-line @typescript-eslint/no-unused-vars
 												} catch (ignored) {
+													console.log(`Repairing JSON for ${file.name}`);
 													return JSON.parse(jsonrepair(text)) as BlogMetadata;
 												}
 											})
@@ -47,6 +48,9 @@ const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 													return JSON.parse(text) as BlogFileEntries;
 													// eslint-disable-next-line @typescript-eslint/no-unused-vars
 												} catch (ignored) {
+													console.log(
+														`Repairing JSON for ${fileEntriesFile.name}`
+													);
 													return JSON.parse(
 														jsonrepair(text)
 													) as BlogFileEntries;
