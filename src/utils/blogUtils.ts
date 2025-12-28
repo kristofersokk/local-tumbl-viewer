@@ -240,11 +240,6 @@ export const detectBlogMediaFiles = (
 		}
 	});
 
-	console.log({
-		blogIds,
-		blogIdLengths,
-	});
-
 	return {
 		imagesByPostId,
 		videosByPostId,
