@@ -1,8 +1,6 @@
 import { fileExtensions } from 'Constants/file';
 import { BlogMetadata, BlogType, CombinedBlogPost, Platform } from 'Types/blog';
 
-import { deduplicateArray } from './arrayUtils';
-
 export function getBlogFolderName(blog: BlogMetadata | undefined) {
 	if (!blog) return undefined;
 
@@ -96,16 +94,16 @@ export const detectBlogMediaFiles = (
 export const countAllTags = (
 	posts: CombinedBlogPost[]
 ): { tag: string; count: number }[] => {
-	const allTags = deduplicateArray(
-		posts.flatMap(post => post.processed.tags || [])
-	);
-	return allTags.map(tag => {
-		const count = posts.filter(p => p.processed.tags.includes(tag)).length;
-		return {
-			tag,
-			count,
-		};
+	const tagCounts = new Map<string, number>();
+	posts.forEach(post => {
+		(post.processed.tags || []).forEach(tag => {
+			tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+		});
 	});
+	return Array.from(tagCounts.entries()).map(([tag, count]) => ({
+		tag,
+		count,
+	}));
 };
 
 export const filterBlogPostsByFuzzySearch = (
