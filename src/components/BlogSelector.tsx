@@ -1,15 +1,22 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import classNames from 'classnames';
 import { useMemo } from 'react';
+
+import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogEntry, Platform } from 'Types/blog';
+
 import PlatformLogo from './Blog/PlatformLogo';
+import IconButton from './IconButton';
 import RootDirResetButton from './RootDirResetButton';
+import Tooltip from './Tooltip';
 
 interface BlogSelectorProps {
 	blogs: BlogEntry[];
 }
 
 const BlogSelector = ({ blogs }: BlogSelectorProps) => {
+	const queryClient = useQueryClient();
 	const navigate = useNavigate({ from: '/' });
 
 	const sortedBlogs = useMemo(() => {
@@ -32,6 +39,11 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 		});
 	};
 
+	const refreshBlogs = () => {
+		queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROOT_FOLDERS] });
+		queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BLOGS] });
+	};
+
 	return (
 		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
 			<div className="bg-navbar grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
@@ -44,7 +56,10 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 					</button>
 				</div>
 				<h3 className="text-2xl">TumblViewer</h3>
-				<div className="flex justify-end">
+				<div className="flex justify-end gap-2">
+					<Tooltip content="Refresh">
+						<IconButton icon="refresh" onClick={refreshBlogs} />
+					</Tooltip>
 					<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
 				</div>
 			</div>
