@@ -85,24 +85,13 @@ function replaceLinks(text: string, links?: Record<string, string>): string {
 function getBlogPostMediaFiles(
 	post: RawBlogPost,
 	blogMediaFiles:
-		| {
-				imagesByPostId: Map<string, string[]>;
-				videosByPostId: Map<string, string[]>;
-		  }
+		| Map<string, { name: string; type: 'image' | 'video' }[]>
 		| undefined
 ) {
-	const emptyMediaFiles = {
-		images: [],
-		videos: [],
-	};
+	if (!('id' in post)) return [];
+	if (!blogMediaFiles) return [];
 
-	if (!('id' in post)) return emptyMediaFiles;
-	if (!blogMediaFiles) return emptyMediaFiles;
-
-	return {
-		images: blogMediaFiles.imagesByPostId.get(post.id) || [],
-		videos: blogMediaFiles.videosByPostId.get(post.id) || [],
-	};
+	return blogMediaFiles.get(post.id) || [];
 }
 
 function undoubleText<T extends string | undefined>(
@@ -199,10 +188,7 @@ function processBlogPost(
 	post: RawBlogPost,
 	blogMetadata: BlogMetadata | undefined,
 	blogMediaFiles:
-		| {
-				imagesByPostId: Map<string, string[]>;
-				videosByPostId: Map<string, string[]>;
-		  }
+		| Map<string, { name: string; type: 'image' | 'video' }[]>
 		| undefined
 ): ProcessedBlogPost {
 	if (post.platform === 'bluesky') {
@@ -247,10 +233,7 @@ function processBlogPost(
 			platform: post.platform,
 			type: 'regular',
 			tags: [],
-			mediaFiles: {
-				images: [],
-				videos: [],
-			},
+			mediaFiles: [],
 		};
 	}
 
@@ -356,10 +339,7 @@ export const getCachedProcessedBlogPost = ({
 	blog: BlogEntry | undefined;
 	rawPost: RawBlogPost;
 	blogMediaFiles:
-		| {
-				imagesByPostId: Map<string, string[]>;
-				videosByPostId: Map<string, string[]>;
-		  }
+		| Map<string, { name: string; type: 'image' | 'video' }[]>
 		| undefined;
 }) => {
 	const id = 'id' in rawPost ? rawPost.id : 'unknown-id';

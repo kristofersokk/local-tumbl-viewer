@@ -266,14 +266,13 @@ const BlogPostBody = ({
 		<UnsafeContent
 			domProcessors={blogPostProcessors}
 			className="flex flex-col gap-2"
-			content={
-				post.mediaFiles.images
-					.map(imageUrl => `<img data-src="${imageUrl}" />`)
-					.join('') +
-				post.mediaFiles.videos
-					.map(videoUrl => `<video data-src="${videoUrl}" />`)
-					.join('')
-			}
+			content={post.mediaFiles
+				.map(media =>
+					media.type === 'image'
+						? `<img data-src="${media.name}" />`
+						: `<video data-src="${media.name}" />`
+				)
+				.join('')}
 		/>
 	) : null;
 

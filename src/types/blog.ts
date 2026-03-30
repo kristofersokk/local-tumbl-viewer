@@ -165,9 +165,9 @@ export interface ProcessedBlogPost {
 		| 'conversation'
 		| 'answer';
 	mediaFiles: {
-		images: string[];
-		videos: string[];
-	};
+		name: string;
+		type: 'image' | 'video';
+	}[];
 	createdAt?: Date;
 	title?: string;
 	url?: string;

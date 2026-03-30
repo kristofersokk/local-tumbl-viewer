@@ -38,14 +38,13 @@ export const detectBlogMediaFiles = (
 	blogFileNames: string[] | undefined,
 	blogIds: string[] | undefined
 ) => {
-	const imagesByPostId = new Map<string, string[]>();
-	const videosByPostId = new Map<string, string[]>();
+	const mediaFiles = new Map<
+		string,
+		{ name: string; type: 'image' | 'video' }[]
+	>();
 
 	if (!blogFileNames) {
-		return {
-			imagesByPostId,
-			videosByPostId,
-		};
+		return mediaFiles;
 	}
 
 	const blogIdLengths: number[] = [];
@@ -67,22 +66,28 @@ export const detectBlogMediaFiles = (
 				lastPoint !== -1 ? fileName.slice(0, lastPoint) : fileName;
 			const extension =
 				lastPoint !== -1 ? fileName.slice(lastPoint + 1).toLowerCase() : '';
-			const appropriateSet = fileExtensions.image.includes(extension)
-				? imagesByPostId
+			const mediaType: 'image' | 'video' | null = fileExtensions.image.includes(
+				extension
+			)
+				? 'image'
 				: fileExtensions.video.includes(extension)
-					? videosByPostId
+					? 'video'
 					: null;
-			if (appropriateSet) {
+			if (mediaType) {
 				for (const blogIdLength of blogIdLengths) {
 					const possibleBlogId = fileNameWithoutExtension.slice(
 						0,
 						blogIdLength
 					);
 					if (blogIdsSet.has(possibleBlogId)) {
-						if (appropriateSet.has(possibleBlogId)) {
-							appropriateSet.get(possibleBlogId)!.push(fileName);
+						if (mediaFiles.has(possibleBlogId)) {
+							mediaFiles
+								.get(possibleBlogId)!
+								.push({ name: fileName, type: mediaType });
 						} else {
-							appropriateSet.set(possibleBlogId, [fileName]);
+							mediaFiles.set(possibleBlogId, [
+								{ name: fileName, type: mediaType },
+							]);
 						}
 						break;
 					}
@@ -90,10 +95,7 @@ export const detectBlogMediaFiles = (
 			}
 		});
 
-	return {
-		imagesByPostId,
-		videosByPostId,
-	};
+	return mediaFiles;
 };
 
 export const countAllTags = (
