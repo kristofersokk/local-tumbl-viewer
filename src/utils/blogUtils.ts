@@ -59,31 +59,36 @@ export const detectBlogMediaFiles = (
 
 	const blogIdsSet = new Set(blogIds || []);
 
-	blogFileNames.forEach(fileName => {
-		const lastPoint = fileName.lastIndexOf('.');
-		const fileNameWithoutExtension =
-			lastPoint !== -1 ? fileName.slice(0, lastPoint) : fileName;
-		const extension =
-			lastPoint !== -1 ? fileName.slice(lastPoint + 1).toLowerCase() : '';
-		const appropriateSet = fileExtensions.image.includes(extension)
-			? imagesByPostId
-			: fileExtensions.video.includes(extension)
-				? videosByPostId
-				: null;
-		if (appropriateSet) {
-			for (const blogIdLength of blogIdLengths) {
-				const possibleBlogId = fileNameWithoutExtension.slice(0, blogIdLength);
-				if (blogIdsSet.has(possibleBlogId)) {
-					if (appropriateSet.has(possibleBlogId)) {
-						appropriateSet.get(possibleBlogId)!.push(fileName);
-					} else {
-						appropriateSet.set(possibleBlogId, [fileName]);
+	blogFileNames
+		.toSorted((a, b) => a.localeCompare(b))
+		.forEach(fileName => {
+			const lastPoint = fileName.lastIndexOf('.');
+			const fileNameWithoutExtension =
+				lastPoint !== -1 ? fileName.slice(0, lastPoint) : fileName;
+			const extension =
+				lastPoint !== -1 ? fileName.slice(lastPoint + 1).toLowerCase() : '';
+			const appropriateSet = fileExtensions.image.includes(extension)
+				? imagesByPostId
+				: fileExtensions.video.includes(extension)
+					? videosByPostId
+					: null;
+			if (appropriateSet) {
+				for (const blogIdLength of blogIdLengths) {
+					const possibleBlogId = fileNameWithoutExtension.slice(
+						0,
+						blogIdLength
+					);
+					if (blogIdsSet.has(possibleBlogId)) {
+						if (appropriateSet.has(possibleBlogId)) {
+							appropriateSet.get(possibleBlogId)!.push(fileName);
+						} else {
+							appropriateSet.set(possibleBlogId, [fileName]);
+						}
+						break;
 					}
-					break;
 				}
 			}
-		}
-	});
+		});
 
 	return {
 		imagesByPostId,
