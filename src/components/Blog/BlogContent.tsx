@@ -77,6 +77,7 @@ const BlogContent = ({
 	const measureElement = (el: Element | null) => {
 		if (!(el && el instanceof Element)) return;
 
+		// TODO: figure out a better way to measure the element after images have loaded or if they're upwards from current scroll
 		setTimeout(() => {
 			rowVirtualizer.measureElement(el);
 		}, 500);

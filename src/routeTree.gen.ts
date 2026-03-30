@@ -36,9 +36,9 @@ const InitializerBlogNameIndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/about': typeof AboutRoute
   '/': typeof InitializerIndexRoute
-  '/$blogName': typeof InitializerBlogNameIndexRoute
+  '/about': typeof AboutRoute
+  '/$blogName/': typeof InitializerBlogNameIndexRoute
 }
 export interface FileRoutesByTo {
   '/about': typeof AboutRoute
@@ -54,7 +54,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/about' | '/' | '/$blogName'
+  fullPaths: '/' | '/about' | '/$blogName/'
   fileRoutesByTo: FileRoutesByTo
   to: '/about' | '/' | '/$blogName'
   id:
@@ -82,7 +82,7 @@ declare module '@tanstack/react-router' {
     '/_initializer': {
       id: '/_initializer'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof InitializerRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -96,7 +96,7 @@ declare module '@tanstack/react-router' {
     '/_initializer/$blogName/': {
       id: '/_initializer/$blogName/'
       path: '/$blogName'
-      fullPath: '/$blogName'
+      fullPath: '/$blogName/'
       preLoaderRoute: typeof InitializerBlogNameIndexRouteImport
       parentRoute: typeof InitializerRouteRoute
     }
