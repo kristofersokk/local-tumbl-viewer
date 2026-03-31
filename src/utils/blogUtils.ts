@@ -59,8 +59,8 @@ export const detectBlogMediaFiles = (
 	const blogIdsSet = new Set(blogIds || []);
 
 	blogFileNames
-		.toSorted((a, b) => a.localeCompare(b))
-		.forEach(fileName => {
+		.map(fileName => fileName.trim())
+		.map(fileName => {
 			const lastPoint = fileName.lastIndexOf('.');
 			const fileNameWithoutExtension =
 				lastPoint !== -1 ? fileName.slice(0, lastPoint) : fileName;
@@ -73,6 +73,18 @@ export const detectBlogMediaFiles = (
 				: fileExtensions.video.includes(extension)
 					? 'video'
 					: null;
+			return {
+				original: fileName,
+				fileNameWithoutExtension,
+				mediaType,
+			};
+		})
+		.toSorted(
+			(a, b) =>
+				a.original.length - b.original.length ||
+				a.fileNameWithoutExtension.localeCompare(b.fileNameWithoutExtension)
+		)
+		.forEach(({ mediaType, fileNameWithoutExtension, original: fileName }) => {
 			if (mediaType) {
 				for (const blogIdLength of blogIdLengths) {
 					const possibleBlogId = fileNameWithoutExtension.slice(

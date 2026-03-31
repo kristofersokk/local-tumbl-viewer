@@ -5,20 +5,28 @@ import {
 	memo,
 	RefObject,
 	useEffect,
+	useEffectEvent,
 	useState,
 } from 'react';
 
-import { DomProcessor, iterateDomTree } from 'Utils/htmlUtils';
+import {
+	DomProcessor,
+	DomProcessorAsync,
+	iterateDomTree,
+	iterateDomTreeAsync,
+} from 'Utils/htmlUtils';
 
+import { EventCollector } from 'Helpers/eventCollector';
 import Loader from './Loader';
 
 type Props<E extends keyof JSX.IntrinsicElements = 'div'> = {
 	tag?: E;
 	Ref?: RefObject<HTMLElement | null>;
 	content: string;
-	domProcessors?: DomProcessor[]; // needs to be stable
+	domProcessors?: { main: DomProcessorAsync; mediaOnLoad?: DomProcessor }; // needs to be stable
 	allowIframes?: boolean;
-} & JSX.IntrinsicElements[E];
+	onLoad?: () => void;
+} & Omit<JSX.IntrinsicElements[E], 'onLoad'>;
 
 const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	tag,
@@ -26,6 +34,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	content,
 	domProcessors,
 	allowIframes = false,
+	onLoad,
 	...rest
 }: Props<E>) => {
 	const tagContainer = {
@@ -33,6 +42,34 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	};
 
 	const [body, setBody] = useState<HTMLBodyElement | null>(null);
+
+	const onLoadEvent = useEffectEvent(() => {
+		onLoad?.();
+	});
+
+	const handleBody = useEffectEvent((body: HTMLBodyElement) => {
+		setTimeout(() => {
+			if (domProcessors) {
+				iterateDomTreeAsync(body, domProcessors.main).then(() => {
+					if (domProcessors.mediaOnLoad) {
+						setBody(body);
+						const eventCollector = new EventCollector({
+							autoComplete: false,
+						});
+						eventCollector.setOutput(() => {
+							onLoadEvent();
+						});
+						iterateDomTree(body, domProcessors.mediaOnLoad, eventCollector);
+						eventCollector.markEverythingRegistered();
+					} else {
+						onLoadEvent();
+					}
+				});
+			} else {
+				setBody(body);
+			}
+		}, 0);
+	});
 
 	useEffect(() => {
 		const body = DOMPurify.sanitize(content, {
@@ -44,13 +81,7 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 				: [],
 		}) as HTMLBodyElement;
 
-		setTimeout(() => {
-			Promise.all(
-				(domProcessors || []).map(processor => iterateDomTree(body, processor))
-			).then(() => {
-				setBody(body);
-			});
-		}, 0);
+		handleBody(body);
 	}, [allowIframes, content, domProcessors]);
 
 	if (!body) {
@@ -74,7 +105,6 @@ export default memo(UnsafeContent, (prevProps, nextProps) => {
 		prevProps.content === nextProps.content &&
 		prevProps.tag === nextProps.tag &&
 		prevProps.Ref === nextProps.Ref &&
-		prevProps.domProcessors?.length === nextProps.domProcessors?.length &&
 		JSON.stringify(prevProps) === JSON.stringify(nextProps)
 	);
 });

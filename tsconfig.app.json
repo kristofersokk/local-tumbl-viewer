@@ -26,6 +26,7 @@
             "Components/*": ["src/components/*"],
             "Constants/*": ["src/constants/*"],
             "Contexts/*": ["src/contexts/*"],
+            "Helpers/*": ["src/helpers/*"],
             "Hooks/*": ["src/hooks/*"],
             "Styles/*": ["src/styles/*"],
             "Types/*": ["src/types/*"],

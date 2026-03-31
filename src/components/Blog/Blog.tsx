@@ -137,6 +137,18 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 		return sortedPosts;
 	}, [filteredPosts, sortingField, sortingDirection]);
 
+	const sortedMedia = useMemo(
+		() =>
+			sortedFilteredPosts.flatMap(
+				post =>
+					post.processed.mediaFiles?.map(file => ({
+						...file,
+						post,
+					})) ?? []
+			),
+		[sortedFilteredPosts]
+	);
+
 	const goHome = () => {
 		goToBlogSelection();
 	};
@@ -225,6 +237,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 			<BlogContent
 				blog={blog}
 				sortedFilteredPosts={sortedFilteredPosts}
+				sortedMedia={sortedMedia}
 				managedPostsComputation={managedPostsComputation}
 				addTagFilter={addTagFilter}
 				params={deferredParams}
@@ -239,6 +252,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				zoomOut={zoomOut}
 				blogKey={blogKey}
 			/>
+			{/* TODO: add image viewer here and pass the media files to it */}
 		</div>
 	);
 };

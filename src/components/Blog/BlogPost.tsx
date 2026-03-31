@@ -16,6 +16,7 @@ interface BlogPostProps {
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	blogKey: number;
+	onLoad?: () => void;
 	zoomInToPost?: (postId: string) => void;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
@@ -30,6 +31,7 @@ const BlogPost = ({
 	addTagFilter,
 	params,
 	blogKey,
+	onLoad,
 	zoomInToPost,
 	forceUncollapsed,
 	zoomedIn = false,
@@ -62,6 +64,7 @@ const BlogPost = ({
 					post={post.processed}
 					blogFiles={blogFiles}
 					blogKey={blogKey}
+					onLoad={onLoad}
 					forceUncollapsed={forceUncollapsed}
 					zoomedIn={zoomedIn}
 				/>

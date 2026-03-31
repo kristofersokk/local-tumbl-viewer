@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import Loader from 'Components/Loader';
 import UnsafeContent from 'Components/UnsafeContent';
-import { DomProcessor } from 'Utils/htmlUtils';
+import { DomProcessor, DomProcessorAsync } from 'Utils/htmlUtils';
 
 interface BlogPostPhotoProps {
 	photo: {
@@ -14,13 +14,15 @@ interface BlogPostPhotoProps {
 	transformMediaUrl: (
 		urls: string[]
 	) => Promise<{ original: string; transformed: string }>;
-	blogPostProcessors: DomProcessor[];
+	blogPostProcessors: { main: DomProcessorAsync; mediaOnLoad?: DomProcessor };
+	onLoad?: () => void;
 }
 
 const BlogPostPhoto = ({
 	photo,
 	transformMediaUrl,
 	blogPostProcessors,
+	onLoad,
 }: BlogPostPhotoProps) => {
 	const [mediaInfo, setMediaInfo] = useState<{
 		original: string;
@@ -54,6 +56,7 @@ const BlogPostPhoto = ({
 				<UnsafeContent
 					content={photo.caption}
 					domProcessors={blogPostProcessors}
+					onLoad={onLoad}
 				/>
 			)}
 		</div>

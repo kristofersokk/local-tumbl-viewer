@@ -20,10 +20,16 @@ import {
 import { getBlogFolderName } from 'Utils/blogUtils';
 
 import BlogPost from './BlogPost';
+import BlogPostMediaItem from './BlogPostMediaItem';
 
 interface BlogContentProps {
 	blog: BlogEntry;
 	sortedFilteredPosts: CombinedBlogPost[];
+	sortedMedia: {
+		name: string;
+		type: 'image' | 'video';
+		post: CombinedBlogPost;
+	}[];
 	managedPostsComputation: ExpensiveComputationResult<
 		{
 			stringified: string;
@@ -40,6 +46,7 @@ interface BlogContentProps {
 const BlogContent = ({
 	blog,
 	sortedFilteredPosts,
+	sortedMedia,
 	managedPostsComputation,
 	addTagFilter,
 	params,
@@ -62,26 +69,30 @@ const BlogContent = ({
 					1,
 					Math.floor(viewportWidthInPixels / remInPixels / columnWidthRem)
 				);
-	const lanePercentage = 100 / lanes;
+
+	const postsGap = 16;
+	const mediaGap = 8;
 
 	const parentRef = useRef<HTMLDivElement>(null);
-	const rowVirtualizer = useVirtualizer({
+	const postVirtualizer = useVirtualizer({
 		count: sortedFilteredPosts.length,
 		getScrollElement: () => parentRef.current,
 		estimateSize: () => (collapsedHeightRem + 5) * remInPixels,
 		overscan: 20,
 		lanes,
-		gap: 16,
+		gap: postsGap,
 	});
 
-	const measureElement = (el: Element | null) => {
-		if (!(el && el instanceof Element)) return;
+	const mediaVirtualizer = useVirtualizer({
+		count: sortedMedia.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => columnWidthRem * remInPixels + mediaGap,
+		overscan: 5,
+		lanes,
+		gap: mediaGap,
+	});
 
-		// TODO: figure out a better way to measure the element after images have loaded or if they're upwards from current scroll
-		setTimeout(() => {
-			rowVirtualizer.measureElement(el);
-		}, 500);
-	};
+	const elementsRef = useRef<Map<string, Element | null>>(new Map());
 
 	const { data: folders, isFetching: isFetchingRootFolders } = useRootFolders();
 	const blogFolderName = getBlogFolderName(blog?.metadata);
@@ -151,6 +162,9 @@ const BlogContent = ({
 		);
 	}
 
+	const virtualizer =
+		params.layoutMode === 'media' ? mediaVirtualizer : postVirtualizer;
+
 	return (
 		<div className="flex h-[calc(100dvh-4rem)] w-full justify-center">
 			<div
@@ -166,38 +180,84 @@ const BlogContent = ({
 			>
 				<div
 					style={{
-						height: `${rowVirtualizer.getTotalSize()}px`,
+						height: `${virtualizer.getTotalSize()}px`,
 						width: '100%',
 						position: 'relative',
 					}}
 				>
-					{rowVirtualizer.getVirtualItems().map(virtualRow => {
-						const post = sortedFilteredPosts[virtualRow.index];
-						return (
-							<div
-								key={post.processed.id}
-								ref={measureElement}
-								data-index={virtualRow.index}
-								className="absolute top-0 will-change-transform"
-								style={{
-									left: `${virtualRow.lane * lanePercentage}%`,
-									width: `calc(${lanePercentage}% - ${virtualRow.lane === lanes - 1 ? 0 : 1}rem)`,
-									transform: `translateY(${virtualRow.start}px)`,
-								}}
-							>
-								<BlogPost
+					{params.layoutMode !== 'media' &&
+						postVirtualizer.getVirtualItems().map(virtualRow => {
+							const post = sortedFilteredPosts[virtualRow.index];
+							const postId = post.processed.id ?? '';
+							return (
+								<div
 									key={post.processed.id}
-									blog={blog}
-									post={post}
-									blogFiles={blogFiles}
-									addTagFilter={addTagFilter}
-									params={params}
-									zoomInToPost={zoomInToPost}
-									blogKey={blogKey}
-								/>
-							</div>
-						);
-					})}
+									ref={el => {
+										elementsRef.current.set(postId, el);
+									}}
+									data-index={virtualRow.index}
+									className="absolute top-0 will-change-transform"
+									style={{
+										left: `calc(${virtualRow.lane} * (100% + ${postsGap}px) / ${lanes})`,
+										width: `calc((100% + ${postsGap}px) / ${lanes} - ${postsGap}px)`,
+										transform: `translateY(${virtualRow.start}px)`,
+									}}
+								>
+									<BlogPost
+										key={post.processed.id}
+										blog={blog}
+										post={post}
+										blogFiles={blogFiles}
+										addTagFilter={addTagFilter}
+										params={params}
+										zoomInToPost={zoomInToPost}
+										blogKey={blogKey}
+										onLoad={() => {
+											setTimeout(() => {
+												postVirtualizer.measureElement(
+													elementsRef.current.get(postId) ?? null
+												);
+											}, 100);
+										}}
+									/>
+								</div>
+							);
+						})}
+					{params.layoutMode === 'media' &&
+						mediaVirtualizer.getVirtualItems().map(virtualRow => {
+							const media = sortedMedia[virtualRow.index];
+							return (
+								<div
+									key={media.name}
+									ref={el => {
+										elementsRef.current.set(media.name, el);
+									}}
+									data-index={virtualRow.index}
+									className="absolute top-0 will-change-transform"
+									style={{
+										left: `calc(${virtualRow.lane} * (100% + ${mediaGap}px) / ${lanes})`,
+										width: `calc((100% + ${mediaGap}px) / ${lanes} - ${mediaGap}px)`,
+										transform: `translateY(${virtualRow.start}px)`,
+									}}
+								>
+									<BlogPostMediaItem
+										key={media.name}
+										blog={blog}
+										blogFiles={blogFiles}
+										post={media.post}
+										media={media}
+										params={params}
+										zoomInToPost={zoomInToPost}
+										onLoad={() => {
+											const el = elementsRef.current.get(media.name);
+											if (el) {
+												mediaVirtualizer.measureElement(el);
+											}
+										}}
+									/>
+								</div>
+							);
+						})}
 				</div>
 			</div>
 		</div>
@@ -209,6 +269,7 @@ export default memo(BlogContent, (prevProps, nextProps) => {
 		prevProps.params === nextProps.params &&
 		prevProps.blogKey === nextProps.blogKey &&
 		prevProps.sortedFilteredPosts === nextProps.sortedFilteredPosts &&
+		prevProps.sortedMedia === nextProps.sortedMedia &&
 		prevProps.managedPostsComputation === nextProps.managedPostsComputation
 	);
 });

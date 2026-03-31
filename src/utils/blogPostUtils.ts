@@ -1,7 +1,12 @@
 import { fileExtensions } from 'Constants/file';
 import { BlogFileEntry, ProcessedBlogPost } from 'Types/blog';
 
-import { DomProcessor, extractUrls, modifyAttribute } from './htmlUtils';
+import {
+	DomProcessor,
+	DomProcessorAsync,
+	extractUrls,
+	modifyAttribute,
+} from './htmlUtils';
 
 export const countCollapsedTags = (
 	post: ProcessedBlogPost,
@@ -30,8 +35,8 @@ export const getBlogPostProcessors = (
 		original: string;
 		transformed: string;
 	}>
-): DomProcessor[] => [
-	async el => {
+): { main: DomProcessorAsync; mediaOnLoad?: DomProcessor } => ({
+	main: async el => {
 		const tag = el.tagName.toLowerCase();
 		if (tag === 'a') {
 			el.setAttribute('target', '_blank');
@@ -140,7 +145,35 @@ export const getBlogPostProcessors = (
 			}
 		}
 	},
-];
+	mediaOnLoad: (el, callback) => {
+		if (el instanceof HTMLImageElement && !el.complete) {
+			el.onload = () => {
+				callback();
+			};
+			el.onerror = () => {
+				callback();
+			};
+			setTimeout(() => {
+				callback();
+			}, 2000);
+		} else if (el instanceof HTMLMediaElement && el.readyState <= 1) {
+			el.onloadeddata = () => {
+				callback();
+			};
+			el.onerror = () => {
+				callback();
+			};
+			el.onabort = () => {
+				callback();
+			};
+			setTimeout(() => {
+				callback();
+			}, 2000);
+		} else {
+			callback();
+		}
+	},
+});
 
 function getAlternativeExtensions(extension: string): string[] {
 	for (const group of Object.values(fileExtensions)) {

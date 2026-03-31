@@ -26,7 +26,7 @@ const useBlogViewSettings = ({ availablePostTypes }: BlogViewSettingsProps) => {
 	const { width } = useWindowSize();
 
 	// Params
-	const [layoutMode, setLayoutMode] = useState<'masonry' | 'list'>(
+	const [layoutMode, setLayoutMode] = useState<'masonry' | 'list' | 'media'>(
 		width > 600 ? 'masonry' : 'list'
 	);
 	const [columnWidthRem, setColumnWidthRem] = useState<number>(24);

@@ -58,20 +58,33 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 							<span className="align-middle text-sm">Layout:</span>
 						</div>
 						<div className="flex items-center gap-1">
-							<IconButton
-								icon="masonry"
-								className={classNames({
-									'bg-gray-700': layoutMode === 'masonry',
-								})}
-								onClick={() => setLayoutMode('masonry')}
-							/>
-							<IconButton
-								icon="vertical-list"
-								className={classNames({
-									'bg-gray-700': layoutMode === 'list',
-								})}
-								onClick={() => setLayoutMode('list')}
-							/>
+							<Tooltip content={<p>Masonry</p>}>
+								<IconButton
+									icon="masonry"
+									className={classNames({
+										'bg-gray-700': layoutMode === 'masonry',
+									})}
+									onClick={() => setLayoutMode('masonry')}
+								/>
+							</Tooltip>
+							<Tooltip content={<p>Vertical List</p>}>
+								<IconButton
+									icon="vertical-list"
+									className={classNames({
+										'bg-gray-700': layoutMode === 'list',
+									})}
+									onClick={() => setLayoutMode('list')}
+								/>
+							</Tooltip>
+							<Tooltip content={<p>Photo Library</p>}>
+								<IconButton
+									icon="photo-library"
+									className={classNames({
+										'bg-gray-700': layoutMode === 'media',
+									})}
+									onClick={() => setLayoutMode('media')}
+								/>
+							</Tooltip>
 						</div>
 						<span className="text-sm">Column width:</span>
 						<div className="flex items-center gap-2">

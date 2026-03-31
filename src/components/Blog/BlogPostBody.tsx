@@ -17,6 +17,7 @@ import { getBlogPostProcessors } from 'Utils/blogPostUtils';
 
 import BlogPostPhoto from './BlogPostPhoto';
 import Collapsible from './Collapsible';
+import { EventCollector } from 'Helpers/eventCollector';
 
 interface BlogPostBodyProps {
 	params: BlogDeferredParams;
@@ -24,6 +25,7 @@ interface BlogPostBodyProps {
 	post: ProcessedBlogPost;
 	blogFiles: { handle: FileSystemFileHandle; name: string }[];
 	blogKey: number;
+	onLoad?: () => void;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
 }
@@ -33,6 +35,7 @@ const BlogPostBody = ({
 	blog,
 	post,
 	blogFiles,
+	onLoad,
 	forceUncollapsed,
 	zoomedIn = false,
 }: BlogPostBodyProps) => {
@@ -53,6 +56,9 @@ const BlogPostBody = ({
 		fileEntries: { Entries: imgMappingEntries },
 	} = blog;
 
+	const onLoadCollector = useMemo(() => new EventCollector(), []);
+	onLoadCollector.setOutput(onLoad);
+
 	const transformMediaUrl = useTransformMediaUrl({
 		fallbackToOnlineMedia,
 		imgMappingEntries,
@@ -66,6 +72,7 @@ const BlogPostBody = ({
 	);
 
 	const renderDynamic = (
+		id: string,
 		content: string | ReactNode | ReactNode[] | undefined,
 		{ className, ...rest }: ComponentProps<'div'> = {}
 	) => {
@@ -119,6 +126,7 @@ const BlogPostBody = ({
 					<UnsafeContent
 						content={content || ''}
 						domProcessors={blogPostProcessors}
+						onLoad={onLoadCollector.registerInput(id)}
 					/>
 				) : (
 					content
@@ -148,24 +156,28 @@ const BlogPostBody = ({
 					'text-xl': quoteFontSize === 'text-xl',
 				})}
 				domProcessors={blogPostProcessors}
+				onLoad={onLoadCollector.registerInput('quote')}
 			/>
 			<UnsafeContent
 				tag="p"
 				className="mt-2 py-2"
 				content={quote.source}
 				domProcessors={blogPostProcessors}
+				onLoad={onLoadCollector.registerInput('quoteSource')}
 			/>
 		</div>
 	) : undefined;
 
 	const photoBody = photo
 		? renderDynamic(
+				'photos',
 				photo.photos.map(photo => (
 					<BlogPostPhoto
 						key={photo.urls[0]}
 						photo={photo}
 						transformMediaUrl={transformMediaUrl}
 						blogPostProcessors={blogPostProcessors}
+						onLoad={onLoadCollector.registerInput(`photo-${photo.urls[0]}`)}
 					/>
 				)),
 				{ className: 'flex flex-wrap justify-center' }
@@ -174,17 +186,20 @@ const BlogPostBody = ({
 
 	const videoBody = video
 		? renderDynamic(
+				'video',
 				<>
 					<UnsafeContent
 						tag="div"
 						content={video.caption ?? ''}
 						domProcessors={blogPostProcessors}
+						onLoad={onLoadCollector.registerInput('videoCaption')}
 					/>
 					<UnsafeContent
 						tag="div"
 						content={video.source ?? ''}
 						domProcessors={blogPostProcessors}
 						allowIframes
+						onLoad={onLoadCollector.registerInput('videoSource')}
 					/>
 				</>
 			)
@@ -204,13 +219,16 @@ const BlogPostBody = ({
 					className="mt-4 [&_*:not(:first-child)]:mt-4"
 					content={answer.question}
 					domProcessors={blogPostProcessors}
+					onLoad={onLoadCollector.registerInput('question')}
 				/>
 			</div>
 			{renderDynamic(
+				'answer',
 				<UnsafeContent
 					tag="div"
 					content={answer.answer}
 					domProcessors={blogPostProcessors}
+					onLoad={onLoadCollector.registerInput('answer')}
 				/>,
 				{
 					className: 'pt-4',
@@ -236,6 +254,7 @@ const BlogPostBody = ({
 						className="mt-2 [&_*:not(:first-child)]:mt-2"
 						content={utterance.phrase}
 						domProcessors={blogPostProcessors}
+						onLoad={onLoadCollector.registerInput(`conversation-${index}`)}
 					/>
 				</div>
 			))}
@@ -258,6 +277,7 @@ const BlogPostBody = ({
 				className="mt-2 py-2"
 				content={link.description}
 				domProcessors={blogPostProcessors}
+				onLoad={onLoadCollector.registerInput('linkDescription')}
 			/>
 		</div>
 	) : undefined;
@@ -273,6 +293,7 @@ const BlogPostBody = ({
 						: `<video data-src="${media.name}" />`
 				)
 				.join('')}
+			onLoad={onLoadCollector.registerInput('mediaFiles')}
 		/>
 	) : null;
 
@@ -286,7 +307,7 @@ const BlogPostBody = ({
 			className={className}
 			style={style}
 		>
-			{renderDynamic(body?.content)}
+			{renderDynamic('body-content', body?.content)}
 			{photoBody ?? null}
 			{videoBody ?? null}
 			{quoteBody ?? null}
