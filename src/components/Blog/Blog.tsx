@@ -213,11 +213,13 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				</div>
 				<div className="xs:gap-1 flex items-center md:gap-2">
 					{appHasUpdate && (
-						<IconButton
-							icon="download"
-							className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
-							onClick={() => updateServiceWorker(true)}
-						/>
+						<Tooltip content="Update available">
+							<IconButton
+								icon="download"
+								className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
+								onClick={() => updateServiceWorker(true)}
+							/>
+						</Tooltip>
 					)}
 					<Tooltip content={<p>Refresh</p>}>
 						<IconButton

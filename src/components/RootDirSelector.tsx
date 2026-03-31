@@ -1,7 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useContext } from 'react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import InitializationContext from 'Contexts/InitializationContext';
+import IconButton from './IconButton';
+import Tooltip from './Tooltip';
 
 const RootDirSelector = () => {
 	const navigate = useNavigate({ from: '/' });
@@ -12,6 +15,11 @@ const RootDirSelector = () => {
 			navigate({ to: '/about' });
 		});
 	};
+
+	const {
+		needRefresh: [appHasUpdate],
+		updateServiceWorker,
+	} = useRegisterSW();
 
 	return (
 		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
@@ -25,7 +33,17 @@ const RootDirSelector = () => {
 					</button>
 				</div>
 				<h3 className="text-2xl">TumblViewer</h3>
-				<div />
+				<div className="flex justify-end">
+					{appHasUpdate && (
+						<Tooltip content="Update available">
+							<IconButton
+								icon="download"
+								className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
+								onClick={() => updateServiceWorker(true)}
+							/>
+						</Tooltip>
+					)}
+				</div>
 			</div>
 			<div className="flex flex-col items-center gap-4 p-8 sm:p-16">
 				<p>Choose TumblThree root directory (TumblrBlogs)</p>

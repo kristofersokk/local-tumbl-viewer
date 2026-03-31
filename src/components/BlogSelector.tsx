@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import classNames from 'classnames';
 import { useMemo } from 'react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogEntry, Platform } from 'Types/blog';
@@ -44,6 +45,11 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 		queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BLOGS] });
 	};
 
+	const {
+		needRefresh: [appHasUpdate],
+		updateServiceWorker,
+	} = useRegisterSW();
+
 	return (
 		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
 			<div className="bg-navbar grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
@@ -57,6 +63,15 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 				</div>
 				<h3 className="text-2xl">TumblViewer</h3>
 				<div className="flex justify-end gap-2">
+					{appHasUpdate && (
+						<Tooltip content="Update available">
+							<IconButton
+								icon="download"
+								className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
+								onClick={() => updateServiceWorker(true)}
+							/>
+						</Tooltip>
+					)}
 					<Tooltip content="Refresh">
 						<IconButton icon="refresh" onClick={refreshBlogs} />
 					</Tooltip>
