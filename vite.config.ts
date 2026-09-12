@@ -1283,9 +1283,9 @@ export default defineConfig(({ mode }) => {
 			],
 			importOrderSeparation: true,
 			importOrderSortSpecifiers: true,
-			sortPackageJson: false,
+			sortPackageJson: true,
 			sortTailwindcss: {},
-			ignorePatterns: [],
+			ignorePatterns: ['src/routeTree.gen.ts'],
 		},
 		plugins: lazyPlugins(() => [
 			// Needs to be before react plugin
@@ -1361,7 +1361,7 @@ export default defineConfig(({ mode }) => {
 				reporter: ['text', 'json', 'html'],
 				all: true,
 				include: ['src/**/*.{ts,tsx}'],
-				exclude: ['src/**/*.test.{ts,tsx}'],
+				exclude: ['src/**/*.test.{ts,tsx}', 'src/routeTree.gen.ts'],
 			},
 		},
 	};
