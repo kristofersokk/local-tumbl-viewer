@@ -1,9 +1,7 @@
-import ClipLoader from 'react-spinners/ClipLoader';
-import PacmanLoader from 'react-spinners/PacmanLoader';
-import ClockLoader from 'react-spinners/ClockLoader';
+import { ClipLoader, PacmanLoader, ClockLoader } from "react-spinners";
 
 interface LoaderProps {
-	type?: 'pacman' | 'spinner' | 'clock';
+	type?: "pacman" | "spinner" | "clock";
 	className?: string;
 	size?: number;
 	text?: string;
@@ -13,17 +11,11 @@ interface LoaderProps {
 	};
 }
 
-const Loader = ({
-	type = 'spinner',
-	className,
-	size = 10,
-	text,
-	progress,
-}: LoaderProps) => {
+const Loader = ({ type = "spinner", className, size = 10, text, progress }: LoaderProps) => {
 	return (
 		<div className="absolute translate-x-1/2">
 			<div className="absolute flex w-96 max-w-[90vw] -translate-x-1/2 -translate-y-16 flex-col items-center gap-4">
-				{type === 'spinner' ? (
+				{type === "spinner" ? (
 					<ClipLoader
 						className={className}
 						color="var(--color-text)"
@@ -31,7 +23,7 @@ const Loader = ({
 						aria-label="Loading Spinner"
 						data-testid="loader"
 					/>
-				) : type === 'pacman' ? (
+				) : type === "pacman" ? (
 					<PacmanLoader
 						className={className}
 						color="var(--color-text)"
