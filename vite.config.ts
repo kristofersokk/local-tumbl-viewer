@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
-import tsConfigPaths from 'vite-tsconfig-paths';
 import { analyzer } from 'vite-bundle-analyzer';
 
 // https://vite.dev/config/
@@ -1294,7 +1293,6 @@ export default defineConfig(({ mode }) => {
 				target: 'react',
 			}),
 			react(),
-			tsConfigPaths(),
 			tailwindcss(),
 			svgr(),
 			VitePWA({
@@ -1344,6 +1342,9 @@ export default defineConfig(({ mode }) => {
 				enabled: mode === 'analyze-bundle',
 			}),
 		]),
+		resolve: {
+			tsconfigPaths: true,
+		},
 		server: {
 			port: 3000,
 		},
