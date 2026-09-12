@@ -81,6 +81,7 @@ const BlogContent = ({
 		overscan: 20,
 		lanes,
 		gap: postsGap,
+		paddingStart: 64,
 	});
 
 	const mediaVirtualizer = useVirtualizer({
@@ -90,6 +91,7 @@ const BlogContent = ({
 		overscan: 5,
 		lanes,
 		gap: mediaGap,
+		paddingStart: 64,
 	});
 
 	const elementsRef = useRef<Map<string, Element | null>>(new Map());
@@ -166,7 +168,7 @@ const BlogContent = ({
 		params.layoutMode === 'media' ? mediaVirtualizer : postVirtualizer;
 
 	return (
-		<div className="flex h-[calc(100dvh-4rem)] w-full justify-center">
+		<div className="flex h-dvh w-full justify-center">
 			<div
 				ref={parentRef}
 				className="h-full max-w-full overflow-auto px-0 py-8 md:px-8 lg:px-12"

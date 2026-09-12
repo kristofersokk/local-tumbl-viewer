@@ -188,9 +188,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 	} = useRegisterSW();
 
 	return (
-		<div className="grid h-dvh grid-rows-[auto_1fr]">
-			<div className="bg-navbar flex h-16 items-center justify-between px-2 shadow-2xl shadow-slate-950/70 sm:px-6">
-				<div className="flex min-w-0 items-center gap-1 sm:gap-4">
+		<div className="h-dvh">
+			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between shadow-slate-950/70 max-md:shadow-2xl">
+				<div className="bg-navbar xs:gap-4 xs:px-6 flex min-w-0 items-center gap-1 rounded-br-3xl px-2 shadow-2xl shadow-slate-950/70">
 					<Tooltip content={<p>Back to blog selection</p>}>
 						<IconButton icon="home" onClick={() => goHome()} />
 					</Tooltip>
@@ -211,7 +211,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 						</a>
 					</div>
 				</div>
-				<div className="xs:gap-1 flex items-center md:gap-2">
+				<div className="xs:gap-1 bg-navbar xs:px-6 flex items-center rounded-bl-3xl px-2 md:gap-2">
 					{appHasUpdate && (
 						<Tooltip content="Update available">
 							<IconButton

@@ -2,6 +2,8 @@
 	--font-Inter: 'Inter', sans-serif;
 	--font-Tinos: 'Tinos', Times, Times New Roman, serif;
 
+	--breakpoint-xs: 480px;
+
 	--color-background: #04060a;
 	--color-navbar: #0b111c;
 	--color-scrollbar-bg: #101828;
