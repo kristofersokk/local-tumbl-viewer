@@ -126,7 +126,7 @@ const BlogContent = ({
 
 	if (isFetching || !blogFiles || !blogPosts) {
 		return (
-			<Center className="relative flex flex-col gap-4">
+			<Center className="relative flex h-dvh flex-col gap-4">
 				<Loader
 					type="pacman"
 					size={60}
