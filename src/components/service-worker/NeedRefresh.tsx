@@ -3,7 +3,7 @@ import { Toast } from 'radix-ui';
 import { useCallback, useState } from 'react';
 
 interface NeedRefreshProps {
-	updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>;
+	updateServiceWorker: (reloadPage?: boolean) => Promise<void>;
 }
 
 const NeedRefresh = ({ updateServiceWorker }: NeedRefreshProps) => {

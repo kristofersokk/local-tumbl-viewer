@@ -55,6 +55,7 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 	const state = useRef<S>(getInitialState(data));
 	const transformRef = useRef(transform);
 	const stepCountRef = useRef(0);
+
 	const totalStepsRef = useRef(getStepCount?.(state.current) ?? 0);
 	const isMounted = useIsMounted();
 
@@ -127,9 +128,7 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 		if (isReady(state.current)) {
 			endTimeRef.current = performance.now();
 			console.log(
-				`Computation finished in ${Math.round(
-					endTimeRef.current - startTimeRef.current
-				)} ms`
+				`Computation finished in ${Math.round(endTimeRef.current - startTimeRef.current)} ms`
 			);
 		} else {
 			setTimeout(() => executeRef.current(), 0);

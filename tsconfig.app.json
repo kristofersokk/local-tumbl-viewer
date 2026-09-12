@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "baseUrl": ".",
         "useDefineForClassFields": true,
         "lib": ["esnext", "dom", "dom.iterable"],
         "module": "esnext",
@@ -22,15 +21,15 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
         "paths": {
-            "Assets/*": ["src/assets/*"],
-            "Components/*": ["src/components/*"],
-            "Constants/*": ["src/constants/*"],
-            "Contexts/*": ["src/contexts/*"],
-            "Helpers/*": ["src/helpers/*"],
-            "Hooks/*": ["src/hooks/*"],
-            "Styles/*": ["src/styles/*"],
-            "Types/*": ["src/types/*"],
-            "Utils/*": ["src/utils/*"]
+            "Assets/*": ["./src/assets/*"],
+            "Components/*": ["./src/components/*"],
+            "Constants/*": ["./src/constants/*"],
+            "Contexts/*": ["./src/contexts/*"],
+            "Helpers/*": ["./src/helpers/*"],
+            "Hooks/*": ["./src/hooks/*"],
+            "Styles/*": ["./src/styles/*"],
+            "Types/*": ["./src/types/*"],
+            "Utils/*": ["./src/utils/*"]
         },
         "types": ["vite/client", "vite-plugin-pwa/client"]
     },

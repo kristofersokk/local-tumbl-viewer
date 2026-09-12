@@ -1,6 +1,4 @@
 let indexedDb: IDBDatabase | undefined = undefined;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let indexedDbError: Event | undefined = undefined;
 
 export const OBJECT_STORES = {
 	FILE_HANDLES: 'fileHandles',
@@ -74,11 +72,10 @@ export async function openDatabaseIfNotOpen() {
 		if (!indexedDb) {
 			const request = indexedDB.open('local-tumbl-viewer', 1);
 			request.onerror = event => {
-				indexedDbError = event;
 				reject(event);
 			};
 			request.onsuccess = event => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error
 				indexedDb = event.target!.result;
 				resolve(indexedDb!);

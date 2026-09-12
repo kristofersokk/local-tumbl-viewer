@@ -83,7 +83,7 @@ const BlogPostBody = ({
 				className={classNames(
 					className,
 					'mb-2',
-					// eslint-disable-next-line no-useless-escape
+					// oxlint-disable-next-line no-useless-escape
 					'[&_.photoset\_row]:h-auto! [&_.photoset\_row]:w-full! [&_.photoset\_row_img]:w-full!',
 					'[&_.photoset\\_row]:h-auto! [&_.photoset\\_row]:w-full! [&_.photoset\\_row_img]:w-full!',
 					'[&_.tmblr-full_img]:w-full!',
@@ -92,13 +92,13 @@ const BlogPostBody = ({
 					'[&_video]:w-full!',
 					'[&_.reblog-header]:flex [&_.reblog-header]:items-center [&_.reblog-header]:gap-3 [&_.reblog-header]:px-2 [&_.reblog-header]:py-1',
 					'[&_img]:my-4 [&_img]:h-auto!',
-					// eslint-disable-next-line no-useless-escape
+					// oxlint-disable-next-line no-useless-escape
 					'[&_.npf\_chat]:font-Tinos [&_.npf\_chat_*]:font-Tinos [&_.npf\_chat]:my-0! [&_.npf\_chat]:text-lg [&_.npf\_chat:has(br)]:h-3',
 					'[&_.npf\\_chat]:font-Tinos [&_.npf\\_chat_*]:font-Tinos [&_.npf\\_chat]:my-0! [&_.npf\\_chat]:text-lg [&_.npf\\_chat:has(br)]:h-3',
-					// eslint-disable-next-line no-useless-escape
+					// oxlint-disable-next-line no-useless-escape
 					'[&_.npf\_quote]:font-Tinos [&_.npf\_quote]:text-2xl',
 					'[&_.npf\\_quote]:font-Tinos [&_.npf\\_quote]:text-2xl',
-					// eslint-disable-next-line no-useless-escape
+					// oxlint-disable-next-line no-useless-escape
 					'[&_.npf\_row]:my-2',
 					'[&_.npf\\_row]:my-2',
 					'[&_p]:mx-4 [&_p]:my-2',

@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_initializer/$blogName/')({
 
 function BlogRoute() {
 	const blogName = Route.useParams().blogName;
-	const navigate = useNavigate({ from: '/$blogName' });
+	const navigate = useNavigate({ from: '/$blogName/' });
 
 	const { data: folders, isFetching: isFetchingRootFolders } = useRootFolders();
 	const indexFolder = folders?.find(folder => folder.name === 'Index');

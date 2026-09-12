@@ -1,7 +1,7 @@
 import { DOMAttributes, ReactNode } from 'react';
 
 type CallbacksOnly<T> = {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+	// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	[K in keyof T as T[K] extends Function | undefined ? K : never]: T[K];
 };
 
@@ -12,7 +12,7 @@ const InterceptCallbacks = <C extends DOMCallbacks>(
 		intercept: {
 			[key in keyof C]: (
 				prevCb: Exclude<C[key], undefined>,
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error
 				args: Parameters<Exclude<C[key], undefined>>
 			) => void;
@@ -27,11 +27,11 @@ const InterceptCallbacks = <C extends DOMCallbacks>(
 		interceptableProps.map(key => [
 			key,
 			rest[key as keyof DOMCallbacks]
-				? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				? // oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-expect-error
 					(...args: Parameters<Exclude<C[key], undefined>>) => {
 						const result = intercept[key](
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-expect-error
 							rest[key as keyof DOMCallbacks],
 							args

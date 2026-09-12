@@ -6,7 +6,7 @@ import { processBlog } from 'Utils/blogUtils';
 
 const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 	return useQuery({
-		queryKey: [QUERY_KEYS.BLOGS, indexFolder?.name],
+		queryKey: [QUERY_KEYS.BLOGS, indexFolder, indexFolder?.name],
 		queryFn: indexFolder
 			? async () =>
 					Array.fromAsync(indexFolder.values()).then(async handles => {
@@ -32,7 +32,7 @@ const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 											.then(text => {
 												try {
 													return JSON.parse(text) as BlogMetadata;
-													// eslint-disable-next-line @typescript-eslint/no-unused-vars
+													// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 												} catch (ignored) {
 													console.log(`Repairing JSON for ${file.name}`);
 													return JSON.parse(jsonrepair(text)) as BlogMetadata;
@@ -46,7 +46,7 @@ const useBlogs = (indexFolder: FileSystemDirectoryHandle | undefined) => {
 											.then(text => {
 												try {
 													return JSON.parse(text) as BlogFileEntries;
-													// eslint-disable-next-line @typescript-eslint/no-unused-vars
+													// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 												} catch (ignored) {
 													console.log(
 														`Repairing JSON for ${fileEntriesFile.name}`

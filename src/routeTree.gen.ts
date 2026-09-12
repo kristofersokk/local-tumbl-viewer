@@ -9,18 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as InitializerRouteRouteImport } from './routes/_initializer/route'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as InitializerRouteRouteImport } from './routes/_initializer/route'
 import { Route as InitializerIndexRouteImport } from './routes/_initializer/index'
 import { Route as InitializerBlogNameIndexRouteImport } from './routes/_initializer/$blogName/index'
 
-const InitializerRouteRoute = InitializerRouteRouteImport.update({
-  id: '/_initializer',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InitializerRouteRoute = InitializerRouteRouteImport.update({
+  id: '/_initializer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InitializerIndexRoute = InitializerIndexRouteImport.update({
@@ -72,18 +72,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_initializer': {
-      id: '/_initializer'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof InitializerRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_initializer': {
+      id: '/_initializer'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof InitializerRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_initializer/': {
