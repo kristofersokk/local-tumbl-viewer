@@ -211,7 +211,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 						</a>
 					</div>
 				</div>
-				<div className="xs:gap-1 bg-navbar xs:px-6 flex items-center rounded-bl-3xl px-2 md:gap-2">
+				<div className="xs:gap-1 bg-navbar xs:px-6 flex items-center rounded-bl-3xl px-2 shadow-2xl shadow-slate-950/70 md:gap-2">
 					{appHasUpdate && (
 						<Tooltip content="Update available">
 							<IconButton
