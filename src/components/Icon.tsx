@@ -19,6 +19,7 @@ import PhotoLibrary from '../assets/icons/photo-library.svg?react';
 import LightMode from '../assets/icons/light-mode.svg?react';
 import DarkMode from '../assets/icons/dark-mode.svg?react';
 import Close from '../assets/icons/close.svg?react';
+import Menu from '../assets/icons/menu.svg?react';
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
 	icon: keyof typeof mapIconToComponent;
@@ -45,6 +46,7 @@ const mapIconToComponent = {
 	'light-mode': LightMode,
 	'dark-mode': DarkMode,
 	close: Close,
+	menu: Menu,
 };
 
 const Icon = ({ icon, ...props }: IconProps) => {

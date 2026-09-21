@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
+import useTheme from 'Hooks/useTheme';
 import { BlogEntry, Platform } from 'Types/blog';
 import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 import PlatformLogo from './Blog/PlatformLogo';
 import HeaderPill from './HeaderPill';
 import IconButton from './IconButton';
+import MobileMenu, { MobileMenuRow } from './MobileMenu';
 import RootDirResetButton from './RootDirResetButton';
 import ThemeToggle from './ThemeToggle';
 import Tooltip from './Tooltip';
@@ -53,6 +55,9 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 		updateServiceWorker,
 	} = useRegisterSW();
 
+	const { theme, toggleTheme } = useTheme();
+	const isDark = theme === 'dark';
+
 	return (
 		<div className="h-dvh w-dvw">
 			<div className="z-sticky max-md:bg-navbar max-md:border-navbar-border max-md:shadow-header fixed top-0 right-0 left-0 flex h-16 justify-between max-md:border-b md:right-3">
@@ -66,20 +71,43 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 					</button>
 				</HeaderPill>
 				<HeaderPill side="right">
-					<ThemeToggle />
-					{appHasUpdate && (
-						<Tooltip content="Update available">
-							<IconButton
+					<div className="hidden items-center md:flex md:gap-2">
+						<ThemeToggle />
+						{appHasUpdate && (
+							<Tooltip content="Update available">
+								<IconButton
+									icon="download"
+									className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
+									onClick={() => updateServiceWorker(true)}
+								/>
+							</Tooltip>
+						)}
+						<Tooltip content="Refresh">
+							<IconButton icon="refresh" onClick={refreshBlogs} />
+						</Tooltip>
+						<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
+					</div>
+					<MobileMenu>
+						<MobileMenuRow
+							icon={isDark ? 'light-mode' : 'dark-mode'}
+							label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+							onClick={toggleTheme}
+						/>
+						{appHasUpdate && (
+							<MobileMenuRow
 								icon="download"
+								label="Update available"
 								className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
 								onClick={() => updateServiceWorker(true)}
 							/>
-						</Tooltip>
-					)}
-					<Tooltip content="Refresh">
-						<IconButton icon="refresh" onClick={refreshBlogs} />
-					</Tooltip>
-					<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
+						)}
+						<MobileMenuRow
+							icon="refresh"
+							label="Refresh"
+							onClick={refreshBlogs}
+						/>
+						<RootDirResetButton className="bg-control-bg [&:hover]:bg-control-bg-strong w-full" />
+					</MobileMenu>
 				</HeaderPill>
 			</div>
 			<div className="h-dvh overflow-y-auto pt-16">

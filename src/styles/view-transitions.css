@@ -6,3 +6,13 @@
 	animation-duration: 320ms;
 	animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
+
+/* the transition snapshot overlay sits above the page; don't let it block swipes/taps
+   on the real content while a transition is still animating out */
+::view-transition,
+::view-transition-group(*),
+::view-transition-image-pair(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+	pointer-events: none;
+}

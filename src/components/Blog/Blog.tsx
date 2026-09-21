@@ -2,8 +2,10 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
+import Counter from 'Components/utils/Counter';
 import useBlogReload from 'Hooks/useBlogReload';
 import useProcessedBlogPosts from 'Hooks/useProcessedBlogPosts';
+import useTheme from 'Hooks/useTheme';
 import useZoomedMedia from 'Hooks/useZoomedMedia';
 import { BlogEntry } from 'Types/blog';
 
@@ -14,6 +16,7 @@ import PlatformLogo from './PlatformLogo';
 import ZoomedInMedia from './ZoomedInMedia';
 import ZoomedInPost from './ZoomedInPost';
 import HeaderPill from '../HeaderPill';
+import MobileMenu, { MobileMenuRow } from '../MobileMenu';
 import ThemeToggle from '../ThemeToggle';
 
 interface BlogProps {
@@ -87,6 +90,9 @@ const Blog = ({
 		updateServiceWorker,
 	} = useRegisterSW();
 
+	const { theme, toggleTheme } = useTheme();
+	const isDark = theme === 'dark';
+
 	return (
 		<div className="h-dvh">
 			<div className="z-sticky max-md:bg-navbar max-md:border-navbar-border max-md:shadow-header fixed top-0 right-0 left-0 flex h-16 justify-between max-md:border-b md:right-3">
@@ -112,29 +118,70 @@ const Blog = ({
 					</div>
 				</HeaderPill>
 				<HeaderPill side="right">
-					<ThemeToggle />
-					{appHasUpdate && (
-						<Tooltip content="Update available">
+					<div className="hidden items-center md:flex md:gap-2">
+						<ThemeToggle />
+						{appHasUpdate && (
+							<Tooltip content="Update available">
+								<IconButton
+									icon="download"
+									className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
+									onClick={() => updateServiceWorker(true)}
+								/>
+							</Tooltip>
+						)}
+						<Tooltip content={<p>Refresh</p>}>
 							<IconButton
+								icon="refresh"
+								className="cursor-pointer"
+								onClick={reloadBlog}
+							/>
+						</Tooltip>
+						<BlogFiltering
+							filteredPosts={sortedFilteredPosts}
+							allPostsCount={posts?.length}
+							filter={filter}
+						/>
+						<BlogSettings params={params} sorting={sorting} />
+					</div>
+					<MobileMenu>
+						<MobileMenuRow
+							icon={isDark ? 'light-mode' : 'dark-mode'}
+							label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+							onClick={toggleTheme}
+						/>
+						{appHasUpdate && (
+							<MobileMenuRow
 								icon="download"
+								label="Update available"
 								className="fill-download-icon-fill [&:hover]:bg-download-icon-hover"
 								onClick={() => updateServiceWorker(true)}
 							/>
-						</Tooltip>
-					)}
-					<Tooltip content={<p>Refresh</p>}>
-						<IconButton
+						)}
+						<MobileMenuRow
 							icon="refresh"
-							className="cursor-pointer"
+							label="Refresh"
 							onClick={reloadBlog}
 						/>
-					</Tooltip>
-					<BlogFiltering
-						filteredPosts={sortedFilteredPosts}
-						allPostsCount={posts?.length}
-						filter={filter}
-					/>
-					<BlogSettings params={params} sorting={sorting} />
+						<BlogFiltering
+							filteredPosts={sortedFilteredPosts}
+							allPostsCount={posts?.length}
+							filter={filter}
+							trigger={
+								<MobileMenuRow
+									icon="filter"
+									label="Filters"
+									badge={
+										<Counter count={filter.tagsForFilter.length || undefined} />
+									}
+								/>
+							}
+						/>
+						<BlogSettings
+							params={params}
+							sorting={sorting}
+							trigger={<MobileMenuRow icon="page-info" label="Settings" />}
+						/>
+					</MobileMenu>
 				</HeaderPill>
 			</div>
 			<BlogContent

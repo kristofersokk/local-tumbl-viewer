@@ -1,0 +1,49 @@
+.MobileMenuOverlay[data-state='open'] {
+	animation: mobileMenuOverlayShow 200ms ease-out;
+}
+.MobileMenuOverlay[data-state='closed'] {
+	animation: mobileMenuOverlayHide 200ms ease-in;
+}
+
+.MobileMenuContent[data-state='open'] {
+	animation: mobileMenuSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.MobileMenuContent[data-state='closed'] {
+	animation: mobileMenuSlideOut 200ms ease-in;
+}
+
+@keyframes mobileMenuOverlayShow {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes mobileMenuOverlayHide {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes mobileMenuSlideIn {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes mobileMenuSlideOut {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}

@@ -1,5 +1,5 @@
 import { Popover, Switch } from 'radix-ui';
-import { useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 
 import IconButton from 'Components/IconButton';
 import TextInput from 'Components/TextInput';
@@ -13,11 +13,13 @@ interface BlogFilteringProps {
 	filteredPosts: CombinedBlogPost[] | undefined;
 	allPostsCount: number | undefined;
 	filter: BlogFilteringType;
+	trigger?: ReactNode;
 }
 
 const BlogFiltering = ({
 	filteredPosts = [],
 	allPostsCount,
+	trigger,
 	filter: {
 		tagsForFilter,
 		removeTagFilter,
@@ -48,13 +50,17 @@ const BlogFiltering = ({
 
 	return (
 		<Popover.Root open={open} onOpenChange={setOpen}>
-			<Tooltip content={<p>Filtering</p>}>
-				<Popover.Trigger asChild>
-					<IconButton icon="filter" className="relative">
-						<Counter count={filterCount || undefined} />
-					</IconButton>
-				</Popover.Trigger>
-			</Tooltip>
+			{trigger ? (
+				<Popover.Trigger asChild>{trigger}</Popover.Trigger>
+			) : (
+				<Tooltip content={<p>Filtering</p>}>
+					<Popover.Trigger asChild>
+						<IconButton icon="filter" className="relative">
+							<Counter count={filterCount || undefined} />
+						</IconButton>
+					</Popover.Trigger>
+				</Tooltip>
+			)}
 			<Popover.Content
 				align="end"
 				sideOffset={5}

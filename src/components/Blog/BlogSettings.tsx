@@ -6,15 +6,16 @@ import {
 	BlogSorting as BlogSortingType,
 } from 'Hooks/useBlogViewSettings';
 import { Popover, Slider, Switch } from 'radix-ui';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import BlogSorting from './BlogSorting';
 
 interface BlogSettingsProps {
 	params: BlogParams;
 	sorting: BlogSortingType;
+	trigger?: ReactNode;
 }
 
-const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
+const BlogSettings = ({ params, sorting, trigger }: BlogSettingsProps) => {
 	const {
 		layoutMode,
 		setLayoutMode,
@@ -40,11 +41,15 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 
 	return (
 		<Popover.Root open={open} onOpenChange={setOpen}>
-			<Tooltip content={<p>Settings</p>}>
-				<Popover.Trigger asChild>
-					<IconButton icon="page-info" />
-				</Popover.Trigger>
-			</Tooltip>
+			{trigger ? (
+				<Popover.Trigger asChild>{trigger}</Popover.Trigger>
+			) : (
+				<Tooltip content={<p>Settings</p>}>
+					<Popover.Trigger asChild>
+						<IconButton icon="page-info" />
+					</Popover.Trigger>
+				</Tooltip>
+			)}
 			<Popover.Content
 				align="end"
 				sideOffset={5}

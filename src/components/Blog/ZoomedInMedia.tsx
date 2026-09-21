@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import ClickOutside from 'Components/ClickOutside';
 import IconButton from 'Components/IconButton';
 import { useEffect, useRef, useState } from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -38,6 +37,7 @@ const ZoomedInMedia = ({
 	zoomOut,
 }: ZoomedInMediaProps) => {
 	const imageRef = useRef<HTMLImageElement>(null);
+	const videoRef = useRef<HTMLVideoElement>(null);
 	const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 	const [isImageZoomed, setIsImageZoomed] = useState(false);
 	const [adjacentUrls, setAdjacentUrls] = useState<{
@@ -120,6 +120,20 @@ const ZoomedInMedia = ({
 			clientY > top + renderedHeight
 		);
 	};
+	// unlike the image, the video element's box already tightly fits its rendered size
+	const isOutsideVideo = (clientX: number, clientY: number) => {
+		const bounds = videoRef.current?.getBoundingClientRect();
+		if (!bounds) {
+			return true;
+		}
+
+		return (
+			clientX < bounds.left ||
+			clientX > bounds.right ||
+			clientY < bounds.top ||
+			clientY > bounds.bottom
+		);
+	};
 	const previous = adjacentUrls.previous;
 	const next = adjacentUrls.next;
 	const previousUrl =
@@ -145,31 +159,41 @@ const ZoomedInMedia = ({
 		!isMediaSwitching && previewTransitionMediaName === nextMedia?.name
 			? getMediaViewTransitionName(nextMedia?.name ?? '')
 			: undefined;
-	const navigateFromSwipe = (touch: { clientX: number; clientY: number }) => {
-		if (isImageZoomed) {
-			return;
-		}
-
+	// returns whether the touch resulted in navigation (a swipe or an edge tap)
+	const navigateFromTouch = (touch: { clientX: number; clientY: number }) => {
 		const touchStart = touchStartRef.current;
 		touchStartRef.current = null;
-		if (!touchStart) {
-			return;
+		if (isImageZoomed || !touchStart) {
+			return false;
 		}
 
 		const horizontalDistance = touch.clientX - touchStart.x;
 		const verticalDistance = touch.clientY - touchStart.y;
-		if (
-			Math.abs(horizontalDistance) < 56 ||
-			Math.abs(horizontalDistance) < Math.abs(verticalDistance)
-		) {
-			return;
+		const isSwipe =
+			Math.abs(horizontalDistance) >= 56 &&
+			Math.abs(horizontalDistance) >= Math.abs(verticalDistance);
+		if (isSwipe) {
+			if (horizontalDistance < 0 && nextMedia) {
+				selectMedia(nextMedia);
+			} else if (horizontalDistance > 0 && previousMedia) {
+				selectMedia(previousMedia);
+			}
+			return true;
 		}
 
-		if (horizontalDistance < 0 && nextMedia) {
-			selectMedia(nextMedia);
-		} else if (horizontalDistance > 0 && previousMedia) {
+		// tapping the edge of the screen also navigates, matching the desktop
+		// hover-preview affordance which isn't reachable on touch devices
+		const edgeZoneWidth = window.innerWidth * 0.2;
+		if (touchStart.x <= edgeZoneWidth && previousMedia) {
 			selectMedia(previousMedia);
+			return true;
 		}
+		if (touchStart.x >= window.innerWidth - edgeZoneWidth && nextMedia) {
+			selectMedia(nextMedia);
+			return true;
+		}
+
+		return false;
 	};
 	return (
 		<>
@@ -222,12 +246,6 @@ const ZoomedInMedia = ({
 								},
 								onTouchStart: event => {
 									const touch = event.touches[0];
-									if (touch && isOutsideImage(touch.clientX, touch.clientY)) {
-										event.preventDefault();
-										event.stopPropagation();
-										dismissFromBackground();
-										return;
-									}
 									if (touch && event.touches.length === 1) {
 										touchStartRef.current = {
 											x: touch.clientX,
@@ -237,8 +255,18 @@ const ZoomedInMedia = ({
 								},
 								onTouchEnd: event => {
 									const touch = event.changedTouches[0];
-									if (touch) {
-										navigateFromSwipe(touch);
+									const touchStart = touchStartRef.current;
+									if (!touch || !touchStart) {
+										return;
+									}
+
+									const startedOutsideImage = isOutsideImage(
+										touchStart.x,
+										touchStart.y
+									);
+									const didNavigate = navigateFromTouch(touch);
+									if (startedOutsideImage && !didNavigate) {
+										dismissFromBackground();
 									}
 								},
 							}}
@@ -248,7 +276,7 @@ const ZoomedInMedia = ({
 								src={media.url}
 								alt=""
 								draggable={false}
-								className="h-full max-h-[calc(100dvh-8rem)] w-full max-w-[100vw] object-contain sm:max-w-[calc(100vw-26rem)]"
+								className="h-full max-h-[calc(100dvh-10rem)] w-full max-w-[100vw] object-contain sm:max-w-[calc(100vw-26rem)]"
 								style={{
 									viewTransitionName: isMediaSwitching
 										? 'none'
@@ -258,37 +286,49 @@ const ZoomedInMedia = ({
 						</TransformComponent>
 					</TransformWrapper>
 				) : (
-					<ClickOutside onClickOutside={zoomOut}>
-						{ref => (
-							<div
-								className="flex h-full w-full items-center justify-center"
-								onTouchStart={event => {
-									const touch = event.touches[0];
-									if (touch && event.touches.length === 1) {
-										touchStartRef.current = {
-											x: touch.clientX,
-											y: touch.clientY,
-										};
-									}
-								}}
-								onTouchEnd={event => {
-									const touch = event.changedTouches[0];
-									if (touch) {
-										navigateFromSwipe(touch);
-									}
-								}}
-							>
-								<div ref={ref as React.Ref<HTMLDivElement>}>
-									<video
-										src={media.url}
-										className="h-full max-h-[calc(100dvh-8rem)] w-full max-w-[100vw] object-contain sm:max-w-[calc(100vw-26rem)]"
-										controls
-										autoPlay
-									/>
-								</div>
-							</div>
-						)}
-					</ClickOutside>
+					<div
+						className="flex h-full w-full items-center justify-center"
+						onMouseDown={event => {
+							if (isOutsideVideo(event.clientX, event.clientY)) {
+								event.preventDefault();
+								event.stopPropagation();
+								dismissFromBackground();
+							}
+						}}
+						onTouchStart={event => {
+							const touch = event.touches[0];
+							if (touch && event.touches.length === 1) {
+								touchStartRef.current = {
+									x: touch.clientX,
+									y: touch.clientY,
+								};
+							}
+						}}
+						onTouchEnd={event => {
+							const touch = event.changedTouches[0];
+							const touchStart = touchStartRef.current;
+							if (!touch || !touchStart) {
+								return;
+							}
+
+							const startedOutsideVideo = isOutsideVideo(
+								touchStart.x,
+								touchStart.y
+							);
+							const didNavigate = navigateFromTouch(touch);
+							if (startedOutsideVideo && !didNavigate) {
+								dismissFromBackground();
+							}
+						}}
+					>
+						<video
+							ref={videoRef}
+							src={media.url}
+							className="h-full max-h-[calc(100dvh-10rem)] w-full max-w-[100vw] object-contain sm:max-w-[calc(100vw-26rem)]"
+							controls
+							autoPlay
+						/>
+					</div>
 				)}
 				{!isImageZoomed && total !== undefined && total > 0 && (
 					<div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
