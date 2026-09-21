@@ -48,10 +48,10 @@ const ZoomedInPost = ({
 							iconProps={{ width: 32, height: 32 }}
 							aria-label="Close post"
 							onClick={zoomOut}
-							className="bg-control-bg/50 hover:bg-control-bg/80 absolute top-4 right-4 z-10 fill-black"
+							className="bg-control-bg/50 hover:bg-control-bg/80 absolute top-4 right-4 z-10"
 						/>
 						<div className="min-h-[calc(100dvh+1px)]">
-							<div className="h-fit pt-24 pb-16 lg:py-16">
+							<div className="h-fit pt-32 pb-16 lg:py-16">
 								<div className="h-fit w-4xl max-w-[90vw]">
 									<ClickOutside onClickOutside={zoomOut}>
 										{ref => (

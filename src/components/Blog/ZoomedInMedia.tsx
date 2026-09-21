@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import ClickOutside from 'Components/ClickOutside';
 import IconButton from 'Components/IconButton';
 import { useEffect, useRef, useState } from 'react';
@@ -184,7 +185,13 @@ const ZoomedInMedia = ({
 					iconProps={{ width: 32, height: 32 }}
 					aria-label="Close media"
 					onClick={zoomOut}
-					className={`bg-control-bg/50 hover:bg-control-bg/80 absolute top-4 right-4 fill-black ${isImageZoomed ? 'z-0' : 'z-10'}`}
+					className={classNames(
+						'bg-control-bg/50 hover:bg-control-bg/80 absolute top-4 right-4',
+						{
+							'z-0': isImageZoomed,
+							'z-10': !isImageZoomed,
+						}
+					)}
 				/>
 				{media.type === 'image' ? (
 					<TransformWrapper
@@ -253,7 +260,24 @@ const ZoomedInMedia = ({
 				) : (
 					<ClickOutside onClickOutside={zoomOut}>
 						{ref => (
-							<div className="flex h-full w-full items-center justify-center">
+							<div
+								className="flex h-full w-full items-center justify-center"
+								onTouchStart={event => {
+									const touch = event.touches[0];
+									if (touch && event.touches.length === 1) {
+										touchStartRef.current = {
+											x: touch.clientX,
+											y: touch.clientY,
+										};
+									}
+								}}
+								onTouchEnd={event => {
+									const touch = event.changedTouches[0];
+									if (touch) {
+										navigateFromSwipe(touch);
+									}
+								}}
+							>
 								<div ref={ref as React.Ref<HTMLDivElement>}>
 									<video
 										src={media.url}
