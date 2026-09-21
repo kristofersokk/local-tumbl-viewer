@@ -98,11 +98,11 @@ const ZoomedInMedia = ({
 		return null;
 	}
 
-	const isOutsideImage = (clientX: number, clientY: number) => {
+	const getRenderedImageRect = () => {
 		const image = imageRef.current;
 		const bounds = image?.getBoundingClientRect();
 		if (!image || !bounds) {
-			return true;
+			return undefined;
 		}
 
 		const scale = Math.min(
@@ -113,12 +113,29 @@ const ZoomedInMedia = ({
 		const renderedHeight = image.naturalHeight * scale;
 		const left = bounds.left + (bounds.width - renderedWidth) / 2;
 		const top = bounds.top + (bounds.height - renderedHeight) / 2;
+		return {
+			left,
+			top,
+			right: left + renderedWidth,
+			bottom: top + renderedHeight,
+		};
+	};
+	const isOutsideImage = (clientX: number, clientY: number) => {
+		const rect = getRenderedImageRect();
+		if (!rect) {
+			return true;
+		}
+
 		return (
-			clientX < left ||
-			clientX > left + renderedWidth ||
-			clientY < top ||
-			clientY > top + renderedHeight
+			clientX < rect.left ||
+			clientX > rect.right ||
+			clientY < rect.top ||
+			clientY > rect.bottom
 		);
+	};
+	const isWithinImageHeight = (clientY: number) => {
+		const rect = getRenderedImageRect();
+		return !!rect && clientY >= rect.top && clientY <= rect.bottom;
 	};
 	// unlike the image, the video element's box already tightly fits its rendered size
 	const isOutsideVideo = (clientX: number, clientY: number) => {
@@ -133,6 +150,10 @@ const ZoomedInMedia = ({
 			clientY < bounds.top ||
 			clientY > bounds.bottom
 		);
+	};
+	const isWithinVideoHeight = (clientY: number) => {
+		const bounds = videoRef.current?.getBoundingClientRect();
+		return !!bounds && clientY >= bounds.top && clientY <= bounds.bottom;
 	};
 	const previous = adjacentUrls.previous;
 	const next = adjacentUrls.next;
@@ -164,6 +185,16 @@ const ZoomedInMedia = ({
 		const touchStart = touchStartRef.current;
 		touchStartRef.current = null;
 		if (isImageZoomed || !touchStart) {
+			return false;
+		}
+
+		// swipes/edge-taps only count when they start within the media's height,
+		// so touches above/below it (e.g. on empty letterboxed space) don't navigate
+		const isWithinMediaHeight =
+			media.type === 'image'
+				? isWithinImageHeight(touchStart.y)
+				: isWithinVideoHeight(touchStart.y);
+		if (!isWithinMediaHeight) {
 			return false;
 		}
 
