@@ -14,6 +14,11 @@ interface BlogPostProps {
 	post: CombinedBlogPost;
 	blog: BlogEntry;
 	blogFiles: { handle: FileSystemFileHandle; name: string }[];
+	sortedMedia: {
+		name: string;
+		type: 'video' | 'image';
+		post: CombinedBlogPost;
+	}[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	blogKey: number;
@@ -30,6 +35,7 @@ const BlogPost = ({
 	post,
 	blog,
 	blogFiles,
+	sortedMedia,
 	addTagFilter,
 	params,
 	blogKey,
@@ -68,6 +74,7 @@ const BlogPost = ({
 					blog={blog}
 					post={post.processed}
 					blogFiles={blogFiles}
+					sortedMedia={sortedMedia}
 					blogKey={blogKey}
 					onLoad={onLoad}
 					forceUncollapsed={forceUncollapsed}

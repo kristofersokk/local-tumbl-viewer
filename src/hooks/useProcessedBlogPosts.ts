@@ -71,12 +71,6 @@ const useProcessedBlogPosts = (blog: BlogEntry) => {
 		params,
 		deferredParams,
 	} = useBlogViewSettings({ availablePostTypes });
-	const transformMediaUrl = useTransformMediaUrl({
-		fallbackToOnlineMedia: deferredParams.fallbackToOnlineMedia,
-		imgMappingEntries: blog.fileEntries.Entries,
-		blogFiles: blogFiles ?? [],
-		blogName: blog.metadata.Name,
-	});
 
 	const { tagsForFilter, blogPostTypes, fuzzySearchString } = deferredFilter;
 	const { addTagFilter } = filter;
@@ -137,6 +131,14 @@ const useProcessedBlogPosts = (blog: BlogEntry) => {
 			),
 		[sortedFilteredPosts]
 	);
+
+	const transformMediaUrl = useTransformMediaUrl({
+		fallbackToOnlineMedia: deferredParams.fallbackToOnlineMedia,
+		imgMappingEntries: blog.fileEntries.Entries,
+		blogFiles: blogFiles ?? [],
+		blogName: blog.metadata.Name,
+		sortedMedia,
+	});
 
 	return {
 		posts,

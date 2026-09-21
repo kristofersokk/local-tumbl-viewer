@@ -14,7 +14,7 @@ interface BlogPostPhotoProps {
 	transformMediaUrl: (urls: string[]) => Promise<{
 		original: string;
 		transformed: string;
-		localFileName?: string;
+		localFileNames?: string[];
 	}>;
 	blogPostProcessors: { main: DomProcessorAsync; mediaOnLoad?: DomProcessor };
 	onLoad?: () => void;
@@ -29,7 +29,7 @@ const BlogPostPhoto = ({
 	const [mediaInfo, setMediaInfo] = useState<{
 		original: string;
 		transformed: string;
-		localFileName?: string;
+		localFileNames?: string[];
 	} | null>(null);
 
 	useEffect(() => {
@@ -55,10 +55,10 @@ const BlogPostPhoto = ({
 				key={photo.urls[0]}
 				className={classNames('w-full py-1', {
 					'px-1': photo.layoutSpan && photo.layoutSpan > 1,
-					'cursor-zoom-in': !!mediaInfo?.localFileName,
+					'cursor-zoom-in': !!mediaInfo?.localFileNames,
 				})}
 				data-src={mediaInfo?.original}
-				data-zoomable-media={mediaInfo?.localFileName}
+				data-zoomable-media={mediaInfo?.localFileNames?.[0]}
 				src={mediaInfo?.transformed || mediaInfo?.original}
 			/>
 			{photo.caption && (

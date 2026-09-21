@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
-import { BlogFileEntry } from 'Types/blog';
-import { getMediaFileHandle } from 'Utils/blogPostUtils';
+import { BlogFileEntry, CombinedBlogPost } from 'Types/blog';
+import { getMediaFileHandles } from 'Utils/blogPostUtils';
 import { cacheValueAsync, dedupeTask } from 'Utils/cacheUtils';
 
 const useTransformMediaUrl = ({
@@ -9,11 +9,17 @@ const useTransformMediaUrl = ({
 	imgMappingEntries,
 	blogFiles,
 	blogName,
+	sortedMedia,
 }: {
 	fallbackToOnlineMedia: boolean;
 	imgMappingEntries: BlogFileEntry[];
 	blogFiles: { handle: FileSystemFileHandle; name: string }[];
 	blogName: string;
+	sortedMedia: {
+		post: CombinedBlogPost;
+		name: string;
+		type: 'image' | 'video';
+	}[];
 }) => {
 	const constructLocalUrl = useCallback(
 		async (urls: string[]) =>
@@ -24,33 +30,40 @@ const useTransformMediaUrl = ({
 					if (urls.length === 0) {
 						throw new Error('No URLs provided to constructLocalUrl');
 					}
-					const { url: onlineUrl, fileHandle: mediaFileHandle } = urls
+					const { url: onlineUrl, fileHandles: mediaFileHandles } = urls
 						.map(url => ({
 							url,
-							fileHandle: getMediaFileHandle(imgMappingEntries, blogFiles, url),
+							fileHandles: getMediaFileHandles(
+								imgMappingEntries,
+								blogFiles,
+								url
+							),
 						}))
-						.find(file => !!file.fileHandle) ?? {
+						.find(file => file.fileHandles?.length) ?? {
 						url: urls[0],
-						fileHandle: undefined,
+						fileHandles: undefined,
 					};
-					if (mediaFileHandle) {
-						const cacheKey = `constructLocalUrl-localUrl-${blogName}-${mediaFileHandle.name}`;
+					if (mediaFileHandles?.length) {
+						const firstMediaFileHandle = mediaFileHandles[0];
+						const cacheKey = `constructLocalUrl-localUrl-${blogName}-${firstMediaFileHandle.name}`;
 						const { value: localUrl } = await cacheValueAsync(
 							'BLOG_PROCESSING',
 							cacheKey,
 							async () => {
-								const mediaFile = await mediaFileHandle.handle.getFile();
+								const mediaFile = await firstMediaFileHandle.handle.getFile();
 								return URL.createObjectURL(mediaFile);
 							}
 						);
 						return {
 							onlineUrl,
 							localUrl,
-							localFileName: mediaFileHandle.name,
+							localFileNames: mediaFileHandles.map(
+								fileHandle => fileHandle.name
+							),
 						};
 					}
 
-					return { onlineUrl, localUrl: undefined, localFileName: undefined };
+					return { onlineUrl, localUrl: undefined, localFileNames: undefined };
 				}
 			),
 		[fallbackToOnlineMedia, blogFiles, blogName, imgMappingEntries]
@@ -71,13 +84,16 @@ const useTransformMediaUrl = ({
 					if (!value) {
 						throw error;
 					}
-					const { onlineUrl, localUrl, localFileName } = value;
+					const { onlineUrl, localUrl, localFileNames } = value;
 
 					return {
 						original: onlineUrl,
 						transformed:
 							localUrl || (fallbackToOnlineMedia ? firstUrl : 'unknown'),
-						localFileName,
+						localFileNames,
+						mediaFileName: sortedMedia.find(media =>
+							localFileNames?.includes(media.name)
+						)?.name,
 					};
 				}
 			),

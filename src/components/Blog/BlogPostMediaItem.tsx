@@ -2,13 +2,18 @@ import UnsafeContent from 'Components/UnsafeContent';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
 import useTransformMediaUrl from 'Hooks/useTransformMediaUrl';
 import { useMemo } from 'react';
-import { BlogEntry } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogPostUtils';
 import { getMediaViewTransitionName } from 'Utils/viewTransitionUtils';
 
 interface BlogPostMediaItemProps {
 	blog: BlogEntry;
 	blogFiles: { handle: FileSystemFileHandle; name: string }[];
+	sortedMedia: {
+		post: CombinedBlogPost;
+		name: string;
+		type: 'image' | 'video';
+	}[];
 	media: { name: string; type: 'image' | 'video' };
 	params: BlogDeferredParams;
 	zoomInToMedia: (media: { name: string; type: 'image' | 'video' }) => void;
@@ -20,6 +25,7 @@ interface BlogPostMediaItemProps {
 const BlogPostMediaItem = ({
 	blog,
 	blogFiles,
+	sortedMedia,
 	media,
 	params,
 	zoomInToMedia,
@@ -40,6 +46,7 @@ const BlogPostMediaItem = ({
 		imgMappingEntries,
 		blogFiles,
 		blogName,
+		sortedMedia,
 	});
 
 	const blogPostProcessors = useMemo(

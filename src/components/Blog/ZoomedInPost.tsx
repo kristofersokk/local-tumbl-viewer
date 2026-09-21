@@ -10,6 +10,11 @@ import BlogPost from './BlogPost';
 interface ZoomedInPostProps {
 	zoomedInPost: CombinedBlogPost | undefined;
 	blog: BlogEntry;
+	sortedMedia: {
+		name: string;
+		type: 'video' | 'image';
+		post: CombinedBlogPost;
+	}[];
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomOut: () => void;
@@ -25,6 +30,7 @@ const ZoomedInPost = ({
 	zoomOut,
 	zoomInToMedia,
 	blogKey,
+	sortedMedia,
 }: ZoomedInPostProps) => {
 	const { data: folders, isPending: isPendingRootFolders } = useRootFolders();
 	const blogFolderName = getBlogFolderName(blog?.metadata);
@@ -60,6 +66,7 @@ const ZoomedInPost = ({
 												blog={blog}
 												post={zoomedInPost}
 												blogFiles={blogFiles!}
+												sortedMedia={sortedMedia}
 												addTagFilter={addTagFilter}
 												params={params}
 												blogKey={blogKey}

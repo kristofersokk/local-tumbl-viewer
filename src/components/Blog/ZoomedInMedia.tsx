@@ -15,6 +15,7 @@ interface ZoomedInMediaProps {
 	transformMediaUrl: (inputUrls: string | string[]) => Promise<{
 		original: string;
 		transformed: string;
+		localFileNames?: string[];
 	}>;
 	selectMedia: (media: MediaItem) => void;
 	previewTransitionMediaName?: string;

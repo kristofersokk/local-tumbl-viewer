@@ -1,5 +1,17 @@
-export function deduplicateArray<T>(array: T[]): T[] {
-	return Array.from(new Set<T>(array));
+export function deduplicateArray<T, K>(
+	array: T[],
+	keySelector: (item: T) => K = (item: T) => item as unknown as K
+): T[] {
+	const seenKeys = new Set<K>();
+	const deduplicatedArray: T[] = [];
+	for (const item of array) {
+		const key = keySelector(item);
+		if (!seenKeys.has(key)) {
+			seenKeys.add(key);
+			deduplicatedArray.push(item);
+		}
+	}
+	return deduplicatedArray;
 }
 
 export function shuffleArray<T>(array: T[]): T[] {

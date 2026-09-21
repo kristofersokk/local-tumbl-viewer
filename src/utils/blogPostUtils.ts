@@ -7,6 +7,7 @@ import {
 	extractUrls,
 	modifyAttribute,
 } from './htmlUtils';
+import { deduplicateArray } from './arrayUtils';
 
 export const countCollapsedTags = (
 	post: ProcessedBlogPost,
@@ -34,7 +35,8 @@ export const getBlogPostProcessors = (
 	transformMediaUrl: (imageUrl: string | string[]) => Promise<{
 		original: string;
 		transformed: string;
-		localFileName?: string;
+		localFileNames?: string[];
+		mediaFileName?: string;
 	}>
 ): { main: DomProcessorAsync; mediaOnLoad?: DomProcessor } => ({
 	main: async el => {
@@ -60,12 +62,12 @@ export const getBlogPostProcessors = (
 
 			imageEl.removeAttribute('src');
 			imageEl.removeAttribute('srcset');
-			const { original, transformed, localFileName } =
+			const { original, transformed, mediaFileName } =
 				await transformMediaUrl(urls);
 			modifyAttribute(imageEl, 'data-src', original);
 			modifyAttribute(imageEl, 'src', transformed);
-			if (localFileName) {
-				imageEl.setAttribute('data-zoomable-media', localFileName);
+			if (mediaFileName) {
+				imageEl.setAttribute('data-zoomable-media', mediaFileName);
 				imageEl.classList.add('cursor-zoom-in');
 			}
 		}
@@ -203,7 +205,7 @@ function getAlternativeFileNames(fileName: string | undefined): string[] {
 	return [fileName, ...alternativeFileNames];
 }
 
-export function getMediaFileHandle(
+export function getMediaFileHandles(
 	imgMappingEntries: BlogFileEntry[],
 	blogFiles: { handle: FileSystemFileHandle; name: string }[],
 	url: string
@@ -225,7 +227,7 @@ export function getMediaFileHandle(
 		originalResolutionEntry?.L,
 		originalResolutionEntry?.O,
 		urlFileName,
-	];
+	].filter(Boolean);
 	// F types have chance of having same filename, but different extension, so we need to consider them last
 	const newFileNamesForExtendedSearch = [
 		differentResolutionEntry?.O,
@@ -240,8 +242,12 @@ export function getMediaFileHandle(
 	const extendedPossibleFileNames = newFileNamesForExtendedSearch.flatMap(
 		getAlternativeFileNames
 	);
-	const mediaFile =
-		blogFiles.find(file => possibleFileNames.includes(file.name)) ??
-		blogFiles.find(file => extendedPossibleFileNames.includes(file.name));
-	return mediaFile;
+	const mediaFiles = deduplicateArray([
+		...possibleFileNames,
+		...extendedPossibleFileNames,
+	])
+		.map(fileName => blogFiles.find(file => file.name === fileName))
+		.filter(Boolean);
+	console.log('Possible media files:', mediaFiles);
+	return mediaFiles;
 }

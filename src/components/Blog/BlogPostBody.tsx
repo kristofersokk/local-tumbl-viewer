@@ -13,7 +13,7 @@ import {
 	useMemo,
 	useRef,
 } from 'react';
-import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
+import { BlogEntry, CombinedBlogPost, ProcessedBlogPost } from 'Types/blog';
 import { getBlogPostProcessors } from 'Utils/blogPostUtils';
 
 import BlogPostPhoto from './BlogPostPhoto';
@@ -25,6 +25,11 @@ interface BlogPostBodyProps {
 	blog: BlogEntry;
 	post: ProcessedBlogPost;
 	blogFiles: { handle: FileSystemFileHandle; name: string }[];
+	sortedMedia: {
+		name: string;
+		type: 'video' | 'image';
+		post: CombinedBlogPost;
+	}[];
 	blogKey: number;
 	onLoad?: () => void;
 	forceUncollapsed?: boolean;
@@ -37,6 +42,7 @@ const BlogPostBody = ({
 	blog,
 	post,
 	blogFiles,
+	sortedMedia,
 	onLoad,
 	forceUncollapsed,
 	zoomedIn = false,
@@ -67,6 +73,7 @@ const BlogPostBody = ({
 		imgMappingEntries,
 		blogFiles,
 		blogName,
+		sortedMedia,
 	});
 
 	const blogPostProcessors = useMemo(

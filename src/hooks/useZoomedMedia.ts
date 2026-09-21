@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
+import { CombinedBlogPost } from 'Types/blog';
 
 import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 interface ZoomedMedia {
 	name: string;
 	type: 'image' | 'video';
+	index: number;
 	url: string;
 }
 
@@ -18,10 +20,16 @@ const useZoomedMedia = ({
 	navigateOutOfMedia,
 }: {
 	zoomedMediaName: string | undefined;
-	sortedMedia: { name: string; type: 'image' | 'video' }[];
-	transformMediaUrl: (
-		mediaName: string
-	) => Promise<{ transformed: string; original: string }>;
+	sortedMedia: {
+		name: string;
+		type: 'image' | 'video';
+		post: CombinedBlogPost;
+	}[];
+	transformMediaUrl: (mediaName: string) => Promise<{
+		original: string;
+		transformed: string;
+		localFileNames?: string[];
+	}>;
 	zoomToMedia: (mediaName: string) => void;
 	navigateOutOfMedia: () => void;
 }) => {
@@ -41,14 +49,9 @@ const useZoomedMedia = ({
 			return {};
 		}
 
-		const currentIndex = sortedMedia.findIndex(
-			media => media.name === zoomedInMedia.name
-		);
 		return {
-			previousMedia: sortedMedia[currentIndex - 1],
-			nextMedia: sortedMedia[currentIndex + 1],
-			currentIndex,
-			total: sortedMedia.length,
+			previousMedia: sortedMedia[zoomedInMedia.index - 1],
+			nextMedia: sortedMedia[zoomedInMedia.index + 1],
 		};
 	}, [sortedMedia, zoomedInMedia]);
 
@@ -84,17 +87,23 @@ const useZoomedMedia = ({
 			return;
 		}
 
-		const mediaMeta = sortedMedia.find(media => media.name === zoomedMediaName);
-		const type = mediaMeta?.type ?? zoomedInMedia?.type ?? 'image';
-		const outgoingMedia = zoomedInMedia;
-
 		transformMediaUrl(zoomedMediaName)
-			.then(({ transformed, original }) => {
+			.then(({ transformed, original, localFileNames }) => {
 				if (navigationVersion !== mediaNavigationVersionRef.current) {
 					return;
 				}
+
+				console.log('Local file names:', localFileNames);
+				const mediaIndex = sortedMedia.findIndex(media =>
+					localFileNames?.includes(media.name)
+				);
+				const mediaMeta = sortedMedia[mediaIndex];
+				const type = mediaMeta?.type ?? zoomedInMedia?.type ?? 'image';
+				const outgoingMedia = zoomedInMedia;
+
 				const newMedia = {
 					name: zoomedMediaName,
+					index: mediaIndex,
 					type,
 					url: transformed || original,
 				};
