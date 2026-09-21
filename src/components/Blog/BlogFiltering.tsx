@@ -58,7 +58,7 @@ const BlogFiltering = ({
 			<Popover.Content
 				align="end"
 				sideOffset={5}
-				className="z-popover w-80 max-w-[90vw] shadow-2xl shadow-slate-950/70"
+				className="z-popover shadow-popover-shadow/70 w-80 max-w-[90vw] shadow-2xl"
 			>
 				<div className="bg-popover-background rounded-lg px-3 py-4">
 					<div className="flex justify-between">
@@ -76,23 +76,23 @@ const BlogFiltering = ({
 					/>
 					<div className="flex items-center gap-2">
 						{!countedRemainingTags.length && (
-							<p className="text-sm text-gray-400">No tags</p>
+							<p className="text-text-tag text-sm">No tags</p>
 						)}
 						{!!countedRemainingTags.length && (
 							<div className="flex flex-col items-start gap-4">
 								<div className="flex items-start gap-2">
-									<span className="mt-1 text-sm text-gray-400">Tags: </span>
+									<span className="text-text-tag mt-1 text-sm">Tags: </span>
 									<div className="flex flex-wrap gap-2">
 										{tagsForFilter.map(tag => (
 											<span
 												key={tag}
-												className="flex items-center gap-0.5 rounded-full bg-gray-800 px-2 py-1"
+												className="bg-control-bg flex items-center gap-0.5 rounded-full px-2 py-1"
 											>
 												<p className="text-sm">#{tag}</p>
 												{
 													<button
 														// On hover, change background drop-shadow instead of text color
-														className="size-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 text-gray-400 transition-colors [&:hover]:bg-gray-700"
+														className="text-text-tag [&:hover]:bg-control-bg-strong size-4 cursor-pointer rounded-sm p-1 align-middle text-sm leading-0.5 transition-colors"
 														onClick={() => removeTagFilter(tag)}
 													>
 														x
@@ -106,7 +106,7 @@ const BlogFiltering = ({
 									{notUsedTags.map(tag => (
 										<button
 											key={tag}
-											className="cursor-pointer rounded-full bg-gray-900 px-2 py-1 transition-colors [&:hover]:bg-gray-800"
+											className="bg-control-bg-subtle [&:hover]:bg-control-bg cursor-pointer rounded-full px-2 py-1 transition-colors"
 											onClick={() => addTagFilter(tag)}
 										>
 											<p className="text-sm">#{tag}</p>

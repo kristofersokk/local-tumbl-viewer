@@ -9,7 +9,7 @@ const Counter = ({ count, top = 16, left = 16 }: CounterProps) => {
 
 	return (
 		<span
-			className="bg-counter absolute size-4 translate-1/2 rounded-full text-xs text-white"
+			className="bg-counter text-counter-text absolute size-4 translate-1/2 rounded-full text-xs"
 			style={{ top, left }}
 		>
 			{count}

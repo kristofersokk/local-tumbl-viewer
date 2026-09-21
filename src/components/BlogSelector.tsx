@@ -9,8 +9,10 @@ import { BlogEntry, Platform } from 'Types/blog';
 import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 import PlatformLogo from './Blog/PlatformLogo';
+import HeaderPill from './HeaderPill';
 import IconButton from './IconButton';
 import RootDirResetButton from './RootDirResetButton';
+import ThemeToggle from './ThemeToggle';
 import Tooltip from './Tooltip';
 
 interface BlogSelectorProps {
@@ -52,18 +54,19 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 	} = useRegisterSW();
 
 	return (
-		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
-			<div className="bg-navbar grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
-				<div className="flex">
+		<div className="h-dvh w-dvw">
+			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between">
+				<HeaderPill side="left" className="gap-3">
+					<h3 className="text-text-highlight text-xl">TumblViewer</h3>
 					<button
 						className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors"
 						onClick={navigateToAbout}
 					>
 						About
 					</button>
-				</div>
-				<h3 className="text-2xl">TumblViewer</h3>
-				<div className="flex justify-end gap-2">
+				</HeaderPill>
+				<HeaderPill side="right">
+					<ThemeToggle />
 					{appHasUpdate && (
 						<Tooltip content="Update available">
 							<IconButton
@@ -77,9 +80,9 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 						<IconButton icon="refresh" onClick={refreshBlogs} />
 					</Tooltip>
 					<RootDirResetButton className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg" />
-				</div>
+				</HeaderPill>
 			</div>
-			<div className="overflow-y-auto">
+			<div className="h-dvh overflow-y-auto pt-16">
 				<div className="flex flex-col items-center gap-4 px-2 py-8">
 					<div className="flex flex-col gap-0.5">
 						<p className="mb-2 ml-2">Select a blog</p>
@@ -90,7 +93,7 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 							return (
 								<div
 									className={classNames(
-										'flex items-center gap-4 rounded-md px-2 py-1.5 transition-colors [&:hover]:bg-gray-900',
+										'flex items-center gap-4 rounded-md px-2 py-1.5 transition-colors [&:hover]:bg-control-bg-subtle',
 										{
 											'cursor-pointer': isSupported,
 											'cursor-not-allowed opacity-50': !isSupported,
@@ -105,11 +108,11 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 								>
 									<PlatformLogo platform={blog.metadata.platform} />
 									<div className="flex flex-col items-start justify-between text-sm">
-										<p className="text-white">{blog.metadata.Name}</p>
+										<p className="text-text-highlight">{blog.metadata.Name}</p>
 										<p>{blog.metadata.Title}</p>
 									</div>
 									{!isSupported && (
-										<p className="text-xs text-red-500">Not supported</p>
+										<p className="text-danger text-xs">Not supported</p>
 									)}
 								</div>
 							);

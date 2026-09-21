@@ -3,7 +3,9 @@ import { useContext } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import InitializationContext from 'Contexts/InitializationContext';
+import HeaderPill from './HeaderPill';
 import IconButton from './IconButton';
+import ThemeToggle from './ThemeToggle';
 import Tooltip from './Tooltip';
 import { withViewTransition } from 'Utils/viewTransitionUtils';
 
@@ -23,18 +25,19 @@ const RootDirSelector = () => {
 	} = useRegisterSW();
 
 	return (
-		<div className="grid h-dvh w-dvw grid-rows-[auto_1fr]">
-			<div className="bg-navbar grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
-				<div className="flex">
+		<div className="h-dvh w-dvw">
+			<div className="z-sticky max-md:bg-navbar fixed top-0 right-0 left-0 flex h-16 justify-between">
+				<HeaderPill side="left" className="gap-3">
+					<h3 className="text-text-highlight text-xl">TumblViewer</h3>
 					<button
 						className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-2xl px-4 py-2 transition-colors"
 						onClick={navigateToAbout}
 					>
 						About
 					</button>
-				</div>
-				<h3 className="text-2xl">TumblViewer</h3>
-				<div className="flex justify-end">
+				</HeaderPill>
+				<HeaderPill side="right">
+					<ThemeToggle />
 					{appHasUpdate && (
 						<Tooltip content="Update available">
 							<IconButton
@@ -44,12 +47,12 @@ const RootDirSelector = () => {
 							/>
 						</Tooltip>
 					)}
-				</div>
+				</HeaderPill>
 			</div>
-			<div className="flex flex-col items-center gap-4 p-8 sm:p-16">
+			<div className="flex h-dvh flex-col items-center justify-center gap-4 p-8 pt-16 sm:p-16">
 				<p>Choose TumblThree root directory (TumblrBlogs)</p>
 				<button
-					className="cursor-pointer rounded-4xl bg-slate-900 px-6 py-3 text-2xl transition-colors [&:hover]:bg-slate-950"
+					className="bg-action-button-bg [&:hover]:bg-action-button-hover-bg cursor-pointer rounded-4xl px-6 py-3 text-2xl transition-colors"
 					onClick={() => {
 						document.startViewTransition(() => {
 							initializeRootDirHandle?.({ allowPrompt: true });

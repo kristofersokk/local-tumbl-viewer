@@ -26,6 +26,8 @@ import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
 import PlatformLogo from './PlatformLogo';
 import ZoomedInPost from './ZoomedInPost';
+import HeaderPill from '../HeaderPill';
+import ThemeToggle from '../ThemeToggle';
 
 interface BlogProps {
 	blog: BlogEntry;
@@ -192,8 +194,8 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 
 	return (
 		<div className="h-dvh">
-			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between shadow-slate-950/70 max-md:shadow-2xl">
-				<div className="bg-navbar xs:gap-4 xs:px-6 flex min-w-0 items-center gap-1 rounded-br-3xl px-2 shadow-2xl shadow-slate-950/70">
+			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between">
+				<HeaderPill side="left" className="gap-1">
 					<Tooltip content={<p>Back to blog selection</p>}>
 						<IconButton icon="home" onClick={() => goHome()} />
 					</Tooltip>
@@ -205,7 +207,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 							target="_blank"
 							rel="noreferrer noopener"
 						>
-							<p className="overflow-hidden text-nowrap text-ellipsis text-white">
+							<p className="text-text-highlight overflow-hidden text-nowrap text-ellipsis">
 								{blog.metadata.Name}
 							</p>
 							<p className="overflow-hidden text-nowrap text-ellipsis">
@@ -213,8 +215,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 							</p>
 						</a>
 					</div>
-				</div>
-				<div className="xs:gap-1 bg-navbar xs:px-6 flex items-center rounded-bl-3xl px-2 shadow-2xl shadow-slate-950/70 md:gap-2">
+				</HeaderPill>
+				<HeaderPill side="right">
+					<ThemeToggle />
 					{appHasUpdate && (
 						<Tooltip content="Update available">
 							<IconButton
@@ -237,7 +240,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 						filter={filter}
 					/>
 					<BlogSettings params={params} sorting={sorting} />
-				</div>
+				</HeaderPill>
 			</div>
 			<BlogContent
 				blog={blog}

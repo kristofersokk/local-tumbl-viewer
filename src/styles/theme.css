@@ -5,7 +5,8 @@
 	--breakpoint-xs: 480px;
 
 	--color-background: #04060a;
-	--color-navbar: #0b111c;
+	--color-navbar: #16233b;
+	--color-navbar-border: #2a3f69;
 	--color-scrollbar-bg: #101828;
 	--color-scrollbar-thumb: #1d2b48;
 	--color-scrollbar-thumb-hover: #2a3f69;
@@ -16,14 +17,21 @@
 	--color-blog-collapse-color: theme(colors.gray.900);
 	--color-blog-collapse-color-hover: theme(colors.gray.800);
 	--color-popover-background: #111a2b;
+	--color-popover-shadow: #020617;
 	--color-counter: #a11;
+	--color-counter-text: #ffffff;
+	--color-danger: #ef4444;
 	--color-tooltip-bg: #ddd;
 	--color-tooltip-text: #222;
+	--color-tooltip-shadow-strong: hsl(206 22% 7% / 35%);
+	--color-tooltip-shadow-soft: hsl(206 22% 7% / 20%);
 	--color-switch-bg: #151515;
 	--color-switch-thumb: #ddd;
 	--color-switch-checked-bg: #ddd;
 	--color-switch-checked-thumb: #151515;
-	--color-blog-post-card: theme(colors.gray.900);
+	--color-switch-border: #ddd;
+	--color-blog-post-card: #16233b;
+	--color-blog-post-card-border: #2a3f69;
 	--color-blog-post-question-bg: theme(colors.gray.800);
 	--color-blog-post-summary: #888;
 	--color-blog-post-link-border: theme(colors.gray.500);
@@ -36,6 +44,26 @@
 	--color-progress-bar-bg: #1a2842;
 	--color-progress-bar-fill: #2a3f69;
 
+	--color-control-bg-subtle: theme(colors.gray.900);
+	--color-control-bg: theme(colors.gray.800);
+	--color-control-bg-strong: theme(colors.gray.700);
+	--color-logo-border: white;
+	--color-page-shadow: rgb(2 6 23 / 45%);
+	--shadow-header: 0 12px 24px -12px var(--color-page-shadow);
+
+	--color-slider-thumb-shadow-hover: #4b5563;
+	--color-slider-thumb-shadow-focus: #6b7280;
+	--color-slider-knob: #bbb;
+	--color-focus-ring: #3b82f6;
+
+	--color-platform-tumblr: #001935;
+	--color-platform-instagram: #c32aa3;
+	--color-platform-bluesky: #00aabb;
+	--color-platform-newtumbl: #ff77a8;
+	--color-platform-twitter: #000000;
+	--color-platform-unknown: #808080;
+	--color-platform-text: #ffffff;
+
 	--z-index-blog: 40;
 	--z-index-sticky: 50;
 	--z-index-popover: 60;
@@ -43,4 +71,57 @@
 	--z-index-zoomed-post: 80;
 	--z-index-tooltip: 85;
 	--z-index-toast: 90;
+}
+
+/* Light mode overrides for the dark-mode defaults declared above. */
+:root[data-theme='light'] {
+	--color-background: #eef1f6;
+	--color-navbar: #ffffff;
+	--color-navbar-border: #d7deea;
+	--color-scrollbar-bg: #e2e8f2;
+	--color-scrollbar-thumb: #c3cede;
+	--color-scrollbar-thumb-hover: #aab8cf;
+
+	--color-text: #33415c;
+	--color-text-highlight: #101828;
+	--color-text-tag: #5b6b85;
+	--color-blog-collapse-color: #e7ecf3;
+	--color-blog-collapse-color-hover: #d7deea;
+	--color-popover-background: #ffffff;
+	--color-tooltip-bg: #33415c;
+	--color-tooltip-text: #eef1f6;
+	--color-tooltip-shadow-strong: hsl(220 20% 60% / 35%);
+	--color-tooltip-shadow-soft: hsl(220 20% 60% / 20%);
+	--color-switch-bg: #aab8cf;
+	--color-switch-thumb: #ffffff;
+	--color-switch-checked-bg: #6b86ad;
+	--color-switch-checked-thumb: #ffffff;
+	--color-switch-border: #8f9fbc;
+	--color-blog-post-card: #ffffff;
+	--color-blog-post-card-border: #d7deea;
+	--color-blog-post-question-bg: #e7ecf3;
+	--color-blog-post-summary: #5b6b85;
+	--color-blog-post-link-border: #c3cede;
+	--color-blog-post-separator: #d7deea;
+	--color-action-button-bg: #e2e8f2;
+	--color-action-button-hover-bg: #d3dced;
+	--color-toast-bg: #ffffff;
+	--color-download-icon-hover: #d3dced;
+	--color-progress-bar-bg: #d3dced;
+	--color-progress-bar-fill: #6b86ad;
+
+	--color-control-bg-subtle: #e7ecf3;
+	--color-control-bg: #e2e8f2;
+	--color-control-bg-strong: #d3dced;
+	--color-logo-border: #aab8cf;
+	--color-page-shadow: rgb(51 65 85 / 18%);
+	--shadow-header: 0 6px 12px -8px var(--color-page-shadow);
+
+	--color-slider-thumb-shadow-hover: #c3cede;
+	--color-slider-thumb-shadow-focus: #aab8cf;
+	--color-slider-knob: #4f6385;
+	--color-focus-ring: #2563eb;
+
+	--color-platform-tumblr: #3d5a80;
+	--color-platform-twitter: #3a3a3a;
 }

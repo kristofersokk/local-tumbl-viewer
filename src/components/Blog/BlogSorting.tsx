@@ -31,7 +31,7 @@ const BlogSorting = ({
 					<IconButton
 						icon="shuffle"
 						className={classNames({
-							'bg-gray-700': sortingField === 'shuffle',
+							'bg-control-bg-strong': sortingField === 'shuffle',
 						})}
 						onClick={() =>
 							startShuffleTransition(() => setSortingField('shuffle'))
@@ -43,7 +43,7 @@ const BlogSorting = ({
 					<IconButton
 						icon="clock-arrow-down"
 						className={classNames({
-							'bg-gray-700':
+							'bg-control-bg-strong':
 								sortingField === 'createdBy' && sortingDirection === 'asc',
 						})}
 						onClick={() => {
@@ -59,7 +59,7 @@ const BlogSorting = ({
 					<IconButton
 						icon="clock-arrow-up"
 						className={classNames({
-							'bg-gray-700':
+							'bg-control-bg-strong':
 								sortingField === 'createdBy' && sortingDirection === 'desc',
 						})}
 						onClick={() => {

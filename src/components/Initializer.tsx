@@ -1,12 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 
-import RootDirContext from 'Contexts/InitializationContext';
+import RootDirContext, { RootDirState } from 'Contexts/InitializationContext';
 import { getPermittedRootDirectoryHandle } from 'Utils/fileSystemUtils';
-
-import Loader from './Loader';
-import RootDirSelector from './RootDirSelector';
-import Center from './utils/Center';
 
 interface InitializerProps {
 	children: ReactNode | ReactNode[];
@@ -15,15 +11,9 @@ interface InitializerProps {
 const Initializer = ({ children }: InitializerProps) => {
 	const queryClient = useQueryClient();
 
-	const [rootDirState, setRootDirState] = useState<
-		| { state: 'start' }
-		| { state: 'notSupported' }
-		| { state: 'noRootDir' }
-		| { state: 'acquiringRootDirHandle' }
-		| { state: 'promptingUser' }
-		| { state: 'error'; error: unknown }
-		| { state: 'ready'; rootDirHandle: FileSystemDirectoryHandle }
-	>({ state: 'start' });
+	const [rootDirState, setRootDirState] = useState<RootDirState>({
+		state: 'start',
+	});
 
 	const initializeRootDirHandle = useCallback(
 		({ allowPrompt }: { allowPrompt: boolean }) => {
@@ -93,26 +83,10 @@ const Initializer = ({ children }: InitializerProps) => {
 				initializeRootDirHandle,
 				clearRootDirectoryHandle,
 				initialized: rootDirState.state === 'ready',
+				rootDirState,
 			}}
 		>
-			{rootDirState.state === 'noRootDir' && <RootDirSelector />}
-			{rootDirState.state === 'notSupported' && (
-				<div className="flex h-dvh w-dvw items-center justify-center">
-					<p>
-						This browser does not support the File System Access API. <br />
-						Try Chrome, Edge, Brave, Opera, or other Chromium browsers.
-					</p>
-				</div>
-			)}
-			{rootDirState.state === 'ready' && children}
-			{rootDirState.state === 'error' && (
-				<p>Error: {String(rootDirState.error)}</p>
-			)}
-			{rootDirState.state === 'promptingUser' && (
-				<Center className="h-dvh">
-					<Loader type="clock" size={120} />
-				</Center>
-			)}
+			{children}
 		</RootDirContext.Provider>
 	);
 };

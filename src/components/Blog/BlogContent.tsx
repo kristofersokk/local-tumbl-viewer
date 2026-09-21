@@ -171,7 +171,7 @@ const BlogContent = ({
 	return (
 		<div className="flex h-dvh w-full justify-center">
 			{erroredFileNames.length > 0 && (
-				<div className="bg-counter z-sticky fixed top-16 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs text-white shadow-lg">
+				<div className="bg-counter text-counter-text z-sticky fixed top-16 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs shadow-lg">
 					Failed to load: {erroredFileNames.join(', ')}
 				</div>
 			)}

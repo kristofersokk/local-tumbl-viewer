@@ -16,6 +16,8 @@ import Shuffle from '../assets/icons/shuffle.svg?react';
 import ClockArrowDown from '../assets/icons/clock-arrow-down.svg?react';
 import ClockArrowUp from '../assets/icons/clock-arrow-up.svg?react';
 import PhotoLibrary from '../assets/icons/photo-library.svg?react';
+import LightMode from '../assets/icons/light-mode.svg?react';
+import DarkMode from '../assets/icons/dark-mode.svg?react';
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
 	icon: keyof typeof mapIconToComponent;
@@ -39,6 +41,8 @@ const mapIconToComponent = {
 	'clock-arrow-down': ClockArrowDown,
 	'clock-arrow-up': ClockArrowUp,
 	'photo-library': PhotoLibrary,
+	'light-mode': LightMode,
+	'dark-mode': DarkMode,
 };
 
 const Icon = ({ icon, ...props }: IconProps) => {

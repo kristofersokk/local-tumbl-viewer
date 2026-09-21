@@ -34,7 +34,7 @@ function Index() {
 
 	if (error) {
 		return (
-			<Center className="flex flex-col gap-3">
+			<Center className="flex h-full flex-col gap-3">
 				<p>{error}</p>
 				<RootDirResetButton />
 			</Center>
@@ -44,7 +44,7 @@ function Index() {
 	return (
 		<>
 			{erroredFileNames.length > 0 && (
-				<div className="bg-counter z-sticky fixed top-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs text-white shadow-lg">
+				<div className="bg-counter text-counter-text z-sticky fixed top-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs shadow-lg">
 					Failed to load: {erroredFileNames.join(', ')}
 				</div>
 			)}

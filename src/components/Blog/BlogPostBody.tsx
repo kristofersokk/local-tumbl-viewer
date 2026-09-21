@@ -113,7 +113,7 @@ const BlogPostBody = ({
 					'[&_audio]:my-2',
 					'[&_ul]:my-2 [&_ul]:mr-4 [&_ul]:ml-10 [&_ul]:list-outside [&_ul]:list-disc',
 					'[&_ol]:my-2 [&_ol]:mr-4 [&_ol]:ml-10 [&_ol]:list-inside [&_ol]:list-decimal',
-					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-gray-200',
+					'[&_a]:underline [&_a]:transition-colors [&_a:hover]:text-text-highlight',
 					'**:first:mt-0 **:last:mb-0',
 					{
 						'[&_.reblog-header]:hidden': !params.showRebloggedInfo,
@@ -263,7 +263,7 @@ const BlogPostBody = ({
 
 	const linkBody = link ? (
 		<div className="mx-4">
-			<div className="border-blog-post-link-border rounded-lg border transition-colors [&:hover]:bg-gray-700/50">
+			<div className="border-blog-post-link-border [&:hover]:bg-control-bg-strong/50 rounded-lg border transition-colors">
 				<a
 					className="cursor-pointer"
 					href={link.url}
@@ -346,7 +346,7 @@ const BlogPostBody = ({
 						)}
 						collapseButton={collapse => (
 							<button
-								className="mt-2 w-full cursor-pointer bg-gray-700/40 p-2 transition-colors [&:hover]:bg-gray-700/70"
+								className="bg-control-bg-strong/40 [&:hover]:bg-control-bg-strong/70 mt-2 w-full cursor-pointer p-2 transition-colors"
 								onClick={() => {
 									collapse?.();
 									scrollToTopOfPost();

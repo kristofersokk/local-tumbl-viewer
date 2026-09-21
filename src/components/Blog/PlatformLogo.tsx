@@ -5,12 +5,36 @@ const platformToConf: Record<
 	Platform,
 	{ letters: string; bgColor: string; color: string }
 > = {
-	tumblr: { letters: 't', bgColor: '#001935', color: 'white' },
-	instagram: { letters: 'i', bgColor: '#c32aa3', color: 'white' },
-	bluesky: { letters: 'b', bgColor: '#00aabb', color: 'white' },
-	newtumbl: { letters: 'nt', bgColor: '#ff77a8', color: 'white' },
-	twitter: { letters: 'X', bgColor: 'black', color: 'white' },
-	unknown: { letters: '?', bgColor: 'gray', color: 'white' },
+	tumblr: {
+		letters: 't',
+		bgColor: 'var(--color-platform-tumblr)',
+		color: 'var(--color-platform-text)',
+	},
+	instagram: {
+		letters: 'i',
+		bgColor: 'var(--color-platform-instagram)',
+		color: 'var(--color-platform-text)',
+	},
+	bluesky: {
+		letters: 'b',
+		bgColor: 'var(--color-platform-bluesky)',
+		color: 'var(--color-platform-text)',
+	},
+	newtumbl: {
+		letters: 'nt',
+		bgColor: 'var(--color-platform-newtumbl)',
+		color: 'var(--color-platform-text)',
+	},
+	twitter: {
+		letters: 'X',
+		bgColor: 'var(--color-platform-twitter)',
+		color: 'var(--color-platform-text)',
+	},
+	unknown: {
+		letters: '?',
+		bgColor: 'var(--color-platform-unknown)',
+		color: 'var(--color-platform-text)',
+	},
 };
 
 interface PlatformLogoProps {
@@ -23,7 +47,7 @@ const PlatformLogo = ({ platform, className }: PlatformLogoProps) => {
 	return (
 		<div
 			className={classNames(
-				'flex min-h-11 min-w-11 items-center justify-center rounded-lg border-2 border-white text-4xl font-semibold',
+				'border-logo-border flex min-h-11 min-w-11 items-center justify-center rounded-lg border-2 text-4xl font-semibold',
 				className
 			)}
 			style={{ backgroundColor: bgColor, color }}

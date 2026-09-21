@@ -4,6 +4,7 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Toast } from 'radix-ui';
 
+import Initializer from 'Components/Initializer';
 import ServiceWorkerGuard from 'Components/service-worker/ServiceWorkerGuard';
 
 const queryClient = new QueryClient({
@@ -20,7 +21,9 @@ export const Route = createRootRoute({
 			<QueryClientProvider client={queryClient}>
 				<Toast.Provider swipeDirection="right">
 					<ServiceWorkerGuard>
-						<Outlet />
+						<Initializer>
+							<Outlet />
+						</Initializer>
 					</ServiceWorkerGuard>
 				</Toast.Provider>
 				{import.meta.env.DEV ? (

@@ -48,7 +48,7 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 			<Popover.Content
 				align="end"
 				sideOffset={5}
-				className="z-popover max-w-[90vw] shadow-2xl shadow-slate-950/70"
+				className="z-popover shadow-popover-shadow/70 max-w-[90vw] shadow-2xl"
 			>
 				<div className="bg-popover-background flex flex-col gap-4 rounded-lg px-3 py-4">
 					<p className="text-lg">Settings</p>
@@ -62,7 +62,7 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 								<IconButton
 									icon="masonry"
 									className={classNames({
-										'bg-gray-700': layoutMode === 'masonry',
+										'bg-control-bg-strong': layoutMode === 'masonry',
 									})}
 									onClick={() => setLayoutMode('masonry')}
 								/>
@@ -71,7 +71,7 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 								<IconButton
 									icon="vertical-list"
 									className={classNames({
-										'bg-gray-700': layoutMode === 'list',
+										'bg-control-bg-strong': layoutMode === 'list',
 									})}
 									onClick={() => setLayoutMode('list')}
 								/>
@@ -80,7 +80,7 @@ const BlogSettings = ({ params, sorting }: BlogSettingsProps) => {
 								<IconButton
 									icon="photo-library"
 									className={classNames({
-										'bg-gray-700': layoutMode === 'media',
+										'bg-control-bg-strong': layoutMode === 'media',
 									})}
 									onClick={() => setLayoutMode('media')}
 								/>

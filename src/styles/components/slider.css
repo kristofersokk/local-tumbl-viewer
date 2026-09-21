@@ -3,21 +3,21 @@
 }
 
 .SliderTrack {
-	@apply relative h-3 flex-grow-1 rounded-full bg-gray-800;
+	@apply bg-control-bg relative h-3 flex-grow-1 rounded-full;
 }
 
 .SliderRange {
-	@apply absolute h-full rounded-[9999px] bg-gray-700;
+	@apply bg-control-bg-strong absolute h-full rounded-[9999px];
 }
 
 .SliderThumb {
-	@apply bg-text block size-5 rounded-[10px];
+	@apply bg-slider-knob block size-5 rounded-[10px];
 }
 
 .SliderThumb:hover {
-	@apply shadow-[0_0_3px_4px] shadow-gray-600;
+	@apply shadow-slider-thumb-shadow-hover shadow-[0_0_3px_4px];
 }
 
 .SliderThumb:focus {
-	@apply shadow-[0_0_3px_4px] shadow-gray-500 outline-none;
+	@apply shadow-slider-thumb-shadow-focus shadow-[0_0_3px_4px] outline-none;
 }

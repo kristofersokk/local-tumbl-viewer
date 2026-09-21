@@ -9,7 +9,7 @@ const TextInput = (props: TextInputProps) => {
 			{...props}
 			className={classNames(
 				props.className,
-				'bg-switch-bg border-switch-thumb rounded-lg border px-2 py-1'
+				'bg-control-bg border-control-bg-strong rounded-lg border px-2 py-1'
 			)}
 		/>
 	);

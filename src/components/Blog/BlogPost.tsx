@@ -44,7 +44,7 @@ const BlogPost = ({
 			ref={Ref as Ref<HTMLDivElement>}
 			{...containerProps}
 			className={classNames(
-				'z-blog bg-blog-post-card relative flex w-full flex-col md:rounded-md',
+				'z-blog bg-blog-post-card border-blog-post-card-border relative flex w-full flex-col border md:rounded-md',
 				containerProps?.className
 			)}
 			key={post.processed.id}
