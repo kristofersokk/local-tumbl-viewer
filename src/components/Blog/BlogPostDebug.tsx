@@ -1,7 +1,13 @@
-import { JsonView, allExpanded, darkStyles } from 'react-json-view-lite';
+import {
+	JsonView,
+	allExpanded,
+	darkStyles,
+	defaultStyles,
+} from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 
 import { ProcessedBlogPost, RawBlogPost } from 'Types/blog';
+import useTheme from 'Hooks/useTheme';
 
 interface BlogPostDebugProps {
 	post: ProcessedBlogPost;
@@ -9,6 +15,9 @@ interface BlogPostDebugProps {
 }
 
 const BlogPostDebug = ({ post, rawPost }: BlogPostDebugProps) => {
+	const { theme } = useTheme();
+	const jsonViewStyles = theme === 'dark' ? darkStyles : defaultStyles;
+
 	return (
 		<div>
 			<h2 className="m-3 text-lg font-bold">Raw post</h2>
@@ -16,7 +25,7 @@ const BlogPostDebug = ({ post, rawPost }: BlogPostDebugProps) => {
 				data={rawPost}
 				shouldExpandNode={allExpanded}
 				style={{
-					...darkStyles,
+					...jsonViewStyles,
 					container: 'text-xs',
 				}}
 			/>
@@ -25,7 +34,7 @@ const BlogPostDebug = ({ post, rawPost }: BlogPostDebugProps) => {
 				data={post}
 				shouldExpandNode={allExpanded}
 				style={{
-					...darkStyles,
+					...jsonViewStyles,
 					container: 'text-xs',
 				}}
 			/>

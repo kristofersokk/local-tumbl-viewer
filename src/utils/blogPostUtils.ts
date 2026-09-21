@@ -34,6 +34,7 @@ export const getBlogPostProcessors = (
 	transformMediaUrl: (imageUrl: string | string[]) => Promise<{
 		original: string;
 		transformed: string;
+		localFileName?: string;
 	}>
 ): { main: DomProcessorAsync; mediaOnLoad?: DomProcessor } => ({
 	main: async el => {
@@ -59,9 +60,14 @@ export const getBlogPostProcessors = (
 
 			imageEl.removeAttribute('src');
 			imageEl.removeAttribute('srcset');
-			const { original, transformed } = await transformMediaUrl(urls);
+			const { original, transformed, localFileName } =
+				await transformMediaUrl(urls);
 			modifyAttribute(imageEl, 'data-src', original);
 			modifyAttribute(imageEl, 'src', transformed);
+			if (localFileName) {
+				imageEl.setAttribute('data-zoomable-media', localFileName);
+				imageEl.classList.add('cursor-zoom-in');
+			}
 		}
 		if (tag === 'source') {
 			const sourceEl = el as HTMLSourceElement;

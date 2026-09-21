@@ -1,30 +1,17 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import IconButton from 'Components/IconButton';
 import Tooltip from 'Components/Tooltip';
-import { QUERY_KEYS } from 'Constants/queryKeys';
-import useBlogFiles from 'Hooks/api/useBlogFiles';
-import useBlogPosts from 'Hooks/api/useBlogPosts';
-import useRootFolders from 'Hooks/api/useRootFolders';
-import useBlogViewSettings from 'Hooks/useBlogViewSettings';
-import useExpensiveComputation from 'Hooks/useExpensiveComputation';
-import { BlogEntry, ProcessedBlogPost } from 'Types/blog';
-import { deduplicateArray, shuffleArray } from 'Utils/arrayUtils';
-import { getCachedProcessedBlogPost } from 'Utils/blogPostProcessingUtils';
-import {
-	detectBlogMediaFiles,
-	filterBlogPostsByFuzzySearch,
-	getBlogFolderName,
-} from 'Utils/blogUtils';
-import { clearCache } from 'Utils/cacheUtils';
-import { expensiveMap } from 'Utils/computationUtils';
+import useBlogReload from 'Hooks/useBlogReload';
+import useProcessedBlogPosts from 'Hooks/useProcessedBlogPosts';
+import useZoomedMedia from 'Hooks/useZoomedMedia';
+import { BlogEntry } from 'Types/blog';
 
 import BlogContent from './BlogContent';
 import BlogFiltering from './BlogFiltering';
 import BlogSettings from './BlogSettings';
 import PlatformLogo from './PlatformLogo';
+import ZoomedInMedia from './ZoomedInMedia';
 import ZoomedInPost from './ZoomedInPost';
 import HeaderPill from '../HeaderPill';
 import ThemeToggle from '../ThemeToggle';
@@ -32,160 +19,68 @@ import ThemeToggle from '../ThemeToggle';
 interface BlogProps {
 	blog: BlogEntry;
 	goToBlogSelection: () => void;
+	zoomedPostId: string | undefined;
+	zoomedMediaName: string | undefined;
+	zoomToPost: (postId: string) => void;
+	zoomOutOfPost: () => void;
+	zoomToMedia: (mediaName: string) => void;
+	zoomOutOfMedia: () => void;
 }
 
-const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
-	const queryClient = useQueryClient();
-
-	const { data: folders } = useRootFolders();
-	const blogFolderName = getBlogFolderName(blog?.metadata);
-	const blogFolderHandle = folders?.find(
-		folder => folder.name === blogFolderName
-	);
-	const { data: blogFiles } = useBlogFiles(blogFolderHandle);
-
+const Blog = ({
+	blog,
+	goToBlogSelection,
+	zoomedPostId,
+	zoomedMediaName,
+	zoomToPost,
+	zoomOutOfPost,
+	zoomToMedia,
+	zoomOutOfMedia: navigateOutOfMedia,
+}: BlogProps) => {
 	const {
-		query: { data: posts },
-	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
-
-	const blogMediaFiles = useMemo(() => {
-		if (!blogFiles || !posts) return undefined;
-		return detectBlogMediaFiles(
-			blogFiles.map(file => file.name),
-			posts
-				.map(post => ('id' in post ? post.id : undefined))
-				.filter(id => id !== undefined)
-		);
-	}, [blogFiles, posts]);
-
-	const managedPostsComputation = useExpensiveComputation(
-		expensiveMap(
-			posts,
-			post =>
-				getCachedProcessedBlogPost({
-					blog,
-					rawPost: post,
-					blogMediaFiles,
-				}).value
-		),
-		{
-			enabled: !!blogMediaFiles,
-			transform: posts => posts?.filter(post => !!post),
-			batchTimeMs: 14,
-		}
-	);
-	const { data: managedPosts } = managedPostsComputation;
-
-	const availablePostTypes = useMemo(
-		() =>
-			deduplicateArray((managedPosts ?? []).map(post => post.processed.type)),
-		[managedPosts]
-	);
-
-	const {
-		sorting,
-		deferredSorting: { sortingField, sortingDirection },
+		posts,
+		blogFiles,
+		managedPostsComputation,
 		filter,
-		deferredFilter,
+		sorting,
 		params,
 		deferredParams,
-	} = useBlogViewSettings({ availablePostTypes });
-
-	const { tagsForFilter, blogPostTypes, fuzzySearchString } = deferredFilter;
-	const { addTagFilter } = filter;
-
-	const filteredPosts = useMemo(() => {
-		if (!managedPosts) return [];
-
-		return filterBlogPostsByFuzzySearch(
-			(managedPosts ?? []).filter(({ processed: post }) =>
-				tagsForFilter.length
-					? !!post.tags?.length &&
-						tagsForFilter.every(tag => post.tags?.includes(tag))
-					: post.type
-						? blogPostTypes[post.type]
-						: true
-			),
-			fuzzySearchString
-		);
-	}, [managedPosts, fuzzySearchString, tagsForFilter, blogPostTypes]);
-
-	const sortedFilteredPosts = useMemo(() => {
-		const getKey = (post: ProcessedBlogPost): Date | number => {
-			switch (sortingField) {
-				case 'createdBy':
-					return post.createdAt || 0;
-				default:
-					return 0;
-			}
-		};
-
-		const sortedPosts =
-			sortingField === 'shuffle'
-				? shuffleArray(filteredPosts)
-				: filteredPosts.toSorted((a, b) => {
-						const aValue = getKey(a.processed);
-						const bValue = getKey(b.processed);
-
-						if (aValue < bValue) {
-							return sortingDirection === 'asc' ? -1 : 1;
-						}
-						if (aValue > bValue) {
-							return sortingDirection === 'asc' ? 1 : -1;
-						}
-						return 0;
-					});
-
-		return sortedPosts;
-	}, [filteredPosts, sortingField, sortingDirection]);
-
-	const sortedMedia = useMemo(
-		() =>
-			sortedFilteredPosts.flatMap(
-				post =>
-					post.processed.mediaFiles?.map(file => ({
-						...file,
-						post,
-					})) ?? []
-			),
-		[sortedFilteredPosts]
-	);
+		addTagFilter,
+		transformMediaUrl,
+		sortedFilteredPosts,
+		sortedMedia,
+	} = useProcessedBlogPosts(blog);
 
 	const goHome = () => {
 		goToBlogSelection();
 	};
 
-	const [blogKey, setBlogKey] = useState(0);
+	const { blogKey, reloadBlog } = useBlogReload();
 
-	const reloadBlog = () => {
-		clearCache('BLOG_PROCESSING');
-		queryClient
-			.invalidateQueries({
-				predicate: query =>
-					[QUERY_KEYS.BLOG_FILES, QUERY_KEYS.BLOG_POSTS].some(
-						key => query.queryKey[0] === key
-					),
-			})
-			.then(() => {
-				setBlogKey(prev => prev + 1);
-			})
-			.catch((error: unknown) => {
-				console.error('Error reloading blog:', error);
-			});
-	};
-
-	const [zoomedInPostId, setZoomedInPostId] = useState<string | null>(null);
 	const zoomedInPost = sortedFilteredPosts.find(
-		post => post.processed.id === zoomedInPostId
+		post => post.processed.id === zoomedPostId
 	);
 
-	const zoomInToPost = useCallback((postId: string) => {
-		setZoomedInPostId(postId);
-	}, []);
+	const zoomInToPost = zoomToPost;
+	const zoomOut = zoomOutOfPost;
 
-	const zoomOut = useCallback(() => {
-		setZoomedInPostId(null);
-	}, []);
+	const {
+		zoomedInMedia,
+		adjacentMedia,
+		transitioningMediaName,
+		previewTransitionMediaName,
+		outgoingTransitionMedia,
+		zoomInToMedia,
+		zoomOutOfMedia,
+		dismissMediaFromBackground,
+	} = useZoomedMedia({
+		zoomedMediaName,
+		sortedMedia,
+		transformMediaUrl,
+		zoomToMedia,
+		navigateOutOfMedia,
+	});
+	const selectZoomedMedia = zoomInToMedia;
 
 	const {
 		needRefresh: [appHasUpdate],
@@ -194,7 +89,7 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 
 	return (
 		<div className="h-dvh">
-			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between">
+			<div className="z-sticky max-md:bg-navbar max-md:border-navbar-border max-md:shadow-header fixed top-0 right-0 left-0 flex h-16 justify-between max-md:border-b md:right-3">
 				<HeaderPill side="left" className="gap-1">
 					<Tooltip content={<p>Back to blog selection</p>}>
 						<IconButton icon="home" onClick={() => goHome()} />
@@ -250,6 +145,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomInToPost={zoomInToPost}
+				zoomInToMedia={zoomInToMedia}
+				zoomedInMediaName={zoomedInMedia?.name}
+				transitioningMediaName={transitioningMediaName ?? undefined}
 				blogKey={blogKey}
 			/>
 			<ZoomedInPost
@@ -258,9 +156,25 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 				addTagFilter={addTagFilter}
 				params={deferredParams}
 				zoomOut={zoomOut}
+				zoomInToMedia={zoomInToMedia}
 				blogKey={blogKey}
 			/>
-			{/* TODO: add image viewer here and pass the media files to it */}
+			{blogFiles && (
+				<ZoomedInMedia
+					key={zoomedInMedia?.name ?? 'closed'}
+					media={zoomedInMedia}
+					previousMedia={adjacentMedia.previousMedia}
+					nextMedia={adjacentMedia.nextMedia}
+					currentIndex={adjacentMedia.currentIndex}
+					total={adjacentMedia.total}
+					transformMediaUrl={transformMediaUrl}
+					selectMedia={selectZoomedMedia}
+					previewTransitionMediaName={previewTransitionMediaName ?? undefined}
+					outgoingTransitionMedia={outgoingTransitionMedia ?? undefined}
+					dismissFromBackground={dismissMediaFromBackground}
+					zoomOut={zoomOutOfMedia}
+				/>
+			)}
 		</div>
 	);
 };

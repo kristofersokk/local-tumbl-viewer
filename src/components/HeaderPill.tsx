@@ -11,10 +11,10 @@ const HeaderPill = ({ side, className, children }: HeaderPillProps) => {
 	return (
 		<div
 			className={classNames(
-				'bg-navbar border-navbar-border shadow-header xs:px-6 flex items-center border-b px-2',
+				'md:bg-navbar md:border-navbar-border xs:px-6 flex items-center px-2 md:border-b md:shadow-header',
 				side === 'left'
-					? 'xs:gap-4 min-w-0 rounded-br-3xl'
-					: 'xs:gap-1 rounded-bl-3xl md:gap-2',
+					? 'xs:gap-4 min-w-0 md:rounded-br-3xl'
+					: 'xs:gap-1 md:gap-2 md:rounded-bl-3xl',
 				className
 			)}
 		>

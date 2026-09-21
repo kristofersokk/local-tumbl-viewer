@@ -7,6 +7,7 @@ import {
 	ComponentProps,
 	CSSProperties,
 	memo,
+	MouseEvent,
 	ReactNode,
 	RefObject,
 	useMemo,
@@ -28,6 +29,7 @@ interface BlogPostBodyProps {
 	onLoad?: () => void;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
+	zoomInToMedia?: (media: { name: string; type: 'image' | 'video' }) => void;
 }
 
 const BlogPostBody = ({
@@ -38,6 +40,7 @@ const BlogPostBody = ({
 	onLoad,
 	forceUncollapsed,
 	zoomedIn = false,
+	zoomInToMedia,
 }: BlogPostBodyProps) => {
 	const { collapsedHeightPercent, fallbackToOnlineMedia } = params;
 
@@ -184,6 +187,15 @@ const BlogPostBody = ({
 			)
 		: undefined;
 
+	const handleMediaClick = (event: MouseEvent<HTMLDivElement>) => {
+		if (!zoomInToMedia) return;
+		const target = event.target as HTMLElement;
+		const mediaEl = target.closest<HTMLElement>('[data-zoomable-media]');
+		const name = mediaEl?.getAttribute('data-zoomable-media');
+		if (!name) return;
+		zoomInToMedia({ name, type: 'image' });
+	};
+
 	const videoBody = video
 		? renderDynamic(
 				'video',
@@ -306,6 +318,7 @@ const BlogPostBody = ({
 			ref={ref as RefObject<HTMLDivElement>}
 			className={className}
 			style={style}
+			onClick={zoomInToMedia ? handleMediaClick : undefined}
 		>
 			{renderDynamic('body-content', body?.content)}
 			{photoBody ?? null}

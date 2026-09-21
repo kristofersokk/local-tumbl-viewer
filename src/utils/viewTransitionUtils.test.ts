@@ -20,7 +20,10 @@ describe('withViewTransition', () => {
 	});
 
 	it('delegates to document.startViewTransition when supported', () => {
-		const startViewTransition = vi.fn();
+		let transitionCallback: (() => void) | undefined;
+		const startViewTransition = vi.fn((callback: () => void) => {
+			transitionCallback = callback;
+		});
 		vi.stubGlobal('document', {
 			...document,
 			startViewTransition,
@@ -28,7 +31,9 @@ describe('withViewTransition', () => {
 
 		const callback = vi.fn();
 		withViewTransition(callback);
+		transitionCallback?.();
 
-		expect(startViewTransition).toHaveBeenCalledWith(callback);
+		expect(startViewTransition).toHaveBeenCalledTimes(1);
+		expect(callback).toHaveBeenCalledTimes(1);
 	});
 });

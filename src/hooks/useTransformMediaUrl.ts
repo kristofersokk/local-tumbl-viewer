@@ -43,10 +43,14 @@ const useTransformMediaUrl = ({
 								return URL.createObjectURL(mediaFile);
 							}
 						);
-						return { onlineUrl, localUrl };
+						return {
+							onlineUrl,
+							localUrl,
+							localFileName: mediaFileHandle.name,
+						};
 					}
 
-					return { onlineUrl, localUrl: undefined };
+					return { onlineUrl, localUrl: undefined, localFileName: undefined };
 				}
 			),
 		[fallbackToOnlineMedia, blogFiles, blogName, imgMappingEntries]
@@ -67,12 +71,13 @@ const useTransformMediaUrl = ({
 					if (!value) {
 						throw error;
 					}
-					const { onlineUrl, localUrl } = value;
+					const { onlineUrl, localUrl, localFileName } = value;
 
 					return {
 						original: onlineUrl,
 						transformed:
 							localUrl || (fallbackToOnlineMedia ? firstUrl : 'unknown'),
+						localFileName,
 					};
 				}
 			),

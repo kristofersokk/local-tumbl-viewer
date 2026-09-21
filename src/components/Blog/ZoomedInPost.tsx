@@ -1,4 +1,5 @@
 import ClickOutside from 'Components/ClickOutside';
+import IconButton from 'Components/IconButton';
 import useBlogFiles from 'Hooks/api/useBlogFiles';
 import useRootFolders from 'Hooks/api/useRootFolders';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
@@ -12,6 +13,7 @@ interface ZoomedInPostProps {
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomOut: () => void;
+	zoomInToMedia?: (media: { name: string; type: 'image' | 'video' }) => void;
 	blogKey: number;
 }
 
@@ -21,6 +23,7 @@ const ZoomedInPost = ({
 	addTagFilter,
 	params,
 	zoomOut,
+	zoomInToMedia,
 	blogKey,
 }: ZoomedInPostProps) => {
 	const { data: folders, isPending: isPendingRootFolders } = useRootFolders();
@@ -40,8 +43,15 @@ const ZoomedInPost = ({
 			{zoomedInPost && (
 				<div>
 					<div className="z-zoomed-post fixed top-0 right-0 bottom-0 left-0 flex justify-center overflow-y-auto overscroll-none [&::-webkit-scrollbar]:hidden">
+						<IconButton
+							icon="close"
+							iconProps={{ width: 32, height: 32 }}
+							aria-label="Close post"
+							onClick={zoomOut}
+							className="bg-control-bg/50 hover:bg-control-bg/80 absolute top-4 right-4 z-10 fill-black"
+						/>
 						<div className="min-h-[calc(100dvh+1px)]">
-							<div className="h-fit py-10 pb-16 lg:py-16">
+							<div className="h-fit pt-24 pb-16 lg:py-16">
 								<div className="h-fit w-4xl max-w-[90vw]">
 									<ClickOutside onClickOutside={zoomOut}>
 										{ref => (
@@ -53,6 +63,7 @@ const ZoomedInPost = ({
 												addTagFilter={addTagFilter}
 												params={params}
 												blogKey={blogKey}
+												zoomInToMedia={zoomInToMedia}
 												forceUncollapsed
 												zoomedIn
 											/>

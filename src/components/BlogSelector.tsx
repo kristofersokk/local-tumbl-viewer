@@ -55,7 +55,7 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 
 	return (
 		<div className="h-dvh w-dvw">
-			<div className="z-sticky max-md:bg-navbar fixed top-0 right-3 left-0 flex h-16 justify-between">
+			<div className="z-sticky max-md:bg-navbar max-md:border-navbar-border max-md:shadow-header fixed top-0 right-0 left-0 flex h-16 justify-between max-md:border-b md:right-3">
 				<HeaderPill side="left" className="gap-3">
 					<h3 className="text-text-highlight text-xl">TumblViewer</h3>
 					<button

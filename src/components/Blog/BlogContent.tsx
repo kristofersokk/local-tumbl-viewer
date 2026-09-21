@@ -40,6 +40,9 @@ interface BlogContentProps {
 	addTagFilter: (tag: string) => void;
 	params: BlogDeferredParams;
 	zoomInToPost: (postId: string) => void;
+	zoomInToMedia: (media: { name: string; type: 'image' | 'video' }) => void;
+	zoomedInMediaName: string | undefined;
+	transitioningMediaName: string | undefined;
 	blogKey: number;
 }
 
@@ -51,6 +54,9 @@ const BlogContent = ({
 	addTagFilter,
 	params,
 	zoomInToPost,
+	zoomInToMedia,
+	zoomedInMediaName,
+	transitioningMediaName,
 	blogKey,
 }: BlogContentProps) => {
 	const remInPixels = useRemToPixels();
@@ -220,6 +226,7 @@ const BlogContent = ({
 										addTagFilter={addTagFilter}
 										params={params}
 										zoomInToPost={zoomInToPost}
+										zoomInToMedia={zoomInToMedia}
 										blogKey={blogKey}
 										onLoad={() => {
 											setTimeout(() => {
@@ -254,10 +261,11 @@ const BlogContent = ({
 										key={mediaKey}
 										blog={blog}
 										blogFiles={blogFiles}
-										post={media.post}
 										media={media}
 										params={params}
-										zoomInToPost={zoomInToPost}
+										zoomInToMedia={zoomInToMedia}
+										isZoomedIn={zoomedInMediaName === media.name}
+										isTransitioning={transitioningMediaName === media.name}
 										onLoad={() => {
 											const el = elementsRef.current.get(mediaKey);
 											if (el) {
@@ -280,6 +288,8 @@ export default memo(BlogContent, (prevProps, nextProps) => {
 		prevProps.blogKey === nextProps.blogKey &&
 		prevProps.sortedFilteredPosts === nextProps.sortedFilteredPosts &&
 		prevProps.sortedMedia === nextProps.sortedMedia &&
+		prevProps.zoomedInMediaName === nextProps.zoomedInMediaName &&
+		prevProps.transitioningMediaName === nextProps.transitioningMediaName &&
 		prevProps.managedPostsComputation === nextProps.managedPostsComputation
 	);
 });

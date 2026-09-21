@@ -19,6 +19,7 @@ interface BlogPostProps {
 	blogKey: number;
 	onLoad?: () => void;
 	zoomInToPost?: (postId: string) => void;
+	zoomInToMedia?: (media: { name: string; type: 'image' | 'video' }) => void;
 	forceUncollapsed?: boolean;
 	zoomedIn?: boolean;
 }
@@ -34,6 +35,7 @@ const BlogPost = ({
 	blogKey,
 	onLoad,
 	zoomInToPost,
+	zoomInToMedia,
 	forceUncollapsed,
 	zoomedIn = false,
 }: BlogPostProps) => {
@@ -70,6 +72,7 @@ const BlogPost = ({
 					onLoad={onLoad}
 					forceUncollapsed={forceUncollapsed}
 					zoomedIn={zoomedIn}
+					zoomInToMedia={zoomInToMedia}
 				/>
 			)}
 			<BlogPostFooter
