@@ -70,7 +70,13 @@ export const cacheValueAsync = async <CN extends CacheName, T>(
 };
 
 export const clearCache = (cacheName: CacheName) => {
-	caches[cacheName].clear();
+	const cache = caches[cacheName];
+	for (const value of cache.values()) {
+		if (typeof value === 'string' && value.startsWith('blob:')) {
+			URL.revokeObjectURL(value);
+		}
+	}
+	cache.clear();
 };
 
 export const clearCacheValue = (

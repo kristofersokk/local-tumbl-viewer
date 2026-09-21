@@ -1,11 +1,12 @@
 import classNames from 'classnames';
 import { BlogDeferredParams } from 'Hooks/useBlogViewSettings';
-import { HTMLAttributes, Ref, useState } from 'react';
+import { HTMLAttributes, lazy, Ref, Suspense, useState } from 'react';
 import { BlogEntry, CombinedBlogPost } from 'Types/blog';
 import BlogPostBody from './BlogPostBody';
-import BlogPostDebug from './BlogPostDebug';
 import BlogPostFooter from './BlogPostFooter';
 import BlogPostHeader from './BlogPostHeader';
+
+const BlogPostDebug = lazy(() => import('./BlogPostDebug'));
 
 interface BlogPostProps {
 	Ref?: Ref<HTMLElement | null>;
@@ -56,7 +57,9 @@ const BlogPost = ({
 				setIsDebugging={setIsDebugging}
 			/>
 			{isDebugging ? (
-				<BlogPostDebug post={post.processed} rawPost={post.raw} />
+				<Suspense fallback={null}>
+					<BlogPostDebug post={post.processed} rawPost={post.raw} />
+				</Suspense>
 			) : (
 				<BlogPostBody
 					params={params}

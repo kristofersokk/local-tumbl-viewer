@@ -24,7 +24,7 @@ const NeedRefresh = ({ updateServiceWorker }: NeedRefreshProps) => {
 					className="ToastAction"
 					onClick={() => {
 						setOpen(false);
-						updateServiceWorker(true);
+						void updateServiceWorker(true);
 					}}
 				>
 					Upgrade

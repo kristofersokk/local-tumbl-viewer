@@ -3,6 +3,7 @@ import Blog from 'Components/Blog/Blog';
 import useBlogs from 'Hooks/api/useBlogs';
 import useRootFolders from 'Hooks/api/useRootFolders';
 import { useCallback, useEffect } from 'react';
+import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 export const Route = createFileRoute('/_initializer/$blogName/')({
 	component: BlogRoute,
@@ -18,8 +19,8 @@ function BlogRoute() {
 	const blog = blogs?.find(blog => blog.metadata.Name === blogName);
 
 	const goToBlogSelection = useCallback(() => {
-		document.startViewTransition(() => {
-			navigate({ to: '..' });
+		withViewTransition(() => {
+			void navigate({ to: '..' });
 		});
 	}, [navigate]);
 

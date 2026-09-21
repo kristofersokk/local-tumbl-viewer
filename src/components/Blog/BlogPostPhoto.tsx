@@ -30,9 +30,13 @@ const BlogPostPhoto = ({
 	} | null>(null);
 
 	useEffect(() => {
-		transformMediaUrl(photo.urls).then(mediaInfo => {
-			setMediaInfo(mediaInfo);
-		});
+		transformMediaUrl(photo.urls)
+			.then(mediaInfo => {
+				setMediaInfo(mediaInfo);
+			})
+			.catch((error: unknown) => {
+				console.error('Error transforming media url:', error);
+			});
 	}, [photo.urls, transformMediaUrl]);
 
 	return mediaInfo ? (

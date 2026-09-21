@@ -106,6 +106,7 @@ const BlogContent = ({
 
 	const {
 		foundBlogPostsFiles,
+		erroredFileNames,
 		query: { data: blogPosts, isFetching: isFetchingBlogPosts },
 	} = useBlogPosts(blog, blogFolderHandle, blogFiles);
 
@@ -169,13 +170,18 @@ const BlogContent = ({
 
 	return (
 		<div className="flex h-dvh w-full justify-center">
+			{erroredFileNames.length > 0 && (
+				<div className="bg-counter z-sticky fixed top-16 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs text-white shadow-lg">
+					Failed to load: {erroredFileNames.join(', ')}
+				</div>
+			)}
 			<div
 				ref={parentRef}
 				className="h-full max-w-full overflow-auto px-0 py-8 md:px-8 lg:px-12"
 				style={{
 					width:
 						params.layoutMode === 'list' &&
-						screen.orientation.type.includes('landscape')
+						screen.orientation?.type.includes('landscape')
 							? columnWidthRem * remInPixels
 							: '100%',
 				}}
@@ -190,10 +196,11 @@ const BlogContent = ({
 					{params.layoutMode !== 'media' &&
 						postVirtualizer.getVirtualItems().map(virtualRow => {
 							const post = sortedFilteredPosts[virtualRow.index];
-							const postId = post.processed.id ?? '';
+							const postId =
+								post.processed.id ?? `post-index-${virtualRow.index}`;
 							return (
 								<div
-									key={post.processed.id}
+									key={postId}
 									ref={el => {
 										elementsRef.current.set(postId, el);
 									}}
@@ -206,7 +213,7 @@ const BlogContent = ({
 									}}
 								>
 									<BlogPost
-										key={post.processed.id}
+										key={postId}
 										blog={blog}
 										post={post}
 										blogFiles={blogFiles}
@@ -228,11 +235,12 @@ const BlogContent = ({
 					{params.layoutMode === 'media' &&
 						mediaVirtualizer.getVirtualItems().map(virtualRow => {
 							const media = sortedMedia[virtualRow.index];
+							const mediaKey = `${media.post.processed.id ?? virtualRow.index}-${media.name}`;
 							return (
 								<div
-									key={media.name}
+									key={mediaKey}
 									ref={el => {
-										elementsRef.current.set(media.name, el);
+										elementsRef.current.set(mediaKey, el);
 									}}
 									data-index={virtualRow.index}
 									className="absolute top-0 will-change-transform"
@@ -243,7 +251,7 @@ const BlogContent = ({
 									}}
 								>
 									<BlogPostMediaItem
-										key={media.name}
+										key={mediaKey}
 										blog={blog}
 										blogFiles={blogFiles}
 										post={media.post}
@@ -251,7 +259,7 @@ const BlogContent = ({
 										params={params}
 										zoomInToPost={zoomInToPost}
 										onLoad={() => {
-											const el = elementsRef.current.get(media.name);
+											const el = elementsRef.current.get(mediaKey);
 											if (el) {
 												mediaVirtualizer.measureElement(el);
 											}

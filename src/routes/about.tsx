@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import IconButton from 'Components/IconButton';
+import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 export const Route = createFileRoute('/about')({
 	component: About,
@@ -9,8 +10,8 @@ function About() {
 	const navigate = useNavigate({ from: '/about' });
 
 	const goHome = () => {
-		document.startViewTransition(() => {
-			navigate({ to: '/' });
+		withViewTransition(() => {
+			void navigate({ to: '/' });
 		});
 	};
 

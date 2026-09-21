@@ -12,7 +12,11 @@ export const Route = createFileRoute('/_initializer/')({
 function Index() {
 	const { data: folders, isFetching: isFetchingRootFolders } = useRootFolders();
 	const indexFolder = folders?.find(folder => folder.name === 'Index');
-	const { data: blogs, isFetching: isFetchingBlogs } = useBlogs(indexFolder);
+	const {
+		data: blogs,
+		isFetching: isFetchingBlogs,
+		erroredFileNames,
+	} = useBlogs(indexFolder);
 
 	const isFetching = isFetchingRootFolders || isFetchingBlogs;
 
@@ -37,5 +41,14 @@ function Index() {
 		);
 	}
 
-	return <BlogSelector blogs={blogs!} />;
+	return (
+		<>
+			{erroredFileNames.length > 0 && (
+				<div className="bg-counter z-sticky fixed top-2 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-center text-xs text-white shadow-lg">
+					Failed to load: {erroredFileNames.join(', ')}
+				</div>
+			)}
+			<BlogSelector blogs={blogs!} />
+		</>
+	);
 }

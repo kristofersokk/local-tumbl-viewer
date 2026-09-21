@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import InitializationContext from 'Contexts/InitializationContext';
 import { useContext } from 'react';
 import { resetRootDirectoryHandle } from 'Utils/fileSystemUtils';
+import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 interface RootDirResetButtonProps {
 	className?: string;
@@ -14,7 +15,7 @@ const RootDirResetButton = ({ className }: RootDirResetButtonProps) => {
 
 	const reset = async () => {
 		await resetRootDirectoryHandle();
-		document.startViewTransition(() => {
+		withViewTransition(() => {
 			clearRootDirectoryHandle?.();
 			queryClient.clear();
 		});

@@ -5,14 +5,15 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import InitializationContext from 'Contexts/InitializationContext';
 import IconButton from './IconButton';
 import Tooltip from './Tooltip';
+import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 const RootDirSelector = () => {
 	const navigate = useNavigate({ from: '/' });
 	const { initializeRootDirHandle } = useContext(InitializationContext);
 
 	const navigateToAbout = () => {
-		document.startViewTransition(() => {
-			navigate({ to: '/about' });
+		withViewTransition(() => {
+			void navigate({ to: '/about' });
 		});
 	};
 

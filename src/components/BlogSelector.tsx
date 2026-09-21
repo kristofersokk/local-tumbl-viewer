@@ -6,6 +6,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogEntry, Platform } from 'Types/blog';
+import { withViewTransition } from 'Utils/viewTransitionUtils';
 
 import PlatformLogo from './Blog/PlatformLogo';
 import IconButton from './IconButton';
@@ -29,20 +30,20 @@ const BlogSelector = ({ blogs }: BlogSelectorProps) => {
 	}, [blogs]);
 
 	const navigateToAbout = () => {
-		document.startViewTransition(() => {
-			navigate({ to: '/about' });
+		withViewTransition(() => {
+			void navigate({ to: '/about' });
 		});
 	};
 
 	const selectBlog = (blogName: string) => {
-		document.startViewTransition(() => {
-			navigate({ to: encodeURIComponent(blogName) });
+		withViewTransition(() => {
+			void navigate({ to: encodeURIComponent(blogName) });
 		});
 	};
 
 	const refreshBlogs = () => {
-		queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROOT_FOLDERS] });
-		queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BLOGS] });
+		void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ROOT_FOLDERS] });
+		void queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BLOGS] });
 	};
 
 	const {

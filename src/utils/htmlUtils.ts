@@ -13,12 +13,14 @@ export async function iterateDomTree(
 
 	processor(el, eventCollector?.registerInput(currentPath));
 
-	Array.from(el.children).map((child, index) =>
-		iterateDomTree(
-			child as HTMLElement,
-			processor,
-			eventCollector,
-			currentPath + '.' + index
+	await Promise.all(
+		Array.from(el.children).map((child, index) =>
+			iterateDomTree(
+				child as HTMLElement,
+				processor,
+				eventCollector,
+				currentPath + '.' + index
+			)
 		)
 	);
 }

@@ -19,7 +19,7 @@ const useTransformMediaUrl = ({
 		async (urls: string[]) =>
 			cacheValueAsync(
 				'BLOG_PROCESSING',
-				`constructLocalUrl-${urls.join(',')}-${fallbackToOnlineMedia}`,
+				`constructLocalUrl-${blogName}-${urls.join(',')}-${fallbackToOnlineMedia}`,
 				async () => {
 					if (urls.length === 0) {
 						throw new Error('No URLs provided to constructLocalUrl');
@@ -55,7 +55,7 @@ const useTransformMediaUrl = ({
 	return useCallback(
 		async (inputUrls: string | string[]) =>
 			dedupeTask(
-				`transformMediaUrl-${Array.isArray(inputUrls) ? inputUrls.join(',') : inputUrls}-${fallbackToOnlineMedia}`,
+				`transformMediaUrl-${blogName}-${Array.isArray(inputUrls) ? inputUrls.join(',') : inputUrls}-${fallbackToOnlineMedia}`,
 				async () => {
 					const urls = Array.isArray(inputUrls)
 						? inputUrls.filter(Boolean)
@@ -76,7 +76,7 @@ const useTransformMediaUrl = ({
 					};
 				}
 			),
-		[fallbackToOnlineMedia, constructLocalUrl]
+		[fallbackToOnlineMedia, blogName, constructLocalUrl]
 	);
 };
 

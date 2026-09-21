@@ -1350,7 +1350,12 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			outDir: 'dist',
-			sourcemap: true,
+			sourcemap: mode !== 'production',
+			rolldownOptions: {
+				output: {
+					codeSplitting: true,
+				},
+			},
 		},
 		test: {
 			globals: true,

@@ -1,5 +1,6 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { jsonrepair } from 'jsonrepair';
+import { useState } from 'react';
 
 import { QUERY_KEYS } from 'Constants/queryKeys';
 import { BlogEntry, RawBlogPost } from 'Types/blog';
@@ -30,46 +31,47 @@ const useBlogPosts = (
 		blogLinksFile,
 	].filter(Boolean);
 
+	const [erroredFileNames, setErroredFileNames] = useState<string[]>([]);
+
 	const query = useQuery({
 		queryKey: [QUERY_KEYS.BLOG_POSTS, blogFolderHandle?.name],
 		queryFn: blogFiles
 			? async () => {
-					const [texts, images, videos, conversations, answers, quotes, links] =
-						await Promise.all(
-							foundBlogPostsFiles.map(file =>
-								file.handle
-									.getFile()
-									.then(file => file.text())
-									.then(text => {
-										try {
-											return JSON.parse(text) as RawBlogPost[];
-											// oxlint-disable-next-line @typescript-eslint/no-unused-vars
-										} catch (ignored) {
-											// TODO: add global toast system
-											console.log(`Repairing JSON for ${file.name}`);
-											return JSON.parse(jsonrepair(text)) as RawBlogPost[];
-										}
-									})
-									.catch(e => console.error(`Error reading ${file.name}:`, e))
-							)
-						);
+					const failedFileNames: string[] = [];
 
-					return [
-						...(texts || []),
-						...(images || []),
-						...(videos || []),
-						...(conversations || []),
-						...(answers || []),
-						...(quotes || []),
-						...(links || []),
-					];
+					const results = await Promise.all(
+						foundBlogPostsFiles.map(file =>
+							file.handle
+								.getFile()
+								.then(file => file.text())
+								.then(text => {
+									try {
+										return JSON.parse(text) as RawBlogPost[];
+										// oxlint-disable-next-line @typescript-eslint/no-unused-vars
+									} catch (ignored) {
+										// TODO: add global toast system
+										console.log(`Repairing JSON for ${file.name}`);
+										return JSON.parse(jsonrepair(text)) as RawBlogPost[];
+									}
+								})
+								.catch((e: unknown) => {
+									console.error(`Error reading ${file.name}:`, e);
+									failedFileNames.push(file.name);
+									return undefined;
+								})
+						)
+					);
+
+					setErroredFileNames(failedFileNames);
+
+					return results.flatMap(result => result ?? []);
 				}
 			: skipToken,
 		staleTime: Infinity,
 		enabled: enabled && !!blog && !!blogFiles,
 	});
 
-	return { query, foundBlogPostsFiles };
+	return { query, foundBlogPostsFiles, erroredFileNames };
 };
 
 export default useBlogPosts;

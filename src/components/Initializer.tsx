@@ -65,12 +65,13 @@ const Initializer = ({ children }: InitializerProps) => {
 
 	const clearRootDirectoryHandle = useCallback(() => {
 		setRootDirState({ state: 'noRootDir' });
-		queryClient.resetQueries();
+		void queryClient.resetQueries();
 	}, [queryClient]);
 
 	useEffect(() => {
 		if (rootDirState.state === 'start') {
-			const fileSystemAPIIsSupported = !!window.showDirectoryPicker;
+			const fileSystemAPIIsSupported =
+				!!window.showDirectoryPicker && typeof Array.fromAsync === 'function';
 			if (fileSystemAPIIsSupported) {
 				initializeRootDirHandle({
 					allowPrompt: false,

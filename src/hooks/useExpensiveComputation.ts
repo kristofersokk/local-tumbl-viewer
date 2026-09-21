@@ -204,9 +204,11 @@ const useExpensiveComputation = <I, R, S, TR = R>(
 		return { isLoading: loading, isError: error, progress, data: returnData };
 	}, [error, loading, progress, returnData]);
 
-	if (useCache && isReady(state.current) && isValid(state.current)) {
-		storeCacheValue(useCache.cacheName, useCache.key, returnObj);
-	}
+	useEffect(() => {
+		if (useCache && isReady(state.current) && isValid(state.current)) {
+			storeCacheValue(useCache.cacheName, useCache.key, returnObj);
+		}
+	}, [isReady, isValid, returnObj, useCache]);
 
 	return returnObj;
 };

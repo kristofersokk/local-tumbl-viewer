@@ -166,6 +166,9 @@ const Blog = ({ blog, goToBlogSelection }: BlogProps) => {
 			})
 			.then(() => {
 				setBlogKey(prev => prev + 1);
+			})
+			.catch((error: unknown) => {
+				console.error('Error reloading blog:', error);
 			});
 	};
 

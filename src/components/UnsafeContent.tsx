@@ -50,21 +50,29 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 	const handleBody = useEffectEvent((body: HTMLBodyElement) => {
 		setTimeout(() => {
 			if (domProcessors) {
-				iterateDomTreeAsync(body, domProcessors.main).then(() => {
-					if (domProcessors.mediaOnLoad) {
-						setBody(body);
-						const eventCollector = new EventCollector({
-							autoComplete: false,
-						});
-						eventCollector.setOutput(() => {
+				iterateDomTreeAsync(body, domProcessors.main)
+					.then(() => {
+						if (domProcessors.mediaOnLoad) {
+							setBody(body);
+							const eventCollector = new EventCollector({
+								autoComplete: false,
+							});
+							eventCollector.setOutput(() => {
+								onLoadEvent();
+							});
+							void iterateDomTree(
+								body,
+								domProcessors.mediaOnLoad,
+								eventCollector
+							);
+							eventCollector.markEverythingRegistered();
+						} else {
 							onLoadEvent();
-						});
-						iterateDomTree(body, domProcessors.mediaOnLoad, eventCollector);
-						eventCollector.markEverythingRegistered();
-					} else {
-						onLoadEvent();
-					}
-				});
+						}
+					})
+					.catch((error: unknown) => {
+						console.error('Error processing DOM tree:', error);
+					});
 			} else {
 				setBody(body);
 			}
@@ -101,10 +109,31 @@ const UnsafeContent = <E extends keyof JSX.IntrinsicElements = 'div'>({
 };
 
 export default memo(UnsafeContent, (prevProps, nextProps) => {
+	const {
+		content: prevContent,
+		tag: prevTag,
+		Ref: prevRef,
+		domProcessors: prevDomProcessors,
+		onLoad: prevOnLoad,
+		...prevRest
+	} = prevProps;
+	const {
+		content: nextContent,
+		tag: nextTag,
+		Ref: nextRef,
+		domProcessors: nextDomProcessors,
+		onLoad: nextOnLoad,
+		...nextRest
+	} = nextProps;
+
+	// Ref/domProcessors/onLoad are compared by identity; functions and DOM refs
+	// would otherwise be silently dropped (or crash) when JSON-stringified.
 	return (
-		prevProps.content === nextProps.content &&
-		prevProps.tag === nextProps.tag &&
-		prevProps.Ref === nextProps.Ref &&
-		JSON.stringify(prevProps) === JSON.stringify(nextProps)
+		prevContent === nextContent &&
+		prevTag === nextTag &&
+		prevRef === nextRef &&
+		prevDomProcessors === nextDomProcessors &&
+		prevOnLoad === nextOnLoad &&
+		JSON.stringify(prevRest) === JSON.stringify(nextRest)
 	);
 });
